@@ -5,10 +5,11 @@ public class Test1 : CommonMonoBehaviour
 {
     public GameObject test;
 
+    [Inject]
+    public DITest1 test1;
+
     void Start()
     {
-        Log.Info(this, "HELLO: " + test);
-
-        Coroutines.WaitForSeconds(3, () => Log.Info<Test1>("Alarm"));
+        Log.Info(this, "test1: " + test1.number1);
     }
 }

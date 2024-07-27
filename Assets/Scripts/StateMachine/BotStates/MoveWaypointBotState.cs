@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Game
+namespace Game.StateMachine
 {
     public class MoveWaypointBotState : MoveBotState
     {

@@ -1,8 +1,8 @@
-using m039.Common;
+using m039.Common.StateMachine;
 using System.Linq;
 using UnityEngine;
 
-namespace Game
+namespace Game.StateMachine
 {
     public class BotController : MonoBehaviour
     {
@@ -22,7 +22,7 @@ namespace Game
 
         public Vector2 StartPosition { get; private set; }
 
-        StateMachine StateMachine { get; } = new();
+        m039.Common.StateMachine.StateMachine StateMachine { get; } = new();
 
         void Awake()
         {
@@ -33,10 +33,14 @@ namespace Game
 
             StartPosition = transform.position;
 
-            StateMachine.AddAnyTransition(_IdleState, () => Input.GetKeyDown(KeyCode.R));
-            StateMachine.AddAnyTransition(_PatrolState, () => Input.GetKeyDown(KeyCode.P));
-            StateMachine.AddAnyTransition(_WanderState, () => Input.GetKeyDown(KeyCode.W));
-            StateMachine.SetState(_IdleState);
+            var idleState = _IdleState;
+            var patrolState = _PatrolState;
+            var wanderState = _WanderState;
+
+            StateMachine.AddAnyTransition(idleState, () => Input.GetKeyDown(KeyCode.R));
+            StateMachine.AddAnyTransition(patrolState, () => Input.GetKeyDown(KeyCode.P));
+            StateMachine.AddAnyTransition(wanderState, () => Input.GetKeyDown(KeyCode.W));
+            StateMachine.SetState(idleState);
         }
 
         void OnGUI()

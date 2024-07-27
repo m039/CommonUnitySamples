@@ -1,4 +1,6 @@
-namespace Game
+using m039.Common.StateMachine;
+
+namespace Game.StateMachine
 {
     public class BotState : MonoBehaviourState
     {

@@ -1,6 +1,7 @@
+using m039.Common.StateMachine;
 using UnityEngine;
 
-namespace Game
+namespace Game.StateMachine
 {
     public class PatrolBotState : BotState
     {
@@ -16,9 +17,12 @@ namespace Game
         {
             base.OnInit(botController);
 
-            AddTransition(_IdleState, _MoveState, () => _IdleState.IsComplete);
-            AddTransition(_MoveState, _IdleState, () => _MoveState.IsComplete);
-            SetState(_MoveState);
+            var idleState = _IdleState;
+            var moveState = _MoveState;
+
+            AddTransition(idleState, moveState, () => _IdleState.IsComplete);
+            AddTransition(moveState, idleState, () => _MoveState.IsComplete);
+            SetState(moveState);
         }
     }
 }

@@ -1,7 +1,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace Game
+namespace Game.StateMachine
 {
     public class MoveBotState : BotState
     {

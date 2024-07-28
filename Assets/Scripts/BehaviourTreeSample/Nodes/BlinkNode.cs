@@ -1,9 +1,12 @@
+using m039.Common.BehaviourTrees;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
-namespace Game.StateMachineSample
+namespace Game
 {
-    public class IdleBlinkBotState : IdleBotState
+    public class BlinkNode : MonoBehaviour, INode
     {
         #region Inspector
 
@@ -15,37 +18,34 @@ namespace Game.StateMachineSample
 
         #endregion
 
-        [NonSerialized]
-        float _timer = 0;
+        CoreBotController _botController;
 
-        public override void OnEnter()
+        public void Init(CoreBotController botController)
         {
-            base.OnEnter();
+            _botController = botController;
+        }
 
+        void INode.Reset()
+        {
             _timer = 0;
             SetColor(1);
         }
 
-        public override void OnUpdate()
+        public Status Process()
         {
-            base.OnUpdate();
-
             _timer += Time.deltaTime;
             SetColor(Mathf.Cos(_timer * _Speed));
+            return Status.Running;
         }
 
-        public override void OnExit()
-        {
-            base.OnExit();
-
-            SetColor(1);
-        }
+        [NonSerialized]
+        float _timer = 0;
 
         void SetColor(float value)
         {
             var color = Color.Lerp(_ColorMin, _ColorMax, value);
             // WARNING: Could be a performance issue.
-            botController.EventBus.Raise<ISetColorEvent>(a => a.SetColor(color));
+            _botController.EventBus.Raise<ISetColorEvent>(a => a.SetColor(color));
         }
     }
 }

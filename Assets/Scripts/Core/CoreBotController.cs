@@ -37,6 +37,25 @@ namespace Game
         [SerializeField]
         CoreBotBrain _Brain;
 
+        CoreBotFeature[] _features;
+
+        protected virtual void Awake()
+        {
+            _features = GetComponents<CoreBotFeature>();
+            foreach (var feature in _features)
+            {
+                feature.Init(this);
+            }
+        }
+
+        protected virtual void OnDestroy()
+        {
+            foreach (var feature in _features)
+            {
+                feature.Deinit(this);
+            }
+        }
+
         protected virtual void Start()
         {
             if (_Brain == null)

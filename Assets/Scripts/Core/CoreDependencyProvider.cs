@@ -1,6 +1,7 @@
 using m039.Common;
 using m039.Common.Blackboard;
 using m039.Common.DependencyInjection;
+using m039.Common.Events;
 using UnityEngine;
 
 namespace Game
@@ -18,24 +19,37 @@ namespace Game
 
         ServiceLocator _serviceLocator;
 
+        EventBusByInterface _eventBus;
+
         [Provide]
-        protected virtual Blackboard CreateOrGetBlackboard()
+        protected virtual Blackboard GetOrCreateBlackboard()
         {
             if (_blackboard == null)
             {
-                _blackboard = new Blackboard();
+                _blackboard = new();
                 _blackboard.SetValues(_BlackboardData);
             }
             return _blackboard;
         }
 
         [Provide]
-        protected virtual ServiceLocator CreateOrGetServiceLocator()
+        protected virtual EventBusByInterface GetOrCreateEventBus()
+        {
+            if (_eventBus == null)
+            {
+                _eventBus = new();
+            }
+            return _eventBus;
+        }
+
+        [Provide]
+        protected virtual ServiceLocator GetOrCreateServiceLocator()
         {
             if (_serviceLocator == null)
             {
-                _serviceLocator = new ServiceLocator();
-                _serviceLocator.Register(CreateOrGetBlackboard());
+                _serviceLocator = new();
+                _serviceLocator.Register(GetOrCreateBlackboard());
+                _serviceLocator.Register(GetOrCreateEventBus());
             }
 
             return _serviceLocator;

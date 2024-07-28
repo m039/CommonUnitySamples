@@ -336,6 +336,7 @@ GameObject:
   - component: {fileID: 414696419}
   - component: {fileID: 414696420}
   - component: {fileID: 414696421}
+  - component: {fileID: 414696422}
   m_Layer: 0
   m_Name: Bot
   m_TagString: Untagged
@@ -374,7 +375,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _Brain: {fileID: 414696421}
   _MoveSpeed: 5
-  _Renderer: {fileID: 792580836}
 --- !u!114 &414696421
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -390,6 +390,19 @@ MonoBehaviour:
   _IdleState: {fileID: 1709115789}
   _WanderState: {fileID: 1950819863}
   _PatrolState: {fileID: 1016653782}
+--- !u!114 &414696422
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 414696417}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35e2126fdfbcd8344afbf65902fb2793, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _Renderer: {fileID: 792580836}
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0

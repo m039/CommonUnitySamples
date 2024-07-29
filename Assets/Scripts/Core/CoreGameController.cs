@@ -8,12 +8,12 @@ namespace Game
     public class CoreGameController : MonoBehaviourSingleton<CoreGameController>
     {
         [Inject]
-        public Blackboard Blackboard { get; private set; }
+        public Blackboard Blackboard { get; protected set; }
 
         [Inject]
-        public EventBusByInterface EventBus { get; private set; }
+        public EventBusByInterface EventBus { get; protected set; }
 
         [Inject]
-        public ServiceLocator ServiceLocator { get; private set; }
+        public ServiceLocator ServiceLocator { get; protected set; }
     }
 }

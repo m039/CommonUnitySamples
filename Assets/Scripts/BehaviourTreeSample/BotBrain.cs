@@ -3,14 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Game
+namespace Game.BehaviourTreeSample
 {
     public class BotBrain : CoreBotBrain
     {
         #region Inspector
 
         [SerializeField]
-        BlinkNode _BlinkNode;
+        BlinkBotNode _BlinkNode;
 
         #endregion
 

@@ -76,5 +76,13 @@ namespace Game
                 _Brain.Think();
             }
         }
+
+        protected virtual void FixedUpdate()
+        {
+            if (_Brain != null)
+            {
+                _Brain.FixedThink();
+            }
+        }
     }
 }

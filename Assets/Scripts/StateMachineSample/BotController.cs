@@ -20,6 +20,9 @@ namespace Game
 
         void OnValidate()
         {
+            if (!Application.isPlaying)
+                return;
+
             Blackboard.SetValue(BlackboardKeys.MoveSpeed, _MoveSpeed);
         }
     }

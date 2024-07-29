@@ -152,7 +152,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 570366640}
   - {fileID: 1251105976}
   m_Father: {fileID: 277904196}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -165,6 +164,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 218535110}
+  - component: {fileID: 218535111}
   m_Layer: 0
   m_Name: SetRotatingState
   m_TagString: Untagged
@@ -187,6 +187,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1251105976}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &218535111
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 218535109}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e495e8ee94d2f9c4b9c97711008c83e7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _Priority: 0
+  _State: {fileID: 828331698}
 --- !u!1 &277904193
 GameObject:
   m_ObjectHideFlags: 0
@@ -196,7 +210,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 277904196}
-  - component: {fileID: 277904195}
+  - component: {fileID: 277904198}
   - component: {fileID: 277904194}
   - component: {fileID: 277904197}
   m_Layer: 0
@@ -218,20 +232,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bdea73c09a9fc1e4c8a1133322c06f43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _BlinkNode: {fileID: 570366639}
---- !u!114 &277904195
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 277904193}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b3ead1ac37418654a81c676054d40ae6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _Brain: {fileID: 277904194}
+  _StartNode: {fileID: 1251105977}
 --- !u!4 &277904196
 Transform:
   m_ObjectHideFlags: 0
@@ -263,6 +264,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _Renderer: {fileID: 1173538179}
+--- !u!114 &277904198
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 277904193}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 860fc7c32855f904e852e2a793f9cc45, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _Brain: {fileID: 277904194}
 --- !u!1 &358940911
 GameObject:
   m_ObjectHideFlags: 0
@@ -400,53 +414,6 @@ Transform:
   - {fileID: 1454110311}
   m_Father: {fileID: 277904196}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &570366638
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 570366640}
-  - component: {fileID: 570366639}
-  m_Layer: 0
-  m_Name: Blink
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!114 &570366639
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 570366638}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b4b7219668ade664c9e77da52f41b343, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _ColorMin: {r: 1, g: 1, b: 1, a: 1}
-  _ColorMax: {r: 1, g: 0, b: 0, a: 1}
-  _Speed: 4.01
---- !u!4 &570366640
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 570366638}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 215164729}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &828331696
 GameObject:
   m_ObjectHideFlags: 0
@@ -492,7 +459,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _Timer: 1
-  _RotationSpeed: 10
+  _RotationSpeed: 120
 --- !u!1 &954295316
 GameObject:
   m_ObjectHideFlags: 0
@@ -634,6 +601,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1251105976}
+  - component: {fileID: 1251105977}
   m_Layer: 0
   m_Name: Selector
   m_TagString: Untagged
@@ -658,6 +626,22 @@ Transform:
   - {fileID: 218535110}
   m_Father: {fileID: 215164729}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1251105977
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1251105975}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 21e9d54b86e0a37428fda9f7a4976e59, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _Priority: 0
+  _Nodes:
+  - {fileID: 1938513601}
+  - {fileID: 218535111}
 --- !u!1 &1390625578
 GameObject:
   m_ObjectHideFlags: 0
@@ -667,6 +651,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1390625579}
+  - component: {fileID: 1390625580}
   m_Layer: 0
   m_Name: SetBlinkingState
   m_TagString: Untagged
@@ -689,6 +674,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1938513600}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1390625580
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1390625578}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e495e8ee94d2f9c4b9c97711008c83e7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _Priority: 0
+  _State: {fileID: 954295318}
 --- !u!1 &1454110310
 GameObject:
   m_ObjectHideFlags: 0
@@ -782,6 +781,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1558956628}
+  - component: {fileID: 1558956629}
   m_Layer: 0
   m_Name: IsButtonPressed
   m_TagString: Untagged
@@ -804,6 +804,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1938513600}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1558956629
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1558956627}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 755e5d664854ad945a3a444a82516ea3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _Priority: 0
+  _Key: 116
 --- !u!1 &1938513599
 GameObject:
   m_ObjectHideFlags: 0
@@ -813,6 +827,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1938513600}
+  - component: {fileID: 1938513601}
   m_Layer: 0
   m_Name: Sequence
   m_TagString: Untagged
@@ -837,6 +852,22 @@ Transform:
   - {fileID: 1390625579}
   m_Father: {fileID: 1251105976}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1938513601
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1938513599}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aeb302f851bde4d4bb97f0b61e4bf409, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _Priority: 0
+  _Nodes:
+  - {fileID: 1558956629}
+  - {fileID: 1390625580}
 --- !u!1 &2145916549
 GameObject:
   m_ObjectHideFlags: 0

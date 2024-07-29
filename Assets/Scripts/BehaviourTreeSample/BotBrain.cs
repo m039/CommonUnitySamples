@@ -1,6 +1,7 @@
+using Game.StateMachineSample;
 using m039.Common.BehaviourTrees;
-using System.Collections;
-using System.Collections.Generic;
+using m039.Common.BehaviourTrees.Nodes;
+using m039.Common.StateMachine;
 using UnityEngine;
 
 namespace Game.BehaviourTreeSample
@@ -10,24 +11,44 @@ namespace Game.BehaviourTreeSample
         #region Inspector
 
         [SerializeField]
-        BlinkBotNode _BlinkNode;
+        NodeBase _StartNode;
 
         #endregion
 
         BehaviourTree BehaviourTree { get; } = new();
 
+        StateMachine StateMachine { get; } = new();
+
         public override void Init(CoreBotController botController)
         {
             base.Init(botController);
 
-            _BlinkNode.Init(botController);
+            botController.ServiceLocator.Register(StateMachine);
 
-            BehaviourTree.AddChild(_BlinkNode);
+            foreach (var botState in GetComponentsInChildren<BotState>())
+            {
+                botState.Init(botController);
+            }
+
+            foreach (var botNode in GetComponentsInChildren<BotNode>())
+            {
+                botNode.Init(botController);
+            }
+
+            BehaviourTree.AddChild(_StartNode);
         }
 
         public override void Think()
         {
             BehaviourTree.Update();
+            StateMachine.Update();
+        }
+
+        public override void FixedThink()
+        {
+            base.FixedThink();
+
+            StateMachine.FixedUpdate();
         }
     }
 }

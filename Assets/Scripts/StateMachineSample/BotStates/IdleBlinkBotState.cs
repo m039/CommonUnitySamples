@@ -38,7 +38,7 @@ namespace Game.StateMachineSample
         {
             base.OnExit();
 
-            SetColor(1);
+            botController.EventBus.Raise<ISetColorEvent>(a => a.SetColor(Color.white));
         }
 
         void SetColor(float value)

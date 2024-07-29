@@ -1,3 +1,4 @@
+using m039.Common;
 using m039.Common.Blackboard;
 using m039.Common.Events;
 using UnityEngine;
@@ -31,6 +32,20 @@ namespace Game
                 }
 
                 return _eventBus;
+            }
+        }
+
+        ServiceLocator _serviceLocator;
+
+        public ServiceLocator ServiceLocator
+        {
+            get
+            {
+                if (_serviceLocator == null)
+                {
+                    _serviceLocator = new();
+                }
+                return _serviceLocator;
             }
         }
 

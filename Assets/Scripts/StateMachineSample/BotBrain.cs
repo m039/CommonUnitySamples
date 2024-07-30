@@ -22,7 +22,7 @@ namespace Game.StateMachineSample
         {
             base.Init(botController);
 
-            foreach (var botState in GetComponentsInChildren<BotState>())
+            foreach (var botState in GetComponentsInChildren<CoreBotState>())
             {
                 botState.Init(botController);
             }

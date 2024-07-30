@@ -2,7 +2,7 @@ using m039.Common.StateMachine;
 
 namespace Game.StateMachineSample
 {
-    public class BotState : MonoBehaviourState
+    public class CoreBotState : MonoBehaviourState
     {
         public CoreBotController botController { get; private set; }
 

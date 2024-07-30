@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Game.BehaviourTreeSample
 {
-    public class SetStateBotNode : BotNode
+    public class SetStateBotNode : CoreBotNode
     {
         #region Inspector
 

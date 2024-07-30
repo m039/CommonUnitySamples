@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Game.StateMachineSample
 {
-    public class IdleBotState : BotState
+    public class IdleBotState : CoreBotState
     {
         #region Inspector
 

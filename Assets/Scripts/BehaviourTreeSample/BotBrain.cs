@@ -25,12 +25,12 @@ namespace Game.BehaviourTreeSample
 
             botController.ServiceLocator.Register(StateMachine);
 
-            foreach (var botState in GetComponentsInChildren<BotState>())
+            foreach (var botState in GetComponentsInChildren<CoreBotState>())
             {
                 botState.Init(botController);
             }
 
-            foreach (var botNode in GetComponentsInChildren<BotNode>())
+            foreach (var botNode in GetComponentsInChildren<CoreBotNode>())
             {
                 botNode.Init(botController);
             }

@@ -23,7 +23,7 @@ namespace Game
     {
         T Create<T>(Blackboard blackboard) where T : IGameEntity;
 
-        void CreateManually<T>(Func<Blackboard, T> register) where T : IGameEntity;
+        void CreateManually<T>(T gameEntity) where T : IGameEntity;
 
         void Destroy<T>(T gameEntity) where T : MonoBehaviour, IGameEntity;
     }
@@ -123,11 +123,11 @@ namespace Game
             UnityEngine.Object.Destroy(gameEntity.gameObject);
         }
 
-        public void CreateManually<T>(Func<Blackboard, T> register) where T : IGameEntity
+        public void CreateManually<T>(T gameEntity) where T : IGameEntity
         {
             _blackboard.Clear();
             _blackboard.SetValue(BlackboardKeys.Id, _entitiesId++);
-            register(_blackboard);
+            gameEntity.OnCreate(_blackboard);
         }
     }
 }

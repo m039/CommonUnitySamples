@@ -42,11 +42,7 @@ namespace Game.BehaviourTreeSample
         {
             if (!_created)
             {
-                CoreGameController.Instance.ServiceLocator.Get<IGameEntityFactory>().CreateManually(b =>
-                {
-                    OnCreate(b);
-                    return this;
-                });
+                CoreGameController.Instance.ServiceLocator.Get<IGameEntityFactory>()?.CreateManually(this);
             }
         }
 

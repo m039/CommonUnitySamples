@@ -21,7 +21,7 @@ namespace Game.BehaviourTreeSample
             ProcessInput();
         }
 
-        static Collider2D[] s_Buffer = new Collider2D[16];
+        static readonly Collider2D[] s_Buffer = new Collider2D[16];
 
         void ProcessInput()
         {

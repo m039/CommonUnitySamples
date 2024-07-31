@@ -1,15 +1,12 @@
 using m039.Common.Blackboard;
-using m039.Common.StateMachine;
 using UnityEngine;
 
 namespace Game.BehaviourTreeSample
 {
-    public class BotController : CoreBotController, IGameEntity
+    public class Food : MonoBehaviour, IGameEntity
     {
-        public int id { get; private set; }
-
-        public Vector2 position
-        {
+        public int id { get; private set; } = 0;
+        public Vector2 position {
             get
             {
                 return transform.position;
@@ -28,9 +25,11 @@ namespace Game.BehaviourTreeSample
 
         public void OnCreate(Blackboard blackboard)
         {
-            if (blackboard.TryGetValue(BlackboardKeys.Id, out int _id)) {
+            if (blackboard.TryGetValue(BlackboardKeys.Id, out int _id))
+            {
                 id = _id;
             }
+
             if (blackboard.TryGetValue(BlackboardKeys.Position, out Vector2 _position))
             {
                 position = _position;
@@ -39,15 +38,8 @@ namespace Game.BehaviourTreeSample
             _created = true;
         }
 
-        public void SetState(MonoBehaviourState state)
+        void Start()
         {
-            ServiceLocator.Get<StateMachine>().SetState(state);
-        }
-
-        protected override void Start()
-        {
-            base.Start();
-
             if (!_created)
             {
                 CoreGameController.Instance.ServiceLocator.Get<IGameEntityFactory>().CreateManually(b =>

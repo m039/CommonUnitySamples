@@ -1,5 +1,6 @@
 using Game.StateMachineSample;
 using UnityEngine;
+using m039.Common;
 
 namespace Game.BehaviourTreeSample
 {
@@ -27,7 +28,7 @@ namespace Game.BehaviourTreeSample
                 botController.Blackboard.Remove(BlackboardKeys.Destination);
             } else
             {
-                botController.transform.position += _MoveSpeed * Time.deltaTime * (destination - p).normalized;
+                botController.transform.position += _MoveSpeed * Time.deltaTime * (destination - p).With(z:0).normalized;
             }
         }
     }

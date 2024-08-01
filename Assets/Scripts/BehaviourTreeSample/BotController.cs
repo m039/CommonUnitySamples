@@ -52,6 +52,11 @@ namespace Game.BehaviourTreeSample
         {
             base.Start();
 
+            foreach (var botSystem in GetComponentsInChildren<BotSystem>())
+            {
+                botSystem.Init(this);
+            }
+
             if (!_created)
             {
                 CoreGameController.Instance.ServiceLocator.Get<IGameEntityFactory>()?.CreateManually(this);

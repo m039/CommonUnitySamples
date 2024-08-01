@@ -3,6 +3,11 @@ using UnityEngine;
 
 namespace Game.BehaviourTreeSample
 {
+    public interface IFoodEater
+    {
+        void Eat(IGameEntity food);
+    }
+
     public class Food : MonoBehaviour, IGameEntity
     {
         public int id { get; private set; } = 0;
@@ -52,6 +57,16 @@ namespace Game.BehaviourTreeSample
 
         void IGameEntity.OnDestroy()
         {
+        }
+
+        void OnTriggerEnter2D(Collider2D collider)
+        {
+            var foodEater = collider.GetComponentInParent<IFoodEater>();
+            if (foodEater != null)
+            {
+                foodEater.Eat(this);
+                CoreGameController.Instance.ServiceLocator.Get<IGameEntityFactory>().Destroy(this);
+            }
         }
     }
 }

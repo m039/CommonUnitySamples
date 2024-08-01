@@ -13,6 +13,17 @@ namespace Game.BehaviourTreeSample
 
         #endregion
 
+        public override void OnEnter()
+        {
+            base.OnEnter();
+
+            if (botController.ServiceLocator.TryGet(out Animator animator))
+            {
+                animator.Play(AnimationKeys.Move);
+                animator.SetFloat(AnimationKeys.MoveSpeed, _MoveSpeed);
+            }
+        }
+
         public override void OnUpdate()
         {
             base.OnUpdate();

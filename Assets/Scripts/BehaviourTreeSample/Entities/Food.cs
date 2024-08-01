@@ -1,4 +1,6 @@
+using m039.Common;
 using m039.Common.Blackboard;
+using m039.Common.Events;
 using UnityEngine;
 
 namespace Game.BehaviourTreeSample
@@ -30,7 +32,11 @@ namespace Game.BehaviourTreeSample
 
         public bool IsAlive { get; set; }
 
+        public ServiceLocator locator => _serviceLocator;
+
         bool _created;
+
+        readonly ServiceLocator _serviceLocator = new();
 
         public void OnCreate(Blackboard blackboard)
         {
@@ -61,11 +67,11 @@ namespace Game.BehaviourTreeSample
 
         void OnTriggerEnter2D(Collider2D collider)
         {
-            var foodEater = collider.GetComponentInParent<IFoodEater>();
-            if (foodEater != null)
+            var gameEntity = collider.GetComponentInParent<IGameEntity>();
+            if (gameEntity != null && gameEntity.locator.TryGet(out IFoodEater foodEater))
             {
                 foodEater.Eat(this);
-                CoreGameController.Instance.ServiceLocator.Get<IGameEntityFactory>().Destroy(this);
+                this.Destroy();
             }
         }
     }

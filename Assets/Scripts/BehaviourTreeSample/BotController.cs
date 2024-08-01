@@ -1,3 +1,4 @@
+using m039.Common;
 using m039.Common.Blackboard;
 using m039.Common.StateMachine;
 using UnityEngine;
@@ -28,6 +29,8 @@ namespace Game.BehaviourTreeSample
 
         public bool IsAlive { get; set; }
 
+        ServiceLocator IGameEntity.locator => ServiceLocator;
+
         bool _created;
 
         public void OnCreate(Blackboard blackboard)
@@ -46,6 +49,13 @@ namespace Game.BehaviourTreeSample
         public void SetState(MonoBehaviourState state)
         {
             ServiceLocator.Get<StateMachine>().SetState(state);
+        }
+
+        protected override void Awake()
+        {
+            base.Awake();
+
+            ServiceLocator.Register(GetComponent<Animator>());
         }
 
         protected override void Start()

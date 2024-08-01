@@ -10,6 +10,12 @@ namespace Game
         [SerializeField]
         TMPro.TMP_Text _FoodCounter;
 
+        [SerializeField]
+        float _BlinkDuration = 0.3f;
+
+        [SerializeField]
+        Color _BlinkColor = Color.white;
+
         #endregion
 
         public void Eat(IGameEntity food)
@@ -23,6 +29,8 @@ namespace Game
             foodEaten++;
             botController.Blackboard.SetValue(BlackboardKeys.EatenFood, foodEaten);
             _FoodCounter.text = foodEaten.ToString();
+
+            botController.EventBus.Raise<IBlinkEvent>(a => a.Blink(_BlinkColor, _BlinkDuration));
         }
 
         public override void Init(CoreBotController botController)
@@ -30,6 +38,7 @@ namespace Game
             base.Init(botController);
 
             _FoodCounter.text = 0.ToString();
+            botController.ServiceLocator.Register<IFoodEater>(this);
         }
     }
 }

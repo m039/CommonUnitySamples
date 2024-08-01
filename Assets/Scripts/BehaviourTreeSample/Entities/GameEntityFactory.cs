@@ -9,12 +9,12 @@ using UnityEngine;
 
 namespace Game
 {
-    public interface IGameEntityCreated : IEventSubscriber
+    public interface IGameEntityCreatedEvent : IEventSubscriber
     {
         void OnGameEntityCreated(IGameEntity gameEntity);
     }
 
-    public interface IGameEntityDestroyed : IEventSubscriber
+    public interface IGameEntityDestroyedEvent : IEventSubscriber
     {
         void OnGameEntityDestroyed(IGameEntity gameEntity);
     }
@@ -25,7 +25,7 @@ namespace Game
 
         void CreateManually<T>(T gameEntity) where T : IGameEntity;
 
-        void Destroy<T>(T gameEntity) where T : MonoBehaviour, IGameEntity;
+        void Destroy<T>(T gameEntity) where T : IGameEntity;
     }
 
     public class GameEntityFactory : MonoBehaviour, IGameEntityFactory, IDependencyProvider
@@ -112,17 +112,21 @@ namespace Game
 
             instance.transform.SetParent(_parent);
 
-            _eventBus.Raise<IGameEntityCreated>(a => a.OnGameEntityCreated(gameEntity));
+            _eventBus.Raise<IGameEntityCreatedEvent>(a => a.OnGameEntityCreated(gameEntity));
 
             return (T)gameEntity;
         }
 
-        public void Destroy<T>(T gameEntity) where T : MonoBehaviour, IGameEntity
+        public void Destroy<T>(T gameEntity) where T : IGameEntity
         {
             gameEntity.OnDestroy();
             gameEntity.IsAlive = false;
-            _eventBus.Raise<IGameEntityDestroyed>(a => a.OnGameEntityDestroyed(gameEntity));
-            UnityEngine.Object.Destroy(gameEntity.gameObject);
+            _eventBus.Raise<IGameEntityDestroyedEvent>(a => a.OnGameEntityDestroyed(gameEntity));
+
+            if (gameEntity is MonoBehaviour monoBehaviour)
+            {
+                UnityEngine.Object.Destroy(monoBehaviour.gameObject);
+            }
         }
 
         public void CreateManually<T>(T gameEntity) where T : IGameEntity

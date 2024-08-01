@@ -56,7 +56,7 @@ namespace Game
 
         protected virtual void Awake()
         {
-            _features = GetComponents<CoreBotFeature>();
+            _features = GetComponentsInChildren<CoreBotFeature>();
             foreach (var feature in _features)
             {
                 feature.Init(this);

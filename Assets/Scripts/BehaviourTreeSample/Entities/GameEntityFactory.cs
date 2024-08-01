@@ -108,6 +108,7 @@ namespace Game
             blackboard.SetValue(BlackboardKeys.Id, _entitiesId++);
 
             gameEntity.OnCreate(blackboard);
+            gameEntity.IsAlive = true;
 
             instance.transform.SetParent(_parent);
 
@@ -119,6 +120,7 @@ namespace Game
         public void Destroy<T>(T gameEntity) where T : MonoBehaviour, IGameEntity
         {
             gameEntity.OnDestroy();
+            gameEntity.IsAlive = false;
             _eventBus.Raise<IGameEntityDestroyed>(a => a.OnGameEntityDestroyed(gameEntity));
             UnityEngine.Object.Destroy(gameEntity.gameObject);
         }
@@ -128,6 +130,7 @@ namespace Game
             _blackboard.Clear();
             _blackboard.SetValue(BlackboardKeys.Id, _entitiesId++);
             gameEntity.OnCreate(_blackboard);
+            gameEntity.IsAlive = true;
         }
     }
 }

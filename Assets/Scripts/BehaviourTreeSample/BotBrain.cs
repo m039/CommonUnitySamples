@@ -13,6 +13,12 @@ namespace Game.BehaviourTreeSample
         [SerializeField]
         NodeBase _StartNode;
 
+        [SerializeField]
+        CoreBotState _IdleState;
+
+        [SerializeField]
+        CoreBotState _MoveState;
+
         #endregion
 
         BehaviourTree BehaviourTree { get; } = new();
@@ -36,6 +42,18 @@ namespace Game.BehaviourTreeSample
             }
 
             BehaviourTree.AddChild(_StartNode);
+
+            StateMachine.AddTransition(_IdleState, _MoveState, () =>
+            {
+                return botController.Blackboard.ContainsKey(BlackboardKeys.Destination);
+            });
+
+            StateMachine.AddTransition(_MoveState, _IdleState, () =>
+            {
+                return !botController.Blackboard.ContainsKey(BlackboardKeys.Destination);
+            });
+
+            StateMachine.SetState(_IdleState);
         }
 
         public override void Think()

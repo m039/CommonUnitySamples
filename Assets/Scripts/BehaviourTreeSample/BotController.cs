@@ -24,6 +24,10 @@ namespace Game.BehaviourTreeSample
             }
         }
 
+        public GameEntityType type => GameEntityType.Bot;
+
+        public bool IsAlive { get; set; }
+
         bool _created;
 
         public void OnCreate(Blackboard blackboard)
@@ -52,6 +56,8 @@ namespace Game.BehaviourTreeSample
             {
                 CoreGameController.Instance.ServiceLocator.Get<IGameEntityFactory>()?.CreateManually(this);
             }
+
+            Blackboard.SetValue(BlackboardKeys.StartPosition, transform.position);
         }
 
         void IGameEntity.OnDestroy()

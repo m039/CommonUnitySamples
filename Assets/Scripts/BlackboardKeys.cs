@@ -8,5 +8,7 @@ namespace Game
         static readonly public BlackboardKey MoveSpeed = new("move_speed");
         static readonly public BlackboardKey Id = new("id");
         static readonly public BlackboardKey Position = new("position");
+        static readonly public BlackboardKey Destination = new("destination");
+        static readonly public BlackboardKey Target = new("target");
     }
 }

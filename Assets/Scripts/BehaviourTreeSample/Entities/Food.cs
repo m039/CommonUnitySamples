@@ -21,6 +21,10 @@ namespace Game.BehaviourTreeSample
             }
         }
 
+        public GameEntityType type => GameEntityType.Food;
+
+        public bool IsAlive { get; set; }
+
         bool _created;
 
         public void OnCreate(Blackboard blackboard)

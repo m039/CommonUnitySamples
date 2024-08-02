@@ -14,10 +14,13 @@ namespace Game.BehaviourTreeSample
         #region Inspector
 
         [SerializeField]
-        float _SpawnFoodTimer = 2;
+        MinMaxFloat _SpawnFoodTimer = new(2, 3);
 
         [SerializeField]
         MinMaxInt _SpawnFoodAmount = new(1, 3);
+
+        [SerializeField]
+        MinMaxInt _SpawnBotAmount = new(1, 3);
 
         #endregion
 
@@ -31,6 +34,17 @@ namespace Game.BehaviourTreeSample
         private void Start()
         {
             EventBus.Logger.SetEnabled(false);
+
+            var botClasses = System.Enum.GetValues(typeof(BotClass)).Cast<BotClass>().ToList();
+
+            var count = _SpawnBotAmount.Random();
+            for (int i = 0; i < count; i++)
+            {
+                _blackboard.Clear();
+                _blackboard.SetValue(BlackboardKeys.Position, CameraUtils.RandomPositionOnScreen());
+                _blackboard.SetValue(BlackboardKeys.TypeClass, botClasses[Random.Range(0, botClasses.Count)]);
+                _entityFactory.Create(GameEntityType.Bot, _blackboard);
+            }
         }
 
         private void Update()
@@ -74,7 +88,7 @@ namespace Game.BehaviourTreeSample
                 {
                     _blackboard.Clear();
                     _blackboard.SetValue(BlackboardKeys.Position, position);
-                    _entityFactory.Create<Food>(_blackboard);
+                    _entityFactory.Create(GameEntityType.Food, _blackboard);
                 } else
                 {
                     _entityFactory.Destroy(food);
@@ -84,7 +98,7 @@ namespace Game.BehaviourTreeSample
 
         IEnumerator StartSpawnerCoroutine()
         {
-            yield return new WaitForSeconds(_SpawnFoodTimer);
+            yield return new WaitForSeconds(_SpawnFoodTimer.Random());
 
             var count = _SpawnFoodAmount.Random();
             for (int i = 0; i < count; i++)
@@ -96,14 +110,9 @@ namespace Game.BehaviourTreeSample
 
         void SpawnFoodAtRandomLocation()
         {
-            var height = Camera.main.orthographicSize * 2;
-            var width = height * Camera.main.aspect;
-            Vector2 position = (Vector2)Camera.main.transform.position +
-                new Vector2(Random.Range(-width / 2f, width / 2f), Random.Range(-height / 2f, height / 2f));
-
             _blackboard.Clear();
-            _blackboard.SetValue(BlackboardKeys.Position, position);
-            _entityFactory.Create<Food>(_blackboard);
+            _blackboard.SetValue(BlackboardKeys.Position, CameraUtils.RandomPositionOnScreen());
+            _entityFactory.Create(GameEntityType.Food, _blackboard);
         }
     }
 }

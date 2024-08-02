@@ -22,11 +22,11 @@ namespace Game
 
     public interface IGameEntityFactory
     {
-        T Create<T>(Blackboard blackboard) where T : IGameEntity;
+        IGameEntity Create(GameEntityType type, Blackboard blackboard);
 
-        void CreateManually<T>(T gameEntity) where T : IGameEntity;
+        void CreateManually(IGameEntity gameEntity);
 
-        void Destroy<T>(T gameEntity) where T : IGameEntity;
+        void Destroy(IGameEntity gameEntity);
 
         IEnumerable<IGameEntity> GetEnteties(GameEntityType type);
     }
@@ -52,7 +52,7 @@ namespace Game
             return this;
         }
 
-        readonly Dictionary<Type, GameObject> _typeToPrefab = new();
+        readonly Dictionary<GameEntityType, Dictionary<int, GameObject>> _typeToPrefab = new();
 
         readonly Dictionary<GameEntityType, List<IGameEntity>> _enteties = new();
 
@@ -73,24 +73,31 @@ namespace Game
                     continue;
                 }
 
-                var type = gameEntity.GetType();
+                var type = gameEntity.type;
 
-                if (_typeToPrefab.ContainsKey(type)) {
-                    Debug.LogError($"The {prefab} is already registered.");
+                if (!_typeToPrefab.ContainsKey(type))
+                {
+                    _typeToPrefab[type] = new();
+                }
+
+                var typeClass = gameEntity.typeClass;
+
+                if (_typeToPrefab[type].ContainsKey(typeClass)) {
+                    Debug.LogError($"The {prefab} of {type} is already registered for {typeClass}.");
                     continue;
                 }
 
-                _typeToPrefab[type] = prefab;
+                _typeToPrefab[type].Add(typeClass, prefab);
             }
 
             _serviceLocator.Register<IGameEntityFactory>(this);
         }
 
-        public T Create<T>(Blackboard blackboard) where T: IGameEntity
+        public IGameEntity Create(GameEntityType type, Blackboard blackboard)
         {
-            if (!_typeToPrefab.ContainsKey(typeof(T)))
+            if (!_typeToPrefab.ContainsKey(type))
             {
-                throw new Exception($"Can't create the object for {nameof(T)}.");
+                throw new Exception($"Can't create the object for {type}.");
             }
 
             if (blackboard == null)
@@ -99,12 +106,27 @@ namespace Game
                 blackboard.Clear();
             }
 
+            int typeClass;
+
+            if (blackboard.TryGetValue(BlackboardKeys.TypeClass, out object value))
+            {
+                typeClass = (int)value;
+            } else
+            {
+                typeClass = 0;
+            }
+
+            if (!_typeToPrefab[type].ContainsKey(typeClass))
+            {
+                throw new Exception($"Can't creat the object of {type} for {typeClass}");
+            }
+
             if (_parent == null)
             {
                 _parent = new GameObject("<GameEntities>").transform;
             }
 
-            var instance = Instantiate(_typeToPrefab[typeof(T)]);
+            var instance = Instantiate(_typeToPrefab[type][typeClass]);
 
             instance.name += $"#{_entitiesId}";
 
@@ -125,10 +147,10 @@ namespace Game
             _enteties[gameEntity.type].Add(gameEntity);
             _eventBus.Raise<IGameEntityCreatedEvent>(a => a.OnGameEntityCreated(gameEntity));
 
-            return (T)gameEntity;
+            return gameEntity;
         }
 
-        public void Destroy<T>(T gameEntity) where T : IGameEntity
+        public void Destroy(IGameEntity gameEntity)
         {
             gameEntity.OnDestroy();
             gameEntity.IsAlive = false;
@@ -150,7 +172,7 @@ namespace Game
             }
         }
 
-        public void CreateManually<T>(T gameEntity) where T : IGameEntity
+        public void CreateManually(IGameEntity gameEntity)
         {
             _blackboard.Clear();
             _blackboard.SetValue(BlackboardKeys.Id, _entitiesId++);

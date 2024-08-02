@@ -11,5 +11,6 @@ namespace Game
         static readonly public BlackboardKey Destination = new("destination");
         static readonly public BlackboardKey Target = new("target");
         static readonly public BlackboardKey EatenFood = new("eaten_food");
+        static readonly public BlackboardKey TypeClass = new("type_class");
     }
 }

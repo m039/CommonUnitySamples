@@ -819,7 +819,7 @@ GameObject:
   - component: {fileID: 1891773648140484061}
   - component: {fileID: 8140174568573727944}
   m_Layer: 0
-  m_Name: Bot
+  m_Name: Bot_Blue
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -858,6 +858,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _Brain: {fileID: 3075529061267389523}
+  _TypeClass: 0
 --- !u!50 &1891773648140484061
 Rigidbody2D:
   serializedVersion: 4
@@ -1273,7 +1274,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _Priority: 0
-  _Radius: 4.35
+  _Radius: 9
   _TargetType: 1
 --- !u!1 &9174846155313365138
 GameObject:

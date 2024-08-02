@@ -34,6 +34,8 @@ namespace Game.BehaviourTreeSample
 
         public ServiceLocator locator => _serviceLocator;
 
+        public int typeClass => 0;
+
         bool _created;
 
         readonly ServiceLocator _serviceLocator = new();

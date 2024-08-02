@@ -18,6 +18,8 @@ namespace Game.BehaviourTreeSample
 
         GameEntityType type { get; }
 
+        int typeClass { get; }
+
         ServiceLocator locator { get; }
 
         void OnCreate(Blackboard blackboard);

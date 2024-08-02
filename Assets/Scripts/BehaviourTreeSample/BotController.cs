@@ -5,8 +5,21 @@ using UnityEngine;
 
 namespace Game.BehaviourTreeSample
 {
+    public enum BotClass
+    {
+        Blue = 0,
+        Yellow = 1
+    }
+
     public class BotController : CoreBotController, IGameEntity
     {
+        #region Inspector
+
+        [SerializeField]
+        BotClass _TypeClass;
+
+        #endregion
+
         public int id { get; private set; }
 
         public Vector2 position
@@ -31,6 +44,8 @@ namespace Game.BehaviourTreeSample
 
         ServiceLocator IGameEntity.locator => ServiceLocator;
 
+        public int typeClass => (int)_TypeClass;
+
         bool _created;
 
         public void OnCreate(Blackboard blackboard)
@@ -38,6 +53,7 @@ namespace Game.BehaviourTreeSample
             if (blackboard.TryGetValue(BlackboardKeys.Id, out int _id)) {
                 id = _id;
             }
+
             if (blackboard.TryGetValue(BlackboardKeys.Position, out Vector2 _position))
             {
                 position = _position;

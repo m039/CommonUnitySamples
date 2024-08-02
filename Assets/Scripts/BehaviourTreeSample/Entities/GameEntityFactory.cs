@@ -5,6 +5,7 @@ using m039.Common.DependencyInjection;
 using m039.Common.Events;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Game
@@ -26,6 +27,8 @@ namespace Game
         void CreateManually<T>(T gameEntity) where T : IGameEntity;
 
         void Destroy<T>(T gameEntity) where T : IGameEntity;
+
+        IEnumerable<IGameEntity> GetEnteties(GameEntityType type);
     }
 
     public class GameEntityFactory : MonoBehaviour, IGameEntityFactory, IDependencyProvider
@@ -50,6 +53,8 @@ namespace Game
         }
 
         readonly Dictionary<Type, GameObject> _typeToPrefab = new();
+
+        readonly Dictionary<GameEntityType, List<IGameEntity>> _enteties = new();
 
         int _entitiesId;
 
@@ -112,6 +117,12 @@ namespace Game
 
             instance.transform.SetParent(_parent);
 
+            if (!_enteties.ContainsKey(gameEntity.type))
+            {
+                _enteties[gameEntity.type] = new();
+            }
+
+            _enteties[gameEntity.type].Add(gameEntity);
             _eventBus.Raise<IGameEntityCreatedEvent>(a => a.OnGameEntityCreated(gameEntity));
 
             return (T)gameEntity;
@@ -127,6 +138,16 @@ namespace Game
             {
                 UnityEngine.Object.Destroy(monoBehaviour.gameObject);
             }
+
+            if (_enteties.ContainsKey(gameEntity.type))
+            {
+                _enteties[gameEntity.type].Remove(gameEntity);
+
+                if (_enteties[gameEntity.type].Count <= 0)
+                {
+                    _enteties.Remove(gameEntity.type);
+                }
+            }
         }
 
         public void CreateManually<T>(T gameEntity) where T : IGameEntity
@@ -135,6 +156,17 @@ namespace Game
             _blackboard.SetValue(BlackboardKeys.Id, _entitiesId++);
             gameEntity.OnCreate(_blackboard);
             gameEntity.IsAlive = true;
+        }
+
+        public IEnumerable<IGameEntity> GetEnteties(GameEntityType type)
+        {
+            if (_enteties.ContainsKey(type))
+            {
+                return _enteties[type];
+            } else
+            {
+                return Enumerable.Empty<IGameEntity>();
+            }
         }
     }
 }

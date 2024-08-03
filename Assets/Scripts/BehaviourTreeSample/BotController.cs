@@ -8,7 +8,8 @@ namespace Game.BehaviourTreeSample
     public enum BotClass
     {
         Blue = 0,
-        Yellow = 1
+        Yellow = 1,
+        Green = 2
     }
 
     public class BotController : CoreBotController, IGameEntity

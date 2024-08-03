@@ -3,7 +3,9 @@ using m039.Common.AI;
 using m039.Common.Blackboard;
 using m039.Common.DependencyInjection;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using UnityEngine;
 
 namespace Game.BehaviourTreeSample
@@ -41,26 +43,50 @@ namespace Game.BehaviourTreeSample
             ServiceLocator.Register(_arbiter);
         }
 
-        private void Start()
+        readonly Dictionary<BotClass, Blackboard> _groupBlackboards = new();
+
+        void Start()
         {
             EventBus.Logger.SetEnabled(false);
 
             var botClasses = System.Enum.GetValues(typeof(BotClass)).Cast<BotClass>().ToList();
+            for (int i = 0; i < botClasses.Count; i++)
+            {
+                _groupBlackboards.Add(botClasses[i], new Blackboard());
+            }
 
             var count = _SpawnBotAmount.Random();
             for (int i = 0; i < count; i++)
             {
+                var botClass = botClasses[Random.Range(0, botClasses.Count)];
+
                 _blackboard.Clear();
                 _blackboard.SetValue(BlackboardKeys.Position, CameraUtils.RandomPositionOnScreen());
-                _blackboard.SetValue(BlackboardKeys.TypeClass, botClasses[Random.Range(0, botClasses.Count)]);
+                _blackboard.SetValue(BlackboardKeys.GroupBlackboard, _groupBlackboards[botClass]);
+                _blackboard.SetValue(BlackboardKeys.TypeClass, botClass);
                 _entityFactory.Create(GameEntityType.Bot, _blackboard);
             }
         }
 
-        private void Update()
+        void Update()
         {
             ProcessInput();
             ProcessSpawner();
+        }
+
+        void OnGUI()
+        {
+            var sb = new StringBuilder();
+
+            sb.AppendLine("Eaten food:");
+            foreach (var (botClass, foodEaten) in _groupBlackboards
+                .Select(x => (x.Key, x.Value.GetValue(BlackboardKeys.EatenFood, 0)))
+                .OrderByDescending(x => x.Item2))
+            {
+                sb.AppendLine("  " + botClass + " = " + foodEaten);
+            }
+
+            GUI.Label(new Rect(20, 20, 200, 400), sb.ToString());
         }
 
         private void LateUpdate()

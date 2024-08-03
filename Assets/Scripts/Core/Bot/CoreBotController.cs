@@ -7,7 +7,7 @@ namespace Game
 {
     public class CoreBotController : MonoBehaviour
     {
-        [SerializeField] Blackboard _blackboard;
+        Blackboard _blackboard;
 
         public Blackboard Blackboard {
             get {

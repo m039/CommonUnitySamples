@@ -568,6 +568,10 @@ PrefabInstance:
       propertyPath: _StartNode
       value: 
       objectReference: {fileID: 4247931470700874948}
+    - target: {fileID: 4695721291369484370, guid: 8059cd05d0f8b414aaa433c9f58f0381, type: 3}
+      propertyPath: _MoveSpeed
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 4938221927597281965, guid: 8059cd05d0f8b414aaa433c9f58f0381, type: 3}
       propertyPath: _TypeClass
       value: 1

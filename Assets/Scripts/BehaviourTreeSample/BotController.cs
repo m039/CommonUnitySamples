@@ -1,7 +1,10 @@
 using m039.Common;
 using m039.Common.Blackboard;
 using m039.Common.StateMachine;
+using System.Collections;
+using UnityEditor;
 using UnityEngine;
+using static m039.Common.EasingFunction;
 
 namespace Game.BehaviourTreeSample
 {
@@ -61,6 +64,11 @@ namespace Game.BehaviourTreeSample
                 position = _position;
             }
 
+            if (blackboard.TryGetValue(BlackboardKeys.GroupBlackboard, out Blackboard _groupBlackboard))
+            {
+                Blackboard.SetValue(BlackboardKeys.GroupBlackboard, _groupBlackboard);
+            }
+
             _created = true;
         }
 
@@ -99,4 +107,40 @@ namespace Game.BehaviourTreeSample
             _created = false;
         }
     }
+
+#if UNITY_EDITOR
+
+    [CustomEditor(typeof(BotController))]
+    public class BotControllerEditor : Editor
+    {
+        bool showDebug;
+
+        public override void OnInspectorGUI()
+        {
+            base.OnInspectorGUI();
+
+            var botController = (BotController)target;
+
+            showDebug = EditorGUILayout.Toggle("Debug Blackboard", showDebug);
+            if (!showDebug)
+                return;
+
+            if (botController.Blackboard.Count <= 0)
+            {
+                GUILayout.Label("Blackboard is empty");
+            } else
+            {
+                GUILayout.Label("Blackboard");
+
+                foreach (var entries in botController.Blackboard)
+                {
+                    GUILayout.BeginHorizontal();
+                    GUILayout.Space(10);
+                    GUILayout.Label($"{entries.Key.name}: {entries.Value}");
+                    GUILayout.EndHorizontal();
+                }
+            }
+        }
+    }
+#endif
 }

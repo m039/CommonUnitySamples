@@ -1,4 +1,5 @@
 using Game.BehaviourTreeSample;
+using m039.Common.Blackboard;
 using UnityEngine;
 
 namespace Game
@@ -31,6 +32,17 @@ namespace Game
             _FoodCounter.text = foodEaten.ToString();
 
             botController.EventBus.Raise<IBlinkEvent>(a => a.Blink(_BlinkColor, _BlinkDuration));
+
+            if (botController.Blackboard.TryGetValue(BlackboardKeys.GroupBlackboard, out Blackboard groupBlackboard))
+            {
+                if (groupBlackboard.TryGetValue(BlackboardKeys.EatenFood, out int foodEatenGroup))
+                {
+                    groupBlackboard.SetValue(BlackboardKeys.EatenFood, foodEatenGroup + 1);
+                } else
+                {
+                    groupBlackboard.SetValue(BlackboardKeys.EatenFood, 1);
+                }
+            }
         }
 
         public override void Init(CoreBotController botController)

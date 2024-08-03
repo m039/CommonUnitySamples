@@ -1,6 +1,7 @@
 using m039.Common;
 using m039.Common.Blackboard;
 using m039.Common.Events;
+using System.Collections;
 using UnityEngine;
 
 namespace Game.BehaviourTreeSample
@@ -12,7 +13,18 @@ namespace Game.BehaviourTreeSample
 
     public class Food : MonoBehaviour, IGameEntity
     {
+        #region Inspector
+
+        [SerializeField]
+        SpriteRenderer _Renderer;
+
+        [SerializeField]
+        float _TimeToLive = 6f;
+
+        #endregion
+
         public int id { get; private set; } = 0;
+
         public Vector2 position {
             get
             {
@@ -52,7 +64,27 @@ namespace Game.BehaviourTreeSample
                 position = _position;
             }
 
+            StartCoroutine(WaitAndDestroy());
+
             _created = true;
+        }
+
+        IEnumerator WaitAndDestroy()
+        {
+            yield return new WaitForSeconds(_TimeToLive);
+
+            var v = 0f;
+            const float fadeDuration = 1.5f;
+
+            while (v < 1)
+            {
+                v += Time.deltaTime / fadeDuration;
+
+                _Renderer.color = _Renderer.color.WithAlpha(1 - v);
+                yield return null;
+            }
+
+            this.Destroy();
         }
 
         void Start()

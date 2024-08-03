@@ -56,6 +56,8 @@ namespace Game
 
         readonly Dictionary<GameEntityType, List<IGameEntity>> _enteties = new();
 
+        readonly Dictionary<GameEntityType, Dictionary<int, Queue<IGameEntity>>> _pool = new();
+
         int _entitiesId;
 
         Transform _parent;
@@ -126,18 +128,47 @@ namespace Game
                 _parent = new GameObject("<GameEntities>").transform;
             }
 
-            var instance = Instantiate(_typeToPrefab[type][typeClass]);
+            IGameEntity gameEntity;
 
-            instance.name += $"#{_entitiesId}";
+            // Take a game entity from the pool.
 
-            var gameEntity = instance.GetComponent<IGameEntity>();
+            if (_pool.ContainsKey(type) && _pool[type].ContainsKey(typeClass))
+            {
+                gameEntity = _pool[type][typeClass].Dequeue();
+
+                if (_pool[type][typeClass].Count <= 0)
+                {
+                    _pool[type].Remove(typeClass);
+
+                    if (_pool[type].Count <= 0) {
+                        _pool.Remove(type);
+                    }
+                }
+            } else
+            {
+                // Or create a new one.
+
+                var instance = Instantiate(_typeToPrefab[type][typeClass]);
+
+                instance.transform.SetParent(_parent);
+
+                gameEntity = instance.GetComponent<IGameEntity>();
+            }
+
+            if (gameEntity is MonoBehaviour monoBehaviour)
+            {
+                if (gameEntity is Food food)
+                {
+                    food.isSetActive = true;
+                }
+                monoBehaviour.gameObject.name = $"{_typeToPrefab[type][typeClass].gameObject.name}#{_entitiesId}";
+                monoBehaviour.gameObject.SetActive(true);
+            }
 
             blackboard.SetValue(BlackboardKeys.Id, _entitiesId++);
 
             gameEntity.OnCreate(blackboard);
             gameEntity.IsAlive = true;
-
-            instance.transform.SetParent(_parent);
 
             if (!_enteties.ContainsKey(gameEntity.type))
             {
@@ -152,13 +183,16 @@ namespace Game
 
         public void Destroy(IGameEntity gameEntity)
         {
+            if (!gameEntity.IsAlive)
+                return;
+
             gameEntity.OnDestroy();
             gameEntity.IsAlive = false;
             _eventBus.Raise<IGameEntityDestroyedEvent>(a => a.OnGameEntityDestroyed(gameEntity));
 
             if (gameEntity is MonoBehaviour monoBehaviour)
             {
-                UnityEngine.Object.Destroy(monoBehaviour.gameObject);
+                monoBehaviour.gameObject.SetActive(false);
             }
 
             if (_enteties.ContainsKey(gameEntity.type))
@@ -170,6 +204,20 @@ namespace Game
                     _enteties.Remove(gameEntity.type);
                 }
             }
+
+            // Return a game entity to the pool.
+
+            if (!_pool.ContainsKey(gameEntity.type))
+            {
+                _pool[gameEntity.type] = new();
+            }
+
+            if (!_pool[gameEntity.type].ContainsKey(gameEntity.typeClass))
+            {
+                _pool[gameEntity.type][gameEntity.typeClass] = new();
+            }
+
+            _pool[gameEntity.type][gameEntity.typeClass].Enqueue(gameEntity);
         }
 
         public void CreateManually(IGameEntity gameEntity)

@@ -33,13 +33,16 @@ namespace Game.BehaviourTreeSample
                 return;
             }
 
-            var p = botController.transform.position;
-            if (Vector3.Distance(p, destination) < 0.1f)
+            if (!botController.ServiceLocator.TryGet(out IGameEntity gameEntity))
+                return;
+
+            var p = gameEntity.position;
+            if (Vector2.Distance(p, destination) < 0.1f)
             {
                 botController.Blackboard.Remove(BlackboardKeys.Destination);
             } else
             {
-                botController.transform.position += _MoveSpeed * Time.deltaTime * (destination - p).With(z:0).normalized;
+                gameEntity.position += _MoveSpeed * Time.deltaTime * ((Vector2)destination - p).normalized;
             }
         }
     }

@@ -1,4 +1,5 @@
 using m039.Common;
+using m039.Common.AI;
 using m039.Common.Blackboard;
 using m039.Common.DependencyInjection;
 using System.Collections;
@@ -29,7 +30,16 @@ namespace Game.BehaviourTreeSample
 
         readonly Blackboard _blackboard = new();
 
+        readonly Arbiter _arbiter = new();
+
         Coroutine _spawner;
+
+        protected override void DoAwake()
+        {
+            base.DoAwake();
+
+            ServiceLocator.Register(_arbiter);
+        }
 
         private void Start()
         {
@@ -51,6 +61,11 @@ namespace Game.BehaviourTreeSample
         {
             ProcessInput();
             ProcessSpawner();
+        }
+
+        private void LateUpdate()
+        {
+            _arbiter.Iteration();
         }
 
         void ProcessSpawner()

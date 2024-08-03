@@ -195,13 +195,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _SpawnFoodTimer:
-    min: 3
-    max: 5
-  _SpawnFoodAmount:
     min: 1
-    max: 10
+    max: 2
+  _SpawnFoodAmount:
+    min: 6
+    max: 40
   _SpawnBotAmount:
-    min: 10
+    min: 20
     max: 20
 --- !u!1 &1076878026
 GameObject:

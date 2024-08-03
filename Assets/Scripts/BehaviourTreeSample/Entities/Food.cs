@@ -2,6 +2,9 @@ using m039.Common;
 using m039.Common.Blackboard;
 using m039.Common.Events;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using TMPro;
 using UnityEngine;
 
 namespace Game.BehaviourTreeSample
@@ -16,7 +19,7 @@ namespace Game.BehaviourTreeSample
         #region Inspector
 
         [SerializeField]
-        SpriteRenderer _Renderer;
+        SpriteRenderer[] _Renderers;
 
         [SerializeField]
         float _TimeToLive = 6f;
@@ -36,6 +39,7 @@ namespace Game.BehaviourTreeSample
                 var p = transform.position;
                 p.x = value.x;
                 p.y = value.y;
+                p.z = value.y;
                 transform.position = p;
             }
         }
@@ -44,13 +48,37 @@ namespace Game.BehaviourTreeSample
 
         public bool IsAlive { get; set; }
 
-        public ServiceLocator locator => _serviceLocator;
+        public ServiceLocator locator {
+            get
+            {
+                if (_serviceLocator == null)
+                {
+                    _serviceLocator = new();
+                    _serviceLocator.Register(_blackboard);
+                }
+
+                return _serviceLocator;
+            }
+        }
 
         public int typeClass => 0;
 
         bool _created;
 
-        readonly ServiceLocator _serviceLocator = new();
+        public bool isSetActive { get; set; }
+
+        ServiceLocator _serviceLocator;
+
+        readonly Blackboard _blackboard = new();
+
+        Coroutine _coroutine;
+
+        List<(SpriteRenderer r, float a)> _spriteRenders;
+
+        void Awake()
+        {
+            _spriteRenders = _Renderers.Select(r => (r, r.color.a)).ToList();
+        }
 
         public void OnCreate(Blackboard blackboard)
         {
@@ -64,9 +92,19 @@ namespace Game.BehaviourTreeSample
                 position = _position;
             }
 
-            StartCoroutine(WaitAndDestroy());
+            _coroutine = StartCoroutine(WaitAndDestroy());
 
             _created = true;
+
+            SetAlpha(1f);
+        }
+
+        void SetAlpha(float value)
+        {
+            foreach (var (r, a) in _spriteRenders)
+            {
+                r.color = r.color.WithAlpha(value * a);
+            }
         }
 
         IEnumerator WaitAndDestroy()
@@ -80,7 +118,7 @@ namespace Game.BehaviourTreeSample
             {
                 v += Time.deltaTime / fadeDuration;
 
-                _Renderer.color = _Renderer.color.WithAlpha(1 - v);
+                SetAlpha(1 - v);
                 yield return null;
             }
 
@@ -97,10 +135,25 @@ namespace Game.BehaviourTreeSample
 
         void IGameEntity.OnDestroy()
         {
+            if (_coroutine != null)
+            {
+                StopCoroutine(_coroutine);
+                _coroutine = null;
+            }
+
+            _blackboard.Clear();
+            _created = false;
+            isSetActive = false;
         }
 
         void OnTriggerEnter2D(Collider2D collider)
         {
+            if (!IsAlive)
+            {
+                // When the object is disabled OnTriggerEnter can be called.
+                return;
+            }
+
             var gameEntity = collider.GetComponentInParent<IGameEntity>();
             if (gameEntity != null && gameEntity.locator.TryGet(out IFoodEater foodEater))
             {

@@ -34,6 +34,7 @@ namespace Game.BehaviourTreeSample
                 var p = transform.position;
                 p.x = value.x;
                 p.y = value.y;
+                p.z = value.y;
                 transform.position = p;
             }
         }
@@ -72,6 +73,7 @@ namespace Game.BehaviourTreeSample
             base.Awake();
 
             ServiceLocator.Register(GetComponent<Animator>());
+            ServiceLocator.Register<IGameEntity>(this);
         }
 
         protected override void Start()
@@ -93,6 +95,7 @@ namespace Game.BehaviourTreeSample
 
         void IGameEntity.OnDestroy()
         {
+            _created = false;
         }
     }
 }

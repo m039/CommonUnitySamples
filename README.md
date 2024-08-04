@@ -10,4 +10,4 @@ Samples:
 
 [You can try it in a browser](http://m039.github.io/CommonUnitySamples). 
 
-In this sample there are several types of bots with different behaviours. From time to time some food appears and bots are trying to find and take it. You can also add or remove a food by clicking on the screen.
+In this sample there are several types of bots with different behaviours. From time to time some food appears and bots are trying to find and take it. You can also add or remove food by clicking on the screen.

@@ -38,7 +38,7 @@ namespace Game.BehaviourTreeSample
                 var p = transform.position;
                 p.x = value.x;
                 p.y = value.y;
-                p.z = value.y;
+                p.z = Mathf.InverseLerp(-100, 100, value.y) * 100;
                 transform.position = p;
             }
         }

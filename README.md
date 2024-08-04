@@ -1,4 +1,4 @@
-# Common Unity Sample
+# Common Unity Samples
 
 This project contains samples to showcase [Common Unity Library](https://github.com/m039/CommonUnityLibrary).
 

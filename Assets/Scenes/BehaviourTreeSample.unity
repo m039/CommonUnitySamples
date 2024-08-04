@@ -199,10 +199,10 @@ MonoBehaviour:
     max: 2
   _SpawnFoodAmount:
     min: 50
-    max: 200
+    max: 20
   _SpawnBotAmount:
-    min: 500
-    max: 1000
+    min: 50
+    max: 100
 --- !u!1 &1076878026
 GameObject:
   m_ObjectHideFlags: 0
@@ -234,8 +234,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _Prefabs:
   - {fileID: 6577513796410711425, guid: 0d08abeebf6f810428c20bdbaf580e21, type: 3}
-  - {fileID: 7130089255898559955, guid: 5f9185e6b262d7f4887ba5a78b7265e6, type: 3}
   - {fileID: 4719864943109519805, guid: cb995a5e05898794a92497ba10721bea, type: 3}
+  - {fileID: 7130089255898559955, guid: 5f9185e6b262d7f4887ba5a78b7265e6, type: 3}
   - {fileID: 9072738061416013364, guid: 9be664c244a4907448444faccdb0fd1a, type: 3}
 --- !u!4 &1076878028
 Transform:

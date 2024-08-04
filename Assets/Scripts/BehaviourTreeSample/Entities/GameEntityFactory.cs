@@ -28,11 +28,13 @@ namespace Game
 
         void Destroy(IGameEntity gameEntity);
 
-        IEnumerable<IGameEntity> GetEnteties(GameEntityType type);
+        IList<IGameEntity> GetEnteties(GameEntityType type);
     }
 
     public class GameEntityFactory : MonoBehaviour, IGameEntityFactory, IDependencyProvider
     {
+        static IList<IGameEntity> s_EmptyCollection = new List<IGameEntity>().AsReadOnly();
+
         #region Inspector
 
         [SerializeField]
@@ -228,14 +230,14 @@ namespace Game
             gameEntity.IsAlive = true;
         }
 
-        public IEnumerable<IGameEntity> GetEnteties(GameEntityType type)
+        public IList<IGameEntity> GetEnteties(GameEntityType type)
         {
             if (_enteties.ContainsKey(type))
             {
                 return _enteties[type];
             } else
             {
-                return Enumerable.Empty<IGameEntity>();
+                return s_EmptyCollection;
             }
         }
     }

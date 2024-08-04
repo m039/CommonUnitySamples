@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
+using UnityEditor;
 using UnityEngine;
 
 namespace Game.BehaviourTreeSample
@@ -12,6 +13,11 @@ namespace Game.BehaviourTreeSample
     public interface IFoodEater
     {
         void Eat(IGameEntity food);
+    }
+
+    public interface IFoodEatenEvent : IEventSubscriber
+    {
+        void FoodEaten(IGameEntity eater, IGameEntity food);
     }
 
     public class Food : MonoBehaviour, IGameEntity
@@ -158,8 +164,50 @@ namespace Game.BehaviourTreeSample
             if (gameEntity != null && gameEntity.locator.TryGet(out IFoodEater foodEater))
             {
                 foodEater.Eat(this);
+                CoreGameController.Instance.EventBus.Raise<IFoodEatenEvent>(a => a.FoodEaten(gameEntity, this));
                 this.Destroy();
             }
         }
+
+#if UNITY_EDITOR
+        [CustomEditor(typeof(Food))]
+        public class FoodEditor : Editor
+        {
+            bool showDebug;
+
+            public override void OnInspectorGUI()
+            {
+                base.OnInspectorGUI();
+
+                var food = (Food)target;
+
+                showDebug = EditorGUILayout.Toggle("Debug Blackboard", showDebug);
+                if (!showDebug)
+                    return;
+
+                if (food._blackboard == null || food._blackboard.Count <= 0)
+                {
+                    GUILayout.Label("Blackboard is empty");
+                }
+                else
+                {
+                    GUILayout.Label("Blackboard");
+
+                    foreach (var entries in food._blackboard)
+                    {
+                        GUILayout.BeginHorizontal();
+                        GUILayout.Space(10);
+                        GUILayout.Label($"{entries.Key.name}: {entries.Value}");
+                        GUILayout.EndHorizontal();
+                    }
+
+                    if (food._blackboard.TryGetValue(new(nameof(FindFreeTargetBotNode) + ".takenKey"), out HashSet<int> hashSet))
+                    {
+                        GUILayout.Label($"taken ids: " + string.Join(",", hashSet));
+                    }
+                }
+            }
+        }
+#endif
     }
 }

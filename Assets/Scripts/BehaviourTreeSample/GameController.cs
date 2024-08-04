@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace Game.BehaviourTreeSample
 {
-    public class GameController : CoreGameController
+    public class GameController : CoreGameController, IFoodEatenEvent
     {
         static readonly Collider2D[] s_Buffer = new Collider2D[16];
 
@@ -36,11 +36,21 @@ namespace Game.BehaviourTreeSample
 
         Coroutine _spawner;
 
+        string _groupInfo;
+
         protected override void DoAwake()
         {
             base.DoAwake();
 
             ServiceLocator.Register(_arbiter);
+            EventBus.Subscribe(this);
+        }
+
+        protected override void DoDestroy()
+        {
+            base.DoDestroy();
+
+            EventBus.Unsubscribe(this);
         }
 
         readonly Dictionary<BotClass, Blackboard> _groupBlackboards = new();
@@ -66,6 +76,8 @@ namespace Game.BehaviourTreeSample
                 _blackboard.SetValue(BlackboardKeys.TypeClass, botClass);
                 _entityFactory.Create(GameEntityType.Bot, _blackboard);
             }
+
+            UpdateGroupInfo();
         }
 
         void Update()
@@ -76,17 +88,7 @@ namespace Game.BehaviourTreeSample
 
         void OnGUI()
         {
-            var sb = new StringBuilder();
-
-            sb.AppendLine("Eaten food:");
-            foreach (var (botClass, foodEaten) in _groupBlackboards
-                .Select(x => (x.Key, x.Value.GetValue(BlackboardKeys.EatenFood, 0)))
-                .OrderByDescending(x => x.Item2))
-            {
-                sb.AppendLine("  " + botClass + " = " + foodEaten);
-            }
-
-            GUI.Label(new Rect(20, 20, 200, 400), sb.ToString());
+            GUI.Label(new Rect(20, 20, 200, 400), _groupInfo);
         }
 
         private void LateUpdate()
@@ -96,7 +98,7 @@ namespace Game.BehaviourTreeSample
 
         void ProcessSpawner()
         {
-            if (!_entityFactory.GetEnteties(GameEntityType.Food).Any() && _spawner == null)
+            if (_entityFactory.GetEnteties(GameEntityType.Food).Count <= 0 && _spawner == null)
             {
                 _spawner = StartCoroutine(StartSpawnerCoroutine());
             }
@@ -149,11 +151,31 @@ namespace Game.BehaviourTreeSample
             _spawner = null;
         }
 
+        void UpdateGroupInfo()
+        {
+            var sb = new StringBuilder();
+
+            sb.AppendLine("Eaten food:");
+            foreach (var (botClass, foodEaten) in _groupBlackboards
+                .Select(x => (x.Key, x.Value.GetValue(BlackboardKeys.EatenFood, 0)))
+                .OrderByDescending(x => x.Item2))
+            {
+                sb.AppendLine("  " + botClass + " = " + foodEaten);
+            }
+
+            _groupInfo = sb.ToString();
+        }
+
         void SpawnFoodAtRandomLocation()
         {
             _blackboard.Clear();
             _blackboard.SetValue(BlackboardKeys.Position, CameraUtils.RandomPositionOnScreen());
             _entityFactory.Create(GameEntityType.Food, _blackboard);
+        }
+
+        public void FoodEaten(IGameEntity eater, IGameEntity food)
+        {
+            UpdateGroupInfo();
         }
     }
 }

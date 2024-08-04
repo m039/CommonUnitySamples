@@ -15,7 +15,7 @@ namespace Game.BehaviourTreeSample
 
         #endregion
 
-        BlackboardKey _argumentKey;
+        BlackboardKey<Vector3> _argumentKey;
 
         public override void Init(CoreBotController botController)
         {
@@ -28,7 +28,7 @@ namespace Game.BehaviourTreeSample
 
         public override Status Process()
         {
-            if (botController.Blackboard.TryGetValue(_argumentKey, out Vector3 position))
+            if (botController.Blackboard.TryGetValue(_argumentKey, out var position))
             {
                 botController.Blackboard.SetValue(BlackboardKeys.Destination, position);
                 return Status.Success;

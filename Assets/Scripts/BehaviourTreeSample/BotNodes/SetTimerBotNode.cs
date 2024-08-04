@@ -20,7 +20,7 @@ namespace Game.BehaviourTreeSample
 
         #endregion
 
-        BlackboardKey _timerKey;
+        BlackboardKey<float> _timerKey;
 
         public override void Init(CoreBotController botController)
         {

@@ -73,7 +73,7 @@ namespace Game.BehaviourTreeSample
                 _blackboard.Clear();
                 _blackboard.SetValue(BlackboardKeys.Position, CameraUtils.RandomPositionOnScreen());
                 _blackboard.SetValue(BlackboardKeys.GroupBlackboard, _groupBlackboards[botClass]);
-                _blackboard.SetValue(BlackboardKeys.TypeClass, botClass);
+                _blackboard.SetValue(BlackboardKeys.TypeClass, (int) botClass);
                 _entityFactory.Create(GameEntityType.Bot, _blackboard);
             }
 

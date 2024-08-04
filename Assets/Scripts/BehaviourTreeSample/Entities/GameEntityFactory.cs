@@ -112,9 +112,9 @@ namespace Game
 
             int typeClass;
 
-            if (blackboard.TryGetValue(BlackboardKeys.TypeClass, out object value))
+            if (blackboard.TryGetValue(BlackboardKeys.TypeClass, out int value))
             {
-                typeClass = (int)value;
+                typeClass = value;
             } else
             {
                 typeClass = 0;

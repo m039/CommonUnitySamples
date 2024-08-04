@@ -28,7 +28,7 @@ namespace Game.BehaviourTreeSample
 
         #endregion
 
-        BlackboardKey _takenKey;
+        BlackboardKey<HashSet<int>> _takenKey;
 
         readonly Queue<ActionInternal> _actionPool = new();
 
@@ -81,7 +81,7 @@ namespace Game.BehaviourTreeSample
                     }
 
                     // Check if the target can be taken.
-                    if (blackboard.TryGetValue(_takenKey, out HashSet<int> taken) &&
+                    if (blackboard.TryGetValue(_takenKey, out var taken) &&
                         (taken.Contains(botGameEntity.id) || taken.Count >= _MaxTaken))
                     {
                         continue;
@@ -167,7 +167,7 @@ namespace Game.BehaviourTreeSample
                 }
 
                 // Set target if it is not already taken or there are not many takers.
-                if (!gameEntityBlackboard.TryGetValue(_parent._takenKey, out HashSet<int> taken))
+                if (!gameEntityBlackboard.TryGetValue(_parent._takenKey, out var taken))
                 {
                     _parent.botController.Blackboard.SetValue(BlackboardKeys.Target, gameEntity);
                     gameEntityBlackboard.SetValue(_parent._takenKey, new HashSet<int> { botGameEntity.id });

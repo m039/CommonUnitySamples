@@ -14,7 +14,7 @@ namespace Game.BehaviourTreeSample
 
         #endregion
 
-        BlackboardKey _timerKey;
+        BlackboardKey<float> _timerKey;
 
         public override void Init(CoreBotController botController)
         {
@@ -27,7 +27,7 @@ namespace Game.BehaviourTreeSample
 
         public override Status Process()
         {
-            if (botController.Blackboard.TryGetValue(_timerKey, out float timer))
+            if (botController.Blackboard.TryGetValue(_timerKey, out var timer))
             {
                 if (timer > Time.realtimeSinceStartup)
                 {

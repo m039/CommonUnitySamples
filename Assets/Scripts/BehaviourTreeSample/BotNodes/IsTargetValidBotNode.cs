@@ -1,4 +1,3 @@
-using Game.BehaviourTreeSample;
 using m039.Common.BehaviourTrees;
 using m039.Common.Blackboard;
 using UnityEngine;
@@ -15,7 +14,7 @@ namespace Game.BehaviourTreeSample
 
         #endregion
 
-        BlackboardKey _resultKey;
+        BlackboardKey<Vector3> _resultKey;
 
         public override void Init(CoreBotController botController)
         {
@@ -28,7 +27,7 @@ namespace Game.BehaviourTreeSample
 
         public override Status Process()
         {
-            if (!botController.Blackboard.TryGetValue(BlackboardKeys.Target, out IGameEntity target))
+            if (!botController.Blackboard.TryGetValue(BlackboardKeys.Target, out var target))
             {
                 return Status.Failure;
             }
@@ -39,7 +38,7 @@ namespace Game.BehaviourTreeSample
                 return Status.Failure;
             }
 
-            botController.Blackboard.SetValue(_resultKey, (Vector3)target.position);
+            botController.Blackboard.SetValue(_resultKey, target.position);
             return Status.Success;
         }
     }

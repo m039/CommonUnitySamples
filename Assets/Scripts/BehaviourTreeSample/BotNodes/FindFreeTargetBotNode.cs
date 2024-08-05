@@ -74,7 +74,7 @@ namespace Game.BehaviourTreeSample
                 if (s_Buffer[i].GetComponentInParent<IGameEntity>() is IGameEntity gameEntity &&
                     gameEntity.type == _TargetType)
                 {
-                    if (!gameEntity.locator.TryGet(out Blackboard blackboard))
+                    if (!gameEntity.locator.TryGet(out BlackboardBase blackboard))
                     {
                         botController.Blackboard.SetValue(BlackboardKeys.Target, gameEntity);
                         return Status.Success;
@@ -111,7 +111,7 @@ namespace Game.BehaviourTreeSample
             Gizmos.DrawWireSphere(transform.position, _Radius);
         }
 
-        ActionInternal GetAction(IGameEntity botGameEntity, IGameEntity gameEntity, Blackboard gameEntityBlackboard)
+        ActionInternal GetAction(IGameEntity botGameEntity, IGameEntity gameEntity, BlackboardBase gameEntityBlackboard)
         {
             ActionInternal action;
 
@@ -143,7 +143,7 @@ namespace Game.BehaviourTreeSample
         {
             public IGameEntity gameEntity;
             public IGameEntity botGameEntity;
-            public Blackboard gameEntityBlackboard;
+            public BlackboardBase gameEntityBlackboard;
 
             readonly FindFreeTargetBotNode _parent;
 

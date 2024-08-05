@@ -14,7 +14,7 @@ namespace Game.BehaviourTreeSample
 
         #endregion
 
-        BlackboardKey _key;
+        BlackboardKey<object> _key;
 
         public override void Init(CoreBotController botController)
         {

@@ -53,7 +53,7 @@ namespace Game.BehaviourTreeSample
 
         bool _created;
 
-        public void OnCreate(Blackboard blackboard)
+        public void OnCreate(BlackboardBase blackboard)
         {
             if (blackboard.TryGetValue(BlackboardKeys.Id, out int _id)) {
                 id = _id;
@@ -64,7 +64,7 @@ namespace Game.BehaviourTreeSample
                 position = _position;
             }
 
-            if (blackboard.TryGetValue(BlackboardKeys.GroupBlackboard, out Blackboard _groupBlackboard))
+            if (blackboard.TryGetValue(BlackboardKeys.GroupBlackboard, out BlackboardBase _groupBlackboard))
             {
                 Blackboard.SetValue(BlackboardKeys.GroupBlackboard, _groupBlackboard);
             }
@@ -113,6 +113,8 @@ namespace Game.BehaviourTreeSample
     [CustomEditor(typeof(BotController))]
     public class BotControllerEditor : Editor
     {
+
+#if false
         bool showDebug;
 
         public override void OnInspectorGUI()
@@ -141,6 +143,7 @@ namespace Game.BehaviourTreeSample
                 }
             }
         }
+#endif
     }
 #endif
 }

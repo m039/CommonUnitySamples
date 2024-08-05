@@ -30,7 +30,7 @@ namespace Game.BehaviourTreeSample
         [Inject]
         readonly IGameEntityFactory _entityFactory;
 
-        readonly Blackboard _blackboard = new();
+        readonly BlackboardBase _blackboard = new GameBlackboard();
 
         readonly Arbiter _arbiter = new();
 
@@ -53,7 +53,7 @@ namespace Game.BehaviourTreeSample
             EventBus.Unsubscribe(this);
         }
 
-        readonly Dictionary<BotClass, Blackboard> _groupBlackboards = new();
+        readonly Dictionary<BotClass, BlackboardBase> _groupBlackboards = new();
 
         void Start()
         {
@@ -62,7 +62,7 @@ namespace Game.BehaviourTreeSample
             var botClasses = System.Enum.GetValues(typeof(BotClass)).Cast<BotClass>().ToList();
             for (int i = 0; i < botClasses.Count; i++)
             {
-                _groupBlackboards.Add(botClasses[i], new Blackboard());
+                _groupBlackboards.Add(botClasses[i], new GameBlackboard());
             }
 
             var count = _SpawnBotAmount.Random();

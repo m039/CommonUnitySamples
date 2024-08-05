@@ -2,45 +2,137 @@ using m039.Common.Blackboard;
 
 namespace Game
 {
+#if true
+
+    public class GameBlackboard : Blackboard
+    {
+    }
+
+#else
+    // Cached version of blackboard.
     public class GameBlackboard : BlackboardBase
     {
-        public override int Count => throw new System.NotImplementedException();
+        static readonly Dictionary<Type, Queue<Entry>> s_EntryCache = new();
+
+        readonly Dictionary<BlackboardKey, int> _keyIndex = new();
+
+        readonly Entry[] _entries = new Entry[20]; 
+
+        int _index = 0;
 
         public override void Clear()
         {
-            throw new System.NotImplementedException();
+            for (int i = 0; i < _entries.Length; i++)
+            {
+                if (_entries[i] == null)
+                    continue;
+
+                ReleaseEntry(_entries[i]);
+
+                _entries[i] = null;
+            }
         }
 
         public override bool ContainsKey<T>(BlackboardKey<T> key)
         {
-            throw new System.NotImplementedException();
+            if (_keyIndex.TryGetValue(key, out int index))
+            {
+                return _entries[index] != null;
+            }
+
+            return false;
         }
 
         public override void Remove<T>(BlackboardKey<T> key)
         {
-            throw new System.NotImplementedException();
+            if (_keyIndex.TryGetValue(key, out int index))
+            {
+                if (_entries[index] != null)
+                {
+                    ReleaseEntry(_entries[index]);
+                }
+                _entries[index] = null;
+            }
         }
 
         public override void SetValue<T>(BlackboardKey<T> key, T value)
         {
-            throw new System.NotImplementedException();
+            if (_keyIndex.TryGetValue(key, out int index))
+            {
+                if (_entries[index] == null)
+                {
+                    _entries[index] = GetEntry(value);
+                } else
+                {
+                    ((Entry<T>)_entries[index]).value = value;
+                }
+            } else
+            {
+                var index2 = _index++;
+                _keyIndex[key] = index2;
+                _entries[index2] = GetEntry(value);
+            }
         }
 
         public override bool TryGetValue<T>(BlackboardKey<T> key, out T value)
         {
-            throw new System.NotImplementedException();
+            if (_keyIndex.TryGetValue(key, out int index) && _entries[index] != null)
+            {
+                value = ((Entry<T>)_entries[index]).value;
+                return true;
+            }
+            else
+            {
+                value = default;
+                return false;
+            };
         }
 
-        // Start is called before the first frame update
-        void Start()
+        static Entry<T> GetEntry<T>(T value)
         {
-        
+            Entry<T> entry;
+            var type = typeof(T);
+
+            if (s_EntryCache.ContainsKey(type) && s_EntryCache[type].Count > 0)
+            {
+                entry = (Entry<T>) s_EntryCache[type].Dequeue();
+            }
+            else
+            {
+                entry = new();
+            }
+            entry.value = value;
+            return entry;
         }
 
-        // Update is called once per frame
-        void Update()
+        static void ReleaseEntry(Entry entry)
         {
-        
+            var type = entry.GetValueType();
+            entry.Clear();
+
+            if (!s_EntryCache.ContainsKey(type))
+            {
+                s_EntryCache[type] = new();
+            }
+
+            s_EntryCache[type].Enqueue(entry);
+        }
+
+        abstract class Entry
+        {
+            public abstract Type GetValueType();
+
+            public abstract void Clear();
+        }
+
+        class Entry<T> : Entry
+        {
+            public T value;
+
+            public override void Clear() => value = default;
+
+            public override Type GetValueType() => typeof(T);
         }
     }
+#endif
 }

@@ -22,7 +22,7 @@ namespace Game.BehaviourTreeSample
 
         ServiceLocator locator { get; }
 
-        void OnCreate(Blackboard blackboard);
+        void OnCreate(BlackboardBase blackboard);
 
         void OnDestroy();
 

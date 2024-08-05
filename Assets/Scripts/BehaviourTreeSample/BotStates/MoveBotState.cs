@@ -28,7 +28,7 @@ namespace Game.BehaviourTreeSample
         {
             base.OnUpdate();
 
-            if (!botController.Blackboard.TryGetValue(BlackboardKeys.Destination, out Vector3 destination))
+            if (!botController.Blackboard.TryGetValue(BlackboardKeys.Destination, out var destination))
             {
                 return;
             }

@@ -7,13 +7,13 @@ namespace Game
 {
     public class CoreBotController : MonoBehaviour
     {
-        Blackboard _blackboard;
+        BlackboardBase _blackboard;
 
-        public Blackboard Blackboard {
+        public BlackboardBase Blackboard {
             get {
                 if (_blackboard == null)
                 {
-                    _blackboard = new();
+                    _blackboard = new GameBlackboard();
                 }
 
                 return _blackboard;

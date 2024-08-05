@@ -17,7 +17,7 @@ namespace Game
         static readonly public BlackboardKey<int> EatenFood = new("eaten_food");
         static readonly public BlackboardKey<int> TypeClass = new("type_class");
         static readonly public BlackboardKey<List<Action>> ExpertActions = new("expert_actions");
-        static readonly public BlackboardKey<Blackboard> GroupBlackboard = new("group_blackboard");
+        static readonly public BlackboardKey<BlackboardBase> GroupBlackboard = new("group_blackboard");
 
     }
 }

@@ -33,7 +33,7 @@ namespace Game
 
             botController.EventBus.Raise<IBlinkEvent>(a => a.Blink(_BlinkColor, _BlinkDuration));
 
-            if (botController.Blackboard.TryGetValue(BlackboardKeys.GroupBlackboard, out Blackboard groupBlackboard))
+            if (botController.Blackboard.TryGetValue(BlackboardKeys.GroupBlackboard, out BlackboardBase groupBlackboard))
             {
                 if (groupBlackboard.TryGetValue(BlackboardKeys.EatenFood, out int foodEatenGroup))
                 {

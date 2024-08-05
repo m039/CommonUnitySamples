@@ -22,7 +22,7 @@ namespace Game
 
     public interface IGameEntityFactory
     {
-        IGameEntity Create(GameEntityType type, Blackboard blackboard);
+        IGameEntity Create(GameEntityType type, BlackboardBase blackboard);
 
         void CreateManually(IGameEntity gameEntity);
 
@@ -64,7 +64,7 @@ namespace Game
 
         Transform _parent;
 
-        readonly Blackboard _blackboard = new();
+        readonly BlackboardBase _blackboard = new GameBlackboard();
 
         void Awake()
         {
@@ -97,7 +97,7 @@ namespace Game
             _serviceLocator.Register<IGameEntityFactory>(this);
         }
 
-        public IGameEntity Create(GameEntityType type, Blackboard blackboard)
+        public IGameEntity Create(GameEntityType type, BlackboardBase blackboard)
         {
             if (!_typeToPrefab.ContainsKey(type))
             {

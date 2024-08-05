@@ -75,7 +75,7 @@ namespace Game.BehaviourTreeSample
 
         ServiceLocator _serviceLocator;
 
-        readonly Blackboard _blackboard = new();
+        readonly BlackboardBase _blackboard = new GameBlackboard();
 
         Coroutine _coroutine;
 
@@ -86,7 +86,7 @@ namespace Game.BehaviourTreeSample
             _spriteRenders = _Renderers.Select(r => (r, r.color.a)).ToList();
         }
 
-        public void OnCreate(Blackboard blackboard)
+        public void OnCreate(BlackboardBase blackboard)
         {
             if (blackboard.TryGetValue(BlackboardKeys.Id, out int _id))
             {
@@ -173,6 +173,8 @@ namespace Game.BehaviourTreeSample
         [CustomEditor(typeof(Food))]
         public class FoodEditor : Editor
         {
+#if false
+
             bool showDebug;
 
             public override void OnInspectorGUI()
@@ -193,6 +195,7 @@ namespace Game.BehaviourTreeSample
                 {
                     GUILayout.Label("Blackboard");
 
+
                     foreach (var entries in food._blackboard)
                     {
                         GUILayout.BeginHorizontal();
@@ -201,12 +204,14 @@ namespace Game.BehaviourTreeSample
                         GUILayout.EndHorizontal();
                     }
 
-                    if (food._blackboard.TryGetValue(new(nameof(FindFreeTargetBotNode) + ".takenKey"), out HashSet<int> hashSet))
+
+                if (food._blackboard.TryGetValue(new(nameof(FindFreeTargetBotNode) + ".takenKey"), out HashSet<int> hashSet))
                     {
                         GUILayout.Label($"taken ids: " + string.Join(",", hashSet));
                     }
                 }
             }
+#endif
         }
 #endif
     }

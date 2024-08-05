@@ -15,19 +15,20 @@ namespace Game
 
         #endregion
 
-        Blackboard _blackboard;
+        BlackboardBase _blackboard;
 
         ServiceLocator _serviceLocator;
 
         EventBusByInterface _eventBus;
 
         [Provide]
-        protected virtual Blackboard GetOrCreateBlackboard()
+        protected virtual BlackboardBase GetOrCreateBlackboard()
         {
             if (_blackboard == null)
             {
-                _blackboard = new();
-                _blackboard.SetValues(_BlackboardData);
+                var blackboard = new Blackboard();
+                blackboard.SetValues(_BlackboardData);
+                _blackboard = blackboard;
             }
             return _blackboard;
         }

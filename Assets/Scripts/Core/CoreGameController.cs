@@ -8,7 +8,7 @@ namespace Game
     public class CoreGameController : MonoBehaviourSingleton<CoreGameController>
     {
         [Inject]
-        public Blackboard Blackboard { get; protected set; }
+        public BlackboardBase Blackboard { get; protected set; }
 
         [Inject]
         public EventBusByInterface EventBus { get; protected set; }

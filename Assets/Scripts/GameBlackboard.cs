@@ -9,6 +9,10 @@ namespace Game
     }
 
 #else
+
+    using System;
+    using System.Collections.Generic;
+
     // Cached version of blackboard.
     public class GameBlackboard : BlackboardBase
     {

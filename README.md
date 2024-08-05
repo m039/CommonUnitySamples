@@ -6,7 +6,7 @@ Samples:
 * [Behaviour tree sample](/Assets/Scripts/BehaviourTreeSample)
 * [State machine sample](/Assets/Scripts/StateMachineSample)
 
-## Behaviour tree sample
+## Behaviour Tree Sample
 
 [You can try it in a browser](http://m039.github.io/CommonUnitySamples). 
 

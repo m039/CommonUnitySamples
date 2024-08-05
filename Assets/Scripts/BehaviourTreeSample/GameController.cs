@@ -137,6 +137,11 @@ namespace Game.BehaviourTreeSample
                     _entityFactory.Destroy(food);
                 }
             }
+
+            if (Input.GetKeyDown(KeyCode.D))
+            {
+                Blackboard.UpdateValue(BlackboardKeys.DebugMode, x => !x);
+            }
         }
 
         IEnumerator StartSpawnerCoroutine()

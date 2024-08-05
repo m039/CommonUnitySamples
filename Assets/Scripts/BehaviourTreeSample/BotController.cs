@@ -1,10 +1,8 @@
 using m039.Common;
 using m039.Common.Blackboard;
 using m039.Common.StateMachine;
-using System.Collections;
 using UnityEditor;
 using UnityEngine;
-using static m039.Common.EasingFunction;
 
 namespace Game.BehaviourTreeSample
 {
@@ -12,7 +10,8 @@ namespace Game.BehaviourTreeSample
     {
         Blue = 0,
         Yellow = 1,
-        Green = 2
+        Green = 2,
+        Purple = 3
     }
 
     public class BotController : CoreBotController, IGameEntity

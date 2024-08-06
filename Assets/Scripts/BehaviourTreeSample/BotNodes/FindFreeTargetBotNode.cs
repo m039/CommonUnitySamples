@@ -72,7 +72,9 @@ namespace Game.BehaviourTreeSample
             for (int i = 0; i < count; i++)
             {
                 if (s_Buffer[i].GetComponentInParent<IGameEntity>() is IGameEntity gameEntity &&
-                    gameEntity.type == _TargetType)
+                    gameEntity.type == _TargetType &&
+                    gameEntity.IsAlive &&
+                    Vector2.Distance(gameEntity.position, pivotPosition) < _Radius)
                 {
                     if (!gameEntity.locator.TryGet(out BlackboardBase blackboard))
                     {
@@ -89,7 +91,7 @@ namespace Game.BehaviourTreeSample
 
                     var action = GetAction(botGameEntity, gameEntity, blackboard);
 
-                    if (botController.Blackboard.TryGetValue(BlackboardKeys.ExpertActions, out List<System.Action> actions))
+                    if (botController.Blackboard.TryGetValue(BlackboardKeys.ExpertActions, out var actions))
                     {
                         actions.Add(action.Run);
                     }

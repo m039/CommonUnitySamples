@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace Game.BehaviourTreeSample
 {
@@ -25,6 +26,9 @@ namespace Game.BehaviourTreeSample
         [SerializeField]
         MinMaxInt _SpawnBotAmount = new(1, 3);
 
+        [SerializeField]
+        TMPro.TMP_Text _GroupInfo;
+
         #endregion
 
         [Inject]
@@ -35,8 +39,6 @@ namespace Game.BehaviourTreeSample
         readonly Arbiter _arbiter = new();
 
         Coroutine _spawner;
-
-        string _groupInfo;
 
         protected override void DoAwake()
         {
@@ -86,11 +88,6 @@ namespace Game.BehaviourTreeSample
             ProcessSpawner();
         }
 
-        void OnGUI()
-        {
-            GUI.Label(new Rect(20, 20, 200, 400), _groupInfo);
-        }
-
         private void LateUpdate()
         {
             _arbiter.Iteration();
@@ -112,7 +109,7 @@ namespace Game.BehaviourTreeSample
                 return;
             }
 
-            if (Input.GetMouseButtonDown(0))
+            if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject())
             {
                 Vector2 position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
                 var count = Physics2D.OverlapCircleNonAlloc(position, 0, s_Buffer);
@@ -136,11 +133,6 @@ namespace Game.BehaviourTreeSample
                 {
                     _entityFactory.Destroy(food);
                 }
-            }
-
-            if (Input.GetKeyDown(KeyCode.D))
-            {
-                Blackboard.UpdateValue(BlackboardKeys.DebugMode, x => !x);
             }
         }
 
@@ -168,7 +160,7 @@ namespace Game.BehaviourTreeSample
                 sb.AppendLine("  " + botClass + " = " + foodEaten);
             }
 
-            _groupInfo = sb.ToString();
+            _GroupInfo.text = sb.ToString();
         }
 
         void SpawnFoodAtRandomLocation()
@@ -181,6 +173,11 @@ namespace Game.BehaviourTreeSample
         public void FoodEaten(IGameEntity eater, IGameEntity food)
         {
             UpdateGroupInfo();
+        }
+
+        public void OnDebugModeChanged(bool debugMode)
+        {
+            Blackboard.UpdateValue(BlackboardKeys.DebugMode, x => !x);
         }
     }
 }

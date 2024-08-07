@@ -1,6 +1,5 @@
 using Game.BehaviourTreeSample;
 using m039.Common.Blackboard;
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -16,7 +15,8 @@ namespace Game
         static readonly public BlackboardKey<IGameEntity> Target = new("target");
         static readonly public BlackboardKey<int> EatenFood = new("eaten_food");
         static readonly public BlackboardKey<int> TypeClass = new("type_class");
-        static readonly public BlackboardKey<List<Action>> ExpertActions = new("expert_actions");
+        static readonly public BlackboardKey<Queue<System.Action>> ExpertActions = new("expert_actions");
+        static readonly public BlackboardKey<Queue<System.Action>> ExpertAfterAllActions = new("expert_after_all_actions");
         static readonly public BlackboardKey<BlackboardBase> GroupBlackboard = new("group_blackboard");
         static readonly public BlackboardKey<bool> DebugMode = new("debug_mode");
     }

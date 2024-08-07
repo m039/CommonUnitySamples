@@ -24,6 +24,8 @@ namespace Game
 
         int _index = 0;
 
+        public override int Count => throw new NotImplementedException();
+
         public override void Clear()
         {
             for (int i = 0; i < _entries.Length; i++)
@@ -133,7 +135,14 @@ namespace Game
         {
             public T value;
 
-            public override void Clear() => value = default;
+            public override void Clear()
+            {
+                if (value is IReleasable releasable)
+                {
+                    releasable.Release();
+                }
+                value = default;
+            }
 
             public override Type GetValueType() => typeof(T);
         }

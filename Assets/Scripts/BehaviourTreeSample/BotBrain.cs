@@ -27,7 +27,9 @@ namespace Game.BehaviourTreeSample
 
         StateMachine StateMachine { get; } = new();
 
-        readonly List<System.Action> _expertActions = new();
+        readonly Queue<System.Action> _expertActions = new();
+
+        readonly Queue<System.Action> _expertAfterAllActions = new();
 
         public override void Init(CoreBotController botController)
         {
@@ -60,6 +62,8 @@ namespace Game.BehaviourTreeSample
             StateMachine.SetState(_IdleState);
 
             botController.Blackboard.SetValue(BlackboardKeys.ExpertActions, _expertActions);
+            botController.Blackboard.SetValue(BlackboardKeys.ExpertAfterAllActions, _expertAfterAllActions);
+
         }
 
         void Start()
@@ -81,6 +85,7 @@ namespace Game.BehaviourTreeSample
         public override void Think()
         {
             _expertActions.Clear();
+            _expertAfterAllActions.Clear();
 
             BehaviourTree.Update();
             StateMachine.Update();
@@ -110,9 +115,17 @@ namespace Game.BehaviourTreeSample
 
         public void Execute()
         {
-            foreach (var a in _expertActions)
+            foreach (var action in _expertActions)
             {
-                a?.Invoke();
+                action?.Invoke();
+            }
+        }
+
+        public void AfterAllExecute()
+        {
+            foreach (var action in _expertAfterAllActions)
+            {
+                action?.Invoke();
             }
         }
     }

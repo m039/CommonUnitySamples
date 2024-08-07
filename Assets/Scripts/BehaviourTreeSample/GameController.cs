@@ -29,6 +29,9 @@ namespace Game.BehaviourTreeSample
         [SerializeField]
         TMPro.TMP_Text _GroupInfo;
 
+        [SerializeField]
+        TMPro.TMP_Text _FPSCounter;
+
         #endregion
 
         [Inject]
@@ -39,6 +42,8 @@ namespace Game.BehaviourTreeSample
         readonly Arbiter _arbiter = new();
 
         Coroutine _spawner;
+
+        float _fpsTimer = 0;
 
         protected override void DoAwake()
         {
@@ -80,12 +85,14 @@ namespace Game.BehaviourTreeSample
             }
 
             UpdateGroupInfo();
+            _FPSCounter.gameObject.SetActive(false);
         }
 
         void Update()
         {
             ProcessInput();
             ProcessSpawner();
+            ProcessDebug();
         }
 
         private void LateUpdate()
@@ -136,6 +143,19 @@ namespace Game.BehaviourTreeSample
             }
         }
 
+        void ProcessDebug()
+        {
+            if (Blackboard.GetValue(BlackboardKeys.DebugMode))
+            {
+                _fpsTimer -= Time.deltaTime;
+                if (_fpsTimer < 0)
+                {
+                    _FPSCounter.text = string.Format("FPS: {0,3:f2}", 1 / Time.deltaTime);
+                    _fpsTimer = 0.1f;
+                }
+            }
+        }
+
         IEnumerator StartSpawnerCoroutine()
         {
             yield return new WaitForSeconds(_SpawnFoodTimer.Random());
@@ -178,6 +198,7 @@ namespace Game.BehaviourTreeSample
         public void OnDebugModeChanged(bool debugMode)
         {
             Blackboard.UpdateValue(BlackboardKeys.DebugMode, x => !x);
+            _FPSCounter.gameObject.SetActive(debugMode);
         }
     }
 }

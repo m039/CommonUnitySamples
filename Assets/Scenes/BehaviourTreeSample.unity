@@ -643,14 +643,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _SpawnFoodTimer:
-    min: 1
-    max: 3
+    min: 2
+    max: 4
   _SpawnFoodAmount:
     min: 20
-    max: 200
+    max: 100
   _SpawnBotAmount:
-    min: 200
-    max: 500
+    min: 150
+    max: 300
   _GroupInfo: {fileID: 1235930171}
   _FPSCounter: {fileID: 317188033}
 --- !u!1 &895605170

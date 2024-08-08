@@ -34,6 +34,8 @@ namespace Game.BehaviourTreeSample
 
         public int id { get; private set; } = 0;
 
+        string IGameEntity.name => "Food#" + id;
+
         public Vector2 position {
             get
             {

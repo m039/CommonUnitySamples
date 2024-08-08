@@ -50,6 +50,8 @@ namespace Game.BehaviourTreeSample
 
         public int typeClass => (int)_TypeClass;
 
+        string IGameEntity.name => $"Bot_{_TypeClass}#{id}";
+
         bool _created;
 
         public void OnCreate(BlackboardBase blackboard)
@@ -82,6 +84,7 @@ namespace Game.BehaviourTreeSample
 
             ServiceLocator.Register(GetComponent<Animator>());
             ServiceLocator.Register<IGameEntity>(this);
+            ServiceLocator.Register(Blackboard);
         }
 
         protected override void Start()

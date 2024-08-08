@@ -19,5 +19,6 @@ namespace Game
         static readonly public BlackboardKey<Queue<System.Action>> ExpertAfterAllActions = new("expert_after_all_actions");
         static readonly public BlackboardKey<BlackboardBase> GroupBlackboard = new("group_blackboard");
         static readonly public BlackboardKey<bool> DebugMode = new("debug_mode");
+        static readonly public BlackboardKey<bool> Selection = new("selection");
     }
 }

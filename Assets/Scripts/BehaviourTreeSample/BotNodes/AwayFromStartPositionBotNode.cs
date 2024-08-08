@@ -5,7 +5,7 @@ namespace Game.BehaviourTreeSample
 {
     public class AwayFromStartPositionBotNode : CoreBotNode
     {
-        public override Status Process()
+        protected override Status OnProcess()
         {
             if (!botController.Blackboard.TryGetValue(BlackboardKeys.StartPosition, out Vector3 startPosition))
             {

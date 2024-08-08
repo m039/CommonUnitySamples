@@ -16,7 +16,7 @@ namespace Game.BehaviourTreeSample
 
         #endregion
 
-        public override Status Process()
+        protected override Status OnProcess()
         {
             if (botController.ServiceLocator.TryGet(out StateMachine sm) &&
                 sm.CurrentState is CoreBotState cs &&

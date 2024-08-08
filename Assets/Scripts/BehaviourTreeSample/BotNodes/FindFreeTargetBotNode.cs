@@ -46,7 +46,7 @@ namespace Game.BehaviourTreeSample
 
         static Collider2D[] s_Buffer = new Collider2D[16];
 
-        public override Status Process()
+        protected override Status OnProcess()
         {
             if (!botController.ServiceLocator.TryGet(out IGameEntity botGameEntity))
             {

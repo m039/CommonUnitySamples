@@ -25,7 +25,7 @@ namespace Game.BehaviourTreeSample
             _timerKey = new(_TimerKey);
         }
 
-        public override Status Process()
+        protected override Status OnProcess()
         {
             if (botController.Blackboard.TryGetValue(_timerKey, out var timer))
             {

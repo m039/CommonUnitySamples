@@ -25,7 +25,7 @@ namespace Game.BehaviourTreeSample
             _resultKey = new(_ResultKey);
         }
 
-        public override Status Process()
+        protected override Status OnProcess()
         {
             if (!botController.Blackboard.TryGetValue(BlackboardKeys.Target, out var target))
             {

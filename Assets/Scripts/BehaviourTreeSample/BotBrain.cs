@@ -36,6 +36,7 @@ namespace Game.BehaviourTreeSample
             base.Init(botController);
 
             botController.ServiceLocator.Register(StateMachine);
+            botController.ServiceLocator.Register(BehaviourTree);
 
             foreach (var botState in GetComponentsInChildren<CoreBotState>())
             {
@@ -47,7 +48,7 @@ namespace Game.BehaviourTreeSample
                 botNode.Init(botController);
             }
 
-            BehaviourTree.AddChild(_StartNode);
+            BehaviourTree.AddChild(_StartNode);            
 
             StateMachine.AddTransition(_IdleState, _MoveState, () =>
             {

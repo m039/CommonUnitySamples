@@ -27,6 +27,8 @@ namespace Game.BehaviourTreeSample
         void OnDestroy();
 
         bool IsAlive { get; set; }
+
+        string name { get; }
     }
 
     public static class GameEntityExt {

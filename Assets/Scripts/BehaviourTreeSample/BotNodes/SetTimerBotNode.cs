@@ -31,7 +31,7 @@ namespace Game.BehaviourTreeSample
             _timerKey = new(_TimerKey);
         }
 
-        public override Status Process()
+        protected override Status OnProcess()
         {
             botController.Blackboard.SetValue(_timerKey, Time.realtimeSinceStartup + _TimerDuration.Random());
             return Status.Success;

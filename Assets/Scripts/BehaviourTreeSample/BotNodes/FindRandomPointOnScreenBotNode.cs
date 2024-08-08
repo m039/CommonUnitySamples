@@ -25,7 +25,7 @@ namespace Game.BehaviourTreeSample
             _resultKey = new(_ResultKey);
         }
 
-        public override Status Process()
+        protected override Status OnProcess()
         {
             botController.Blackboard.SetValue(_resultKey, (Vector3)CameraUtils.RandomPositionOnScreen());
             return Status.Success;

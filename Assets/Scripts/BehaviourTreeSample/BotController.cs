@@ -54,6 +54,8 @@ namespace Game.BehaviourTreeSample
 
         bool _created;
 
+        BotSystem[] _systems;
+
         public void OnCreate(BlackboardBase blackboard)
         {
             if (blackboard.TryGetValue(BlackboardKeys.Id, out int _id)) {
@@ -91,7 +93,9 @@ namespace Game.BehaviourTreeSample
         {
             base.Start();
 
-            foreach (var botSystem in GetComponentsInChildren<BotSystem>())
+            _systems = GetComponentsInChildren<BotSystem>();
+
+            foreach (var botSystem in _systems)
             {
                 botSystem.Init(this);
             }
@@ -102,6 +106,16 @@ namespace Game.BehaviourTreeSample
             }
 
             Blackboard.SetValue(BlackboardKeys.StartPosition, transform.position);
+        }
+
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+
+            foreach (var botSystem in _systems)
+            {
+                botSystem.Deinit();
+            }
         }
 
         void IGameEntity.OnDestroy()

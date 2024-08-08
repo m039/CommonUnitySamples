@@ -12,5 +12,9 @@ namespace Game.BehaviourTreeSample
         {
             this.botController = botController;
         }
+
+        public virtual void Deinit()
+        {
+        }
     }
 }

@@ -244,8 +244,7 @@ namespace Game.BehaviourTreeSample
             }
             if (_selectedBot.locator.TryGet(out BehaviourTree behaviourTree)) {
                 sb.AppendLine();
-                sb.AppendLine("BehaviourTree:");
-                behaviourTree.PrintTree(2, sb);
+                behaviourTree.PrintTree(sb: sb);
             }
             _BotInfo.text = sb.ToString();
         }

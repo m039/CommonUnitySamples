@@ -99,8 +99,8 @@ namespace Game.BehaviourTreeSample
                     {
                         actions.Enqueue(action.action);
 
-                        if (botController.Blackboard.TryGetValue(BlackboardKeys.ExpertAfterAllActions, out var afterAllActions)) {
-                            afterAllActions.Enqueue(action.afterAllAction);
+                        if (botController.Blackboard.TryGetValue(BlackboardKeys.ExpertLateActions, out var lateActions)) {
+                            lateActions.Enqueue(action.lateAction);
                         }
                     }
                     else
@@ -137,12 +137,17 @@ namespace Game.BehaviourTreeSample
             action.botGameEntity = botGameEntity;
             action.gameEntity = gameEntity;
             action.gameEntityBlackboard = gameEntityBlackboard;
+            action.isReleased = false;
 
             return action;
         }
 
         static void ReleaseAction(ActionInternal action)
         {
+            if (action.isReleased)
+                return;
+
+            action.isReleased = true;
             action.node = null;
             action.gameEntity = null;
             action.botGameEntity = null;
@@ -190,15 +195,16 @@ namespace Game.BehaviourTreeSample
             public IGameEntity gameEntity;
             public IGameEntity botGameEntity;
             public BlackboardBase gameEntityBlackboard;
+            public bool isReleased;
 
             public readonly System.Action action;
 
-            public readonly System.Action afterAllAction;
+            public readonly System.Action lateAction;
 
             public ActionInternal()
             {
                 action = new System.Action(Run);
-                afterAllAction = new System.Action(Release);
+                lateAction = new System.Action(Release);
             }
 
             void Release()

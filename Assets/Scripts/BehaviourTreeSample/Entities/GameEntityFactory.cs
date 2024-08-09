@@ -5,7 +5,6 @@ using m039.Common.DependencyInjection;
 using m039.Common.Events;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace Game
@@ -33,7 +32,7 @@ namespace Game
 
     public class GameEntityFactory : MonoBehaviour, IGameEntityFactory, IDependencyProvider
     {
-        static IList<IGameEntity> s_EmptyCollection = new List<IGameEntity>().AsReadOnly();
+        static readonly IList<IGameEntity> s_EmptyCollection = new List<IGameEntity>().AsReadOnly();
 
         #region Inspector
 

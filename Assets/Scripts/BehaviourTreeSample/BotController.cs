@@ -75,11 +75,6 @@ namespace Game.BehaviourTreeSample
             _created = true;
         }
 
-        public void SetState(MonoBehaviourState state)
-        {
-            ServiceLocator.Get<StateMachine>().SetState(state);
-        }
-
         protected override void Awake()
         {
             base.Awake();
@@ -123,43 +118,4 @@ namespace Game.BehaviourTreeSample
             _created = false;
         }
     }
-
-#if UNITY_EDITOR
-
-    [CustomEditor(typeof(BotController))]
-    public class BotControllerEditor : Editor
-    {
-
-#if false
-        bool showDebug;
-
-        public override void OnInspectorGUI()
-        {
-            base.OnInspectorGUI();
-
-            var botController = (BotController)target;
-
-            showDebug = EditorGUILayout.Toggle("Debug Blackboard", showDebug);
-            if (!showDebug)
-                return;
-
-            if (botController.Blackboard.Count <= 0)
-            {
-                GUILayout.Label("Blackboard is empty");
-            } else
-            {
-                GUILayout.Label("Blackboard");
-
-                foreach (var entries in botController.Blackboard)
-                {
-                    GUILayout.BeginHorizontal();
-                    GUILayout.Space(10);
-                    GUILayout.Label($"{entries.Key.name}: {entries.Value}");
-                    GUILayout.EndHorizontal();
-                }
-            }
-        }
-#endif
-    }
-#endif
 }

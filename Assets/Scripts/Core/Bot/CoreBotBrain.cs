@@ -11,6 +11,10 @@ namespace Game
             this.botController = botController;
         }
 
+        public virtual void Deinit()
+        {
+        }
+
         public abstract void Think();
 
         public virtual void FixedThink()

@@ -65,6 +65,11 @@ namespace Game
 
         protected virtual void OnDestroy()
         {
+            if (_Brain != null)
+            {
+                _Brain.Deinit();
+            }
+
             foreach (var feature in _features)
             {
                 feature.Deinit(this);

@@ -170,51 +170,5 @@ namespace Game.BehaviourTreeSample
                 this.Destroy();
             }
         }
-
-#if UNITY_EDITOR
-        [CustomEditor(typeof(Food))]
-        public class FoodEditor : Editor
-        {
-#if false
-
-            bool showDebug;
-
-            public override void OnInspectorGUI()
-            {
-                base.OnInspectorGUI();
-
-                var food = (Food)target;
-
-                showDebug = EditorGUILayout.Toggle("Debug Blackboard", showDebug);
-                if (!showDebug)
-                    return;
-
-                if (food._blackboard == null || food._blackboard.Count <= 0)
-                {
-                    GUILayout.Label("Blackboard is empty");
-                }
-                else
-                {
-                    GUILayout.Label("Blackboard");
-
-
-                    foreach (var entries in food._blackboard)
-                    {
-                        GUILayout.BeginHorizontal();
-                        GUILayout.Space(10);
-                        GUILayout.Label($"{entries.Key.name}: {entries.Value}");
-                        GUILayout.EndHorizontal();
-                    }
-
-
-                if (food._blackboard.TryGetValue(new(nameof(FindFreeTargetBotNode) + ".takenKey"), out HashSet<int> hashSet))
-                    {
-                        GUILayout.Label($"taken ids: " + string.Join(",", hashSet));
-                    }
-                }
-            }
-#endif
-        }
-#endif
     }
 }

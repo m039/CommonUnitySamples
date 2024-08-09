@@ -52,5 +52,12 @@ namespace Game
             _FoodCounter.text = 0.ToString();
             botController.ServiceLocator.Register<IFoodEater>(this);
         }
+
+        public override void Deinit()
+        {
+            base.Deinit();
+
+            botController.ServiceLocator.Unregister<IFoodEater>();
+        }
     }
 }

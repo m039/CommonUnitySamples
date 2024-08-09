@@ -29,7 +29,7 @@ namespace Game.BehaviourTreeSample
 
         readonly Queue<System.Action> _expertActions = new();
 
-        readonly Queue<System.Action> _expertAfterAllActions = new();
+        readonly Queue<System.Action> _expertLateActions = new();
 
         public override void Init(CoreBotController botController)
         {
@@ -63,20 +63,21 @@ namespace Game.BehaviourTreeSample
             StateMachine.SetState(_IdleState);
 
             botController.Blackboard.SetValue(BlackboardKeys.ExpertActions, _expertActions);
-            botController.Blackboard.SetValue(BlackboardKeys.ExpertAfterAllActions, _expertAfterAllActions);
+            botController.Blackboard.SetValue(BlackboardKeys.ExpertLateActions, _expertLateActions);
 
-        }
-
-        void Start()
-        {
             if (CoreGameController.Instance.ServiceLocator.TryGet(out Arbiter arbiter))
             {
                 arbiter.Register(this);
             }
         }
 
-        void OnDestroy()
+        public override void Deinit()
         {
+            base.Deinit();
+
+            botController.ServiceLocator.Unregister(StateMachine);
+            botController.ServiceLocator.Unregister(BehaviourTree);
+
             if (CoreGameController.Instance != null && CoreGameController.Instance.ServiceLocator.TryGet(out Arbiter arbiter))
             {
                 arbiter.Unregister(this);
@@ -86,7 +87,7 @@ namespace Game.BehaviourTreeSample
         public override void Think()
         {
             _expertActions.Clear();
-            _expertAfterAllActions.Clear();
+            _expertLateActions.Clear();
 
             BehaviourTree.Update();
             StateMachine.Update();
@@ -122,9 +123,9 @@ namespace Game.BehaviourTreeSample
             }
         }
 
-        public void AfterAllExecute()
+        public void LateExecute()
         {
-            foreach (var action in _expertAfterAllActions)
+            foreach (var action in _expertLateActions)
             {
                 action?.Invoke();
             }

@@ -7,6 +7,7 @@ namespace Game
 {
     public static class BlackboardKeys 
     {
+        // Behaviour Tree Sample
         static readonly public BlackboardKey<Vector3> StartPosition = new("start_position");
         static readonly public BlackboardKey<float> MoveSpeed = new("move_speed");
         static readonly public BlackboardKey<int> Id = new("id");
@@ -20,5 +21,7 @@ namespace Game
         static readonly public BlackboardKey<BlackboardBase> GroupBlackboard = new("group_blackboard");
         static readonly public BlackboardKey<bool> DebugMode = new("debug_mode");
         static readonly public BlackboardKey<bool> Selection = new("selection");
+
+        // GOAP Sample
     }
 }

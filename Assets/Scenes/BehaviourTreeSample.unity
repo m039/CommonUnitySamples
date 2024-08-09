@@ -632,10 +632,10 @@ MonoBehaviour:
     max: 4
   _SpawnFoodAmount:
     min: 20
-    max: 80
+    max: 120
   _SpawnBotAmount:
-    min: 100
-    max: 200
+    min: 150
+    max: 300
   _GroupInfo: {fileID: 1235930171}
   _FPSCounter: {fileID: 317188033}
   _BotInfo: {fileID: 1912132750}

@@ -16,5 +16,9 @@ namespace Game.StateMachineSample
         {
 
         }
+
+        public virtual void Deinit()
+        {
+        }
     }
 }

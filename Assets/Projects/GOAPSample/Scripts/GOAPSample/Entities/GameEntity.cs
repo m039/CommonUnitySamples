@@ -32,7 +32,7 @@ namespace Game.GOAPSample
 
         public virtual int typeClass => 0;
 
-        public ServiceLocator locator
+        public virtual ServiceLocator locator
         {
             get
             {
@@ -49,7 +49,7 @@ namespace Game.GOAPSample
 
         ServiceLocator _serviceLocator;
 
-        protected readonly BlackboardBase Blackboard = new GameBlackboard();
+        protected virtual BlackboardBase Blackboard { get; } = new GameBlackboard();
 
         protected virtual void OnCreateServiceLocator(ServiceLocator serviceLocator)
         {

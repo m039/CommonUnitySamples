@@ -72,7 +72,7 @@ namespace Game
 
             foreach (var feature in _features)
             {
-                feature.Deinit(this);
+                feature.Deinit();
             }
         }
 

@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Game
@@ -12,12 +10,12 @@ namespace Game
 
         #endregion
 
-        public override void Init(CoreBotController botController)
+        protected override void OnInit()
         {
             botController.EventBus.Subscribe(this);
         }
 
-        public override void Deinit(CoreBotController botController)
+        protected override void OnDeinit()
         {
             botController.EventBus.Unsubscribe(this);
         }

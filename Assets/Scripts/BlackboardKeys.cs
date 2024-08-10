@@ -23,5 +23,7 @@ namespace Game
         static readonly public BlackboardKey<bool> Selection = new("selection");
 
         // GOAP Sample
+        static readonly public BlackboardKey<bool> IsMoving = new("is_moving");
+        static readonly public BlackboardKey<bool> IsFacingLeft = new("is_facing_left");
     }
 }

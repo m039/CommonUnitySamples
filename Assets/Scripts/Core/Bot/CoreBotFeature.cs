@@ -6,8 +6,21 @@ namespace Game
 {
     public abstract class CoreBotFeature : MonoBehaviour
     {
-        public abstract void Init(CoreBotController botController);
+        protected CoreBotController botController;
 
-        public abstract void Deinit(CoreBotController botController);
+        public virtual void Init(CoreBotController botController)
+        {
+            this.botController = botController;
+            OnInit();
+        }
+
+        public virtual void Deinit()
+        {
+            OnDeinit();
+        }
+
+        protected abstract void OnInit();
+
+        protected abstract void OnDeinit();
     }
 }

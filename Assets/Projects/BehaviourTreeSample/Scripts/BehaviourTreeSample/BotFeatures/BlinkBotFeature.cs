@@ -66,12 +66,12 @@ namespace Game
             _Renderer.color = Color.white;
         }
 
-        public override void Init(CoreBotController botController)
+        protected override void OnInit()
         {
             botController.EventBus.Subscribe(this);
         }
 
-        public override void Deinit(CoreBotController botController)
+        protected override void OnDeinit()
         {
             botController.EventBus.Unsubscribe(this);
         }

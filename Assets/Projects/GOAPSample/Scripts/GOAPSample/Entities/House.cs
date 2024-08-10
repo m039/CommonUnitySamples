@@ -1,6 +1,8 @@
 using Game.BehaviourTreeSample;
+using m039.Common;
 using m039.Common.Blackboard;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Game.GOAPSample
@@ -17,6 +19,9 @@ namespace Game.GOAPSample
 
         [SerializeField]
         Rigidbody2D _Rigidbody;
+
+        [SerializeField]
+        MinMaxInt _BotsCount = new(1, 2);
 
         #endregion
 
@@ -41,16 +46,23 @@ namespace Game.GOAPSample
 
         IGameEntity _bonfire;
 
+        readonly List<IGameEntity> _bots = new();
+
+        Coroutine _createCoroutine;
+
         protected override void OnCreateEntity(BlackboardBase blackboard)
         {
             base.OnCreateEntity(blackboard);
 
-            IEnumerator createBonfire()
+            IEnumerator createEntities()
             {
                 yield return new WaitForFixedUpdate();
 
+                // Create bonfire.
+
                 var factory = CoreGameController.Instance.ServiceLocator.Get<IGameEntityFactory>();
                 var bonfireSpawnRadius = factory.GetPrefab(GameEntityType.Bonfire).spawnRadius;
+                var b = new Blackboard();
 
                 for (int i = 0; i < 100; i++)
                 {
@@ -60,21 +72,54 @@ namespace Game.GOAPSample
                     if (_Rigidbody.OverlapPoint(rect.min) || _Rigidbody.OverlapPoint(rect.max))
                         continue;
 
-                    var b = new Blackboard();
+                    b.Clear();
                     b.SetValue(BlackboardKeys.Position, point);
                     _bonfire = factory.Create(GameEntityType.Bonfire, b);
                     break;
                 }
+
+                // Create bots.
+
+                var botsCount = _BotsCount.Random();
+
+                for (int i = 0; i < botsCount; i++)
+                {
+                    for (int j = 0; j < 100; j++)
+                    {
+                        var point = position + UnityEngine.Random.insideUnitCircle * this.spawnRadius;
+
+                        if (_Rigidbody.OverlapPoint(point))
+                            continue;
+
+                        b.Clear();
+                        b.SetValue(BlackboardKeys.Position, point);
+                        _bots.Add(factory.Create(GameEntityType.Bot, b));
+                        break;
+                    }
+                }
             }
 
-            StartCoroutine(createBonfire());
+            _createCoroutine = StartCoroutine(createEntities());
         }
 
         protected override void OnDestroyEntity()
         {
             base.OnDestroyEntity();
 
-            _bonfire.Destroy();
+            if (_createCoroutine != null)
+            {
+                StopCoroutine(_createCoroutine);
+                _createCoroutine = null;
+            }
+
+            _bonfire?.Destroy();
+
+            foreach (var bot in _bots)
+            {
+                bot.Destroy();
+            }
+
+            _bots.Clear();
         }
 
         private void OnDrawGizmosSelected()

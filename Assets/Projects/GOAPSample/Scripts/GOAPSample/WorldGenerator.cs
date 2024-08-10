@@ -35,22 +35,14 @@ namespace Game
 
         readonly BlackboardBase _blackboard = new GameBlackboard();
 
-        Coroutine _generateWorldCoroutine;
-
         public void GenerateWorld()
         {
-            if (_generateWorldCoroutine != null)
-            {
-                StopCoroutine(_generateWorldCoroutine);
-                _generateWorldCoroutine = null;
-            }
-
-            _generateWorldCoroutine = StartCoroutine(GenerateWorldCoroutine());
+             GenerateWorldInternal();
         }
 
         static readonly Collider2D[] s_Buffer = new Collider2D[32];
 
-        IEnumerator GenerateWorldCoroutine()
+        void GenerateWorldInternal()
         {
             bool isOccupied(Vector2 position, float spawnRadius, List<GameEntityType> checkTypes)
             {
@@ -68,7 +60,7 @@ namespace Game
                 return false;
             }
 
-            IEnumerator spawn(GameEntityType type, int count, List<GameEntityType> checkTypes)
+            void spawn(GameEntityType type, int count, List<GameEntityType> checkTypes)
             {
                 var spawnRadius = _entityFactory.GetPrefab(type).spawnRadius;
 
@@ -94,37 +86,60 @@ namespace Game
                     _blackboard.Clear();
                     _blackboard.SetValue(BlackboardKeys.Position, position);
                     _entityFactory.Create(type, _blackboard);
-
-                    yield return null;
                 }
             }
 
-            var templates = new List<(GameEntityType, int)>
+            bool generate()
             {
-                (GameEntityType.House, _HousesCount.Random()),
-                (GameEntityType.Forest, _ForestCount.Random()),
-                (GameEntityType.Glade, _GladesCount.Random())
-            };
-
-            // Destroy previous entities.
-
-            foreach (var (type, _) in templates)
-            {
-                foreach (var entity in _entityFactory.GetEnteties(type).ToArray())
+                var templates = new List<(GameEntityType, int)>
                 {
-                    _entityFactory.Destroy(entity);
+                    (GameEntityType.House, _HousesCount.Random()),
+                    (GameEntityType.Forest, _ForestCount.Random()),
+                    (GameEntityType.Glade, _GladesCount.Random())
+                };
+
+                // Destroy previous entities.
+
+                foreach (var (type, _) in templates)
+                {
+                    foreach (var entity in _entityFactory.GetEnteties(type).ToArray())
+                    {
+                        _entityFactory.Destroy(entity);
+                    }
+                }
+
+                // Spawn new entities.
+
+                var checkTypes = new List<GameEntityType>();
+
+                foreach (var (type, count) in templates)
+                {
+                    checkTypes.Add(type);
+                    spawn(type, count, checkTypes);
+                }
+
+                // Check if all entities have been succesfully spawned.
+
+                foreach (var (type, _) in templates)
+                {
+                    if (_entityFactory.GetEnteties(type).Count <= 0)
+                    {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+
+            for (int i = 0; i < 10; i++)
+            {
+                if (generate())
+                {
+                    return;
                 }
             }
 
-            // Spawn new entities.
-
-            var checkTypes = new List<GameEntityType>();
-
-            foreach (var (type, count) in templates)
-            {
-                checkTypes.Add(type);
-                yield return spawn(type, count, checkTypes);
-            }
+            Debug.LogError("Can't successfully generate the world. Adjust the generation parameters.");
         }
     }
 }

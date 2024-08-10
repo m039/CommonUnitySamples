@@ -9,6 +9,11 @@ namespace Game.BehaviourTreeSample
         Bot = 0,
         Food = 1,
         House = 2,
+        Bonfire = 3,
+        Forest = 4,
+        Tree = 5,
+        Glade = 6,
+        Mushroom = 7
     }
 
     public interface IGameEntity

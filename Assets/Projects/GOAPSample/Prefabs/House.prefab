@@ -48,8 +48,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d90a007a71f2784785d8d36005c8158, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _SpawnRadius: 1.35
+  _SpawnRadius: 1.27
   _Pivot: {fileID: 8615724283585216809}
+  _Rigidbody: {fileID: 3768096581463268512}
 --- !u!50 &3768096581463268512
 Rigidbody2D:
   serializedVersion: 4

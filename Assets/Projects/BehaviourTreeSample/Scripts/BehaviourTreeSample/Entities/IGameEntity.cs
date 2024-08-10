@@ -23,6 +23,8 @@ namespace Game.BehaviourTreeSample
 
         ServiceLocator locator { get; }
 
+        float spawnRadius { get; }
+
         void OnCreate(BlackboardBase blackboard);
 
         void OnDestroy();

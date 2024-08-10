@@ -23,6 +23,8 @@ namespace Game
     {
         IGameEntity Create(GameEntityType type, BlackboardBase blackboard);
 
+        IGameEntity GetPrefab(GameEntityType type, int typeClass = 0);
+
         void CreateManually(IGameEntity gameEntity);
 
         void Destroy(IGameEntity gameEntity);
@@ -238,6 +240,11 @@ namespace Game
             {
                 return s_EmptyCollection;
             }
+        }
+
+        public IGameEntity GetPrefab(GameEntityType type, int typeClass = 0)
+        {
+            return _typeToPrefab[type][typeClass].GetComponent<IGameEntity>();
         }
     }
 }

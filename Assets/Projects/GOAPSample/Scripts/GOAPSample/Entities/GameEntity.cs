@@ -9,7 +9,9 @@ namespace Game.GOAPSample
     {
         public int id { get; private set; }
 
-        public Vector2 position
+        public virtual float spawnRadius => 0;
+
+        public virtual Vector2 position
         {
             get
             {
@@ -54,11 +56,33 @@ namespace Game.GOAPSample
             _serviceLocator.Register(Blackboard);
         }
 
+        string IGameEntity.name => $"{type}#{id}";
+
         void IGameEntity.OnCreate(BlackboardBase blackboard)
+        {
+            if (blackboard.TryGetValue(BlackboardKeys.Id, out var id))
+            {
+                this.id = id;
+            }
+
+            if (blackboard.TryGetValue(BlackboardKeys.Position, out var position))
+            {
+                this.position = position;
+            }
+
+            OnCreateEntity(blackboard);
+        }
+
+        protected virtual void OnCreateEntity(BlackboardBase blackboard)
         {
         }
 
         void IGameEntity.OnDestroy()
+        {
+            OnDestroyEntity();
+        }
+
+        protected virtual void OnDestroyEntity()
         {
         }
     }

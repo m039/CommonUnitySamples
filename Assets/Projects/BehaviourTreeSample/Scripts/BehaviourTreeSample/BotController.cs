@@ -25,6 +25,8 @@ namespace Game.BehaviourTreeSample
 
         public int id { get; private set; }
 
+        public float spawnRadius => 0;
+
         public Vector2 position
         {
             get

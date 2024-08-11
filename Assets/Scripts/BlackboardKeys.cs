@@ -25,5 +25,8 @@ namespace Game
         // GOAP Sample
         static readonly public BlackboardKey<bool> IsMoving = new("is_moving");
         static readonly public BlackboardKey<bool> IsFacingLeft = new("is_facing_left");
+        static readonly public BlackboardKey<bool> HasTree = new("has_tree");
+        static readonly public BlackboardKey<bool> IsChoping = new("is_choping");
+        static readonly public BlackboardKey<List<IGameEntity>> Childs = new("childs");
     }
 }

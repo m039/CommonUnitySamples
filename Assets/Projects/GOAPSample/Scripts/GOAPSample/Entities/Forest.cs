@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Game.GOAPSample
 {
-    public class Forest : GameEntity
+    public class Forest : GameEntity, IGameEntityDestroyedEvent
     {
         #region Inspector
 
@@ -38,11 +38,17 @@ namespace Game.GOAPSample
                 b.SetValue(BlackboardKeys.Position, point);
                 _trees.Add(factory.Create(GameEntityType.Tree, b));
             }
+
+            Blackboard.SetValue(BlackboardKeys.Childs, _trees);
+
+            CoreGameController.Instance.EventBus.Subscribe(this);
         }
 
         protected override void OnDestroyEntity()
         {
             base.OnDestroyEntity();
+
+            CoreGameController.Instance.EventBus.Unsubscribe(this);
 
             foreach (var t in _trees)
             {
@@ -56,6 +62,14 @@ namespace Game.GOAPSample
         {
             Gizmos.color = Color.blue;
             Gizmos.DrawWireSphere(transform.position, _SpawnRadius);
+        }
+
+        public void OnGameEntityDestroyed(IGameEntity gameEntity)
+        {
+            if (gameEntity.type == GameEntityType.Tree)
+            {
+                _trees.Remove(gameEntity);
+            }
         }
     }
 }

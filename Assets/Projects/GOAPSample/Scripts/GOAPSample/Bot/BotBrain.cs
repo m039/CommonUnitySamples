@@ -51,8 +51,11 @@ namespace Game.GOAPSample
 
             StateMachine.SetState(_IdleState);
 
-            // GOAP
+            SetupGOAP();
+        }
 
+        void SetupGOAP()
+        {
             var entityFactory = CoreGameController.Instance.ServiceLocator.Get<IGameEntityFactory>();
 
             _action = new AgentAction.Builder("GoToFirstTree")

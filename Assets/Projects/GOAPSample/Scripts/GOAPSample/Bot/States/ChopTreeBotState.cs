@@ -1,10 +1,9 @@
 using Game.BehaviourTreeSample;
 using Game.StateMachineSample;
 using m039.Common;
-using Unity.VisualScripting;
 using UnityEngine;
 
-namespace Game
+namespace Game.GOAPSample
 {
     public class ChopTreeBotState : CoreBotState
     {

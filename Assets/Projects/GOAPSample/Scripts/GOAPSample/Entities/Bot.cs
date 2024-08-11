@@ -16,7 +16,7 @@ namespace Game.GOAPSample
                 {
                     _botController = GetComponent<CoreBotController>();
                 }
-                return botController;
+                return _botController;
             }
         }
 
@@ -25,6 +25,13 @@ namespace Game.GOAPSample
         protected override BlackboardBase Blackboard => botController.Blackboard;
 
         public override GameEntityType type => GameEntityType.Bot;
+
+        protected override void OnCreateEntity(BlackboardBase blackboard)
+        {
+            base.OnCreateEntity(blackboard);
+
+            Blackboard.SetValue(BlackboardKeys.House, blackboard.GetValue(BlackboardKeys.House));
+        }
 
     }
 }

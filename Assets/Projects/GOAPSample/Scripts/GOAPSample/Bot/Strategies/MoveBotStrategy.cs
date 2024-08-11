@@ -3,23 +3,36 @@ using Game.GOAPSample;
 using System;
 using UnityEngine;
 
-namespace Game
+namespace Game.GOAPSample
 {
     public class MoveBotStrategy : BotStrategy
     {
         readonly Func<Vector2> _destination;
         readonly IGameEntity _gameEntity;
+        readonly Func<float> _inRangeOf;
+
         Vector2 _target;
 
-        public MoveBotStrategy(CoreBotController botController, Func<Vector2> destination) : base(botController)
+        public MoveBotStrategy(
+            CoreBotController botController,
+            Func<Vector2> destination,
+            Func<float> inRangeOf = null
+        ) : base(botController)
         {
             _destination = destination;
             _gameEntity = botController.ServiceLocator.Get<IGameEntity>();
+            if (inRangeOf == null)
+            {
+                _inRangeOf = () => 0.01f;
+            } else
+            {
+                _inRangeOf = inRangeOf;
+            }
         }
 
         public override bool canPerform => !complete;
 
-        public override bool complete => Vector2.Distance(_gameEntity.position, _target) < 0.01f;
+        public override bool complete => Vector2.Distance(_gameEntity.position, _target) < _inRangeOf();
 
         public override void Start()
         {

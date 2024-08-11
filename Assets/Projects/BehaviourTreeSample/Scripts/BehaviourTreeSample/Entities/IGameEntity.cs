@@ -43,5 +43,10 @@ namespace Game.BehaviourTreeSample
         public static void Destroy(this IGameEntity gameEntity) {
             CoreGameController.Instance.ServiceLocator.Get<IGameEntityFactory>().Destroy(gameEntity);
         }
+
+        public static BlackboardBase GetBlackboard(this IGameEntity gameEntity)
+        {
+            return gameEntity.locator.Get<BlackboardBase>();
+        }
     }
 }

@@ -78,29 +78,42 @@ namespace Game.GOAPSample
 
         ActionPlan CreatePlan()
         {
-            var entityFactory = CoreGameController.Instance.ServiceLocator.Get<IGameEntityFactory>();
             Stack<AgentAction> actions = new();
+
+            actions.Push(new AgentAction.Builder("Chill")
+                .WithStrategy(new IdleBotStrategy(botController, 3))
+                .Build());
+
+            actions.Push(new AgentAction.Builder("LitBonfire")
+                .WithStrategy(new LitBonfireBotStrategy(botController))
+                .Build());
+
+            actions.Push(new AgentAction.Builder("GoToBonfire")
+                .WithStrategy(new MoveToBotStrategy(botController, BlackboardKeys.Target))
+                .Build());
+
+            actions.Push(new AgentAction.Builder("FindBonfire")
+                .WithStrategy(new FindBonfireBotStrategy(botController))
+                .Build());
+
+            actions.Push(new AgentAction.Builder("GoHome")
+                .WithStrategy(new MoveToBotStrategy(botController, BlackboardKeys.House))
+                .Build());
 
             actions.Push(new AgentAction.Builder("ChopTree")
                 .WithStrategy(new ChopTreeBotStrategy(botController))
                 .Build());
 
-            actions.Push(new AgentAction.Builder("GoToFirstTree")
-                .WithStrategy(new MoveBotStrategy(botController, () =>
-                {
-                    return botController.Blackboard.GetValue(BlackboardKeys.Target).position;
-                }))
+            actions.Push(new AgentAction.Builder("GoToTree")
+                .WithStrategy(new MoveToBotStrategy(botController, BlackboardKeys.Target))
                 .Build());
 
             actions.Push(new AgentAction.Builder("FindTree")
                 .WithStrategy(new FindTreeBotStrategy(botController))
                 .Build());
 
-            actions.Push(new AgentAction.Builder("GoToFirstForest")
-                .WithStrategy(new MoveBotStrategy(botController, () =>
-                {
-                    return botController.Blackboard.GetValue(BlackboardKeys.Target).position;
-                }))
+            actions.Push(new AgentAction.Builder("GoToForest")
+                .WithStrategy(new MoveToBotStrategy(botController, BlackboardKeys.Target))
                 .Build());
 
             actions.Push(new AgentAction.Builder("FindForest")

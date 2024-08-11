@@ -84,6 +84,7 @@ namespace Game.GOAPSample
 
         protected virtual void OnDestroyEntity()
         {
+            Blackboard.Clear();
         }
     }
 }

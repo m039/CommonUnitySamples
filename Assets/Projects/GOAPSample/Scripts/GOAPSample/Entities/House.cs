@@ -75,6 +75,7 @@ namespace Game.GOAPSample
                     b.Clear();
                     b.SetValue(BlackboardKeys.Position, point);
                     _bonfire = factory.Create(GameEntityType.Bonfire, b);
+                    Blackboard.SetValue(BlackboardKeys.Bonfire, _bonfire);
                     break;
                 }
 
@@ -93,6 +94,7 @@ namespace Game.GOAPSample
 
                         b.Clear();
                         b.SetValue(BlackboardKeys.Position, point);
+                        b.SetValue(BlackboardKeys.House, this);
                         _bots.Add(factory.Create(GameEntityType.Bot, b));
                         break;
                     }

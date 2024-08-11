@@ -27,6 +27,10 @@ namespace Game
         static readonly public BlackboardKey<bool> IsFacingLeft = new("is_facing_left");
         static readonly public BlackboardKey<bool> HasTree = new("has_tree");
         static readonly public BlackboardKey<bool> IsChoping = new("is_choping");
+        static readonly public BlackboardKey<bool> IsLit = new("is_lit");
         static readonly public BlackboardKey<List<IGameEntity>> Childs = new("childs");
+        static readonly public BlackboardKey<IGameEntity> House = new("house");
+        static readonly public BlackboardKey<IGameEntity> Bonfire = new("bonfire");
+
     }
 }

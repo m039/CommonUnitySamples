@@ -33,7 +33,7 @@ namespace Game.GOAPSample
 
         void OnTimerStop()
         {
-            botController.Blackboard.SetValue(BlackboardKeys.HasTree, true);
+            botController.Blackboard.SetValue(BlackboardKeys.HasWood, true);
             botController.Blackboard.Remove(BlackboardKeys.IsChoping);
             _tree.Destroy();
         }

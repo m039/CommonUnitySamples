@@ -1,11 +1,17 @@
 using Game.BehaviourTreeSample;
 using m039.Common;
 using m039.Common.Blackboard;
+using m039.Common.Events;
 
 namespace Game.GOAPSample
 {
     public class Bot : GameEntity
     {
+        public interface IOnDestoyEntityEvent : IEventSubscriber
+        {
+            void OnDestroyEntity();
+        }
+
         CoreBotController _botController;
 
         CoreBotController botController
@@ -33,5 +39,11 @@ namespace Game.GOAPSample
             Blackboard.SetValue(BlackboardKeys.House, blackboard.GetValue(BlackboardKeys.House));
         }
 
+        protected override void OnDestroyEntity()
+        {
+            base.OnDestroyEntity();
+
+            botController.EventBus.Raise<IOnDestoyEntityEvent>(a => a.OnDestroyEntity());
+        }
     }
 }

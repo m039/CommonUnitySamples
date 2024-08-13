@@ -1,6 +1,5 @@
 using Game.StateMachineSample;
 using UnityEngine;
-using m039.Common;
 
 namespace Game.BehaviourTreeSample
 {
@@ -11,6 +10,9 @@ namespace Game.BehaviourTreeSample
         [SerializeField]
         float _MoveSpeed = 1f;
 
+        [SerializeField]
+        bool _SyncMoveSpeedInAnimator = true;
+
         #endregion
 
         public override void OnEnter()
@@ -20,7 +22,10 @@ namespace Game.BehaviourTreeSample
             if (botController.ServiceLocator.TryGet(out Animator animator))
             {
                 animator.Play(AnimationKeys.Move);
-                animator.SetFloat(AnimationKeys.MoveSpeed, _MoveSpeed);
+                if (_SyncMoveSpeedInAnimator)
+                {
+                    animator.SetFloat(AnimationKeys.MoveSpeed, _MoveSpeed);
+                }
             }
         }
 
@@ -37,12 +42,17 @@ namespace Game.BehaviourTreeSample
                 return;
 
             var p = gameEntity.position;
-            if (Vector2.Distance(p, destination) < 0.1f)
+            if (Vector2.Distance(p, destination) < botController.Blackboard.GetValue(BlackboardKeys.DestinationThreshold, 0.1f))
             {
                 botController.Blackboard.Remove(BlackboardKeys.Destination);
             } else
             {
-                gameEntity.position += _MoveSpeed * Time.deltaTime * ((Vector2)destination - p).normalized;
+                var direction = ((Vector2)destination - p).normalized;
+                botController.Blackboard.SetValue(BlackboardKeys.IsFacingLeft, direction.x < 0);
+
+                gameEntity.position += _MoveSpeed * Time.deltaTime * direction;
+
+                botController.Blackboard.UpdateValue(BlackboardKeys.Tiredness, x => x + Time.deltaTime);
             }
         }
     }

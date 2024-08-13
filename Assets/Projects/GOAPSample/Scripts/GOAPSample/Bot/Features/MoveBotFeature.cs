@@ -7,16 +7,12 @@ namespace Game.GOAPSample
         #region Inspector
 
         [SerializeField]
-        float _MoveSpeed = 1f;
-
-        [SerializeField]
         SpriteRenderer _SpriteRenderer;
 
         #endregion
 
         protected override void OnInit()
         {
-            botController.Blackboard.SetValue(BlackboardKeys.MoveSpeed, _MoveSpeed);
             botController.Blackboard.Subscribe(BlackboardKeys.IsFacingLeft, UpdateFacing);
             UpdateFacing();
         }

@@ -246,7 +246,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91e11b82353c0d44cbe5380a2e5f6dd8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _MoveSpeed: 1
   _SpriteRenderer: {fileID: 3798269814207098777}
 --- !u!1 &6041806105766450169
 GameObject:
@@ -355,8 +354,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _IdleState: {fileID: 5524504270679006463}
-  _MoveState: {fileID: 6288802895405468739}
+  _MoveState: {fileID: 3857223554644229397}
   _ChopTreeState: {fileID: 7924339200428381769}
+  _SensorRadius: 0.2
 --- !u!1 &6895725822881106804
 GameObject:
   m_ObjectHideFlags: 0
@@ -366,7 +366,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1473772613855910653}
-  - component: {fileID: 6288802895405468739}
+  - component: {fileID: 3857223554644229397}
   m_Layer: 0
   m_Name: Move
   m_TagString: Untagged
@@ -389,7 +389,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 6665153857873796815}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6288802895405468739
+--- !u!114 &3857223554644229397
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -398,9 +398,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 6895725822881106804}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5e67d785a5ffb7f498c968bab321dd17, type: 3}
+  m_Script: {fileID: 11500000, guid: 8b5a68cfaa2d8f941852194e210d7e26, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _MoveSpeed: 1
+  _SyncMoveSpeedInAnimator: 0
 --- !u!1 &6957484622259396281
 GameObject:
   m_ObjectHideFlags: 0

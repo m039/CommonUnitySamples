@@ -21,5 +21,10 @@ namespace Game.GOAPSample
         public override void Start() => _timer.Start();
 
         public override void Update(float deltaTime) => _timer.Tick(deltaTime);
+
+        public override void Stop()
+        {
+            botController.Blackboard.Remove(BlackboardKeys.Tiredness);
+        }
     }
 }

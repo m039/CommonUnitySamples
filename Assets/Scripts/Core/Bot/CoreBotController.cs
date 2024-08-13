@@ -54,6 +54,8 @@ namespace Game
 
         CoreBotFeature[] _features;
 
+        protected CoreBotBrain Brain => _Brain;
+
         protected virtual void Awake()
         {
             _features = GetComponentsInChildren<CoreBotFeature>();

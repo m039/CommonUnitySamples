@@ -24,7 +24,7 @@ namespace Game.GOAPSample
 
             target.GetBlackboard().SetValue(BlackboardKeys.IsLit, true);
 
-            botController.Blackboard.Remove(BlackboardKeys.HasTree);
+            botController.Blackboard.Remove(BlackboardKeys.HasWood);
         }
 
     }

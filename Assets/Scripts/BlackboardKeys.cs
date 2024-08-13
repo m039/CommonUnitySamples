@@ -13,6 +13,7 @@ namespace Game
         static readonly public BlackboardKey<int> Id = new("id");
         static readonly public BlackboardKey<Vector2> Position = new("position");
         static readonly public BlackboardKey<Vector3> Destination = new("destination");
+        static readonly public BlackboardKey<float> DestinationThreshold = new("destination_threshold");
         static readonly public BlackboardKey<IGameEntity> Target = new("target");
         static readonly public BlackboardKey<int> EatenFood = new("eaten_food");
         static readonly public BlackboardKey<int> TypeClass = new("type_class");
@@ -23,14 +24,14 @@ namespace Game
         static readonly public BlackboardKey<bool> Selection = new("selection");
 
         // GOAP Sample
-        static readonly public BlackboardKey<bool> IsMoving = new("is_moving");
         static readonly public BlackboardKey<bool> IsFacingLeft = new("is_facing_left");
-        static readonly public BlackboardKey<bool> HasTree = new("has_tree");
+        static readonly public BlackboardKey<bool> HasWood = new("has_tree");
         static readonly public BlackboardKey<bool> IsChoping = new("is_choping");
         static readonly public BlackboardKey<bool> IsLit = new("is_lit");
         static readonly public BlackboardKey<List<IGameEntity>> Childs = new("childs");
         static readonly public BlackboardKey<IGameEntity> House = new("house");
         static readonly public BlackboardKey<IGameEntity> Bonfire = new("bonfire");
+        static readonly public BlackboardKey<float> Tiredness = new("tiredness");
 
     }
 }

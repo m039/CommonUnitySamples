@@ -11,8 +11,6 @@ namespace Game.GOAPSample
         readonly IGameEntity _gameEntity;
         readonly Func<float> _inRangeOf;
 
-        Vector2 _target;
-
         public MoveBotStrategy(
             CoreBotController botController,
             Func<Vector2> destination,
@@ -32,29 +30,21 @@ namespace Game.GOAPSample
 
         public override bool canPerform => !complete;
 
-        public override bool complete => Vector2.Distance(_gameEntity.position, _target) < _inRangeOf();
+        public override bool complete => !botController.Blackboard.ContainsKey(BlackboardKeys.Destination);
 
         public override void Start()
         {
             base.Start();
-            _target = _destination();
-            botController.Blackboard.SetValue(BlackboardKeys.IsMoving, true);
-        }
 
-        public override void Update(float deltaTime)
-        {
-            base.Update(deltaTime);
-
-            var direction = (_target - _gameEntity.position).normalized;
-            botController.Blackboard.SetValue(BlackboardKeys.IsFacingLeft, direction.x < 0);
-            _gameEntity.position += botController.Blackboard.GetValue(BlackboardKeys.MoveSpeed) * deltaTime * direction;
+            botController.Blackboard.SetValue(BlackboardKeys.Destination, _destination());
+            botController.Blackboard.SetValue(BlackboardKeys.DestinationThreshold, _inRangeOf());
         }
 
         public override void Stop()
         {
             base.Stop();
 
-            botController.Blackboard.Remove(BlackboardKeys.IsMoving);
+            botController.Blackboard.Remove(BlackboardKeys.Destination);
         }
     }
 }

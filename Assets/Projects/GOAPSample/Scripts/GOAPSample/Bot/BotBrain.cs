@@ -1,5 +1,6 @@
 using Game.BehaviourTreeSample;
 using Game.StateMachineSample;
+using m039.Common;
 using m039.Common.BehaviourTrees.Nodes;
 using m039.Common.GOAP;
 using m039.Common.StateMachine;
@@ -32,6 +33,8 @@ namespace Game.GOAPSample
         readonly Agent _agent = new();
 
         CoreBotState[] _botStates;
+
+        Timer _timer = new CountdownTimer(1);
 
         public override void Init(CoreBotController botController)
         {
@@ -73,6 +76,13 @@ namespace Game.GOAPSample
 
             _stateMachine.SetState(_IdleState);
 
+            _timer.onStop += () =>
+            {
+                _agent.CalculatePlan();
+                _timer.Start();
+            };
+            _timer.Start();
+
             SetupGOAP();
         }
 
@@ -102,7 +112,6 @@ namespace Game.GOAPSample
                 var bonfire = house.GetBlackboard().GetValue(BlackboardKeys.Bonfire);
                 return bonfire.GetBlackboard().GetValue(BlackboardKeys.IsLit);
             });
-            addBelief("NotWarm", () => !beliefs["Warm"].Evaluate());
             addBelief("HasWood", () => botController.Blackboard.GetValue(BlackboardKeys.HasWood));
             addBelief("NearBonfire", () =>
             {
@@ -192,7 +201,6 @@ namespace Game.GOAPSample
                 .WithStrategy(new LitBonfireBotStrategy(botController))
                 .AddPrecondition(beliefs["HasWood"])
                 .AddPrecondition(beliefs["NearBonfire"])
-                .AddPrecondition(beliefs["NotWarm"])
                 .AddEffect(beliefs["Warm"])
                 .Build());
 
@@ -279,6 +287,7 @@ namespace Game.GOAPSample
 
         public override void Think()
         {
+            _timer.Tick(Time.deltaTime);
             _agent.Update();
             _stateMachine.Update();
         }

@@ -1,4 +1,5 @@
 using Game.BehaviourTreeSample;
+using UnityEngine;
 
 namespace Game.GOAPSample
 {
@@ -22,7 +23,13 @@ namespace Game.GOAPSample
                 return;
             }
 
-            target.GetBlackboard().SetValue(BlackboardKeys.IsLit, true);
+            var targetBlackboard = target.GetBlackboard();
+
+            if (targetBlackboard.GetValue(BlackboardKeys.IsLit) ||
+                !botController.Blackboard.GetValue(BlackboardKeys.HasWood))
+                return;
+
+            targetBlackboard.SetValue(BlackboardKeys.IsLit, true);
 
             botController.Blackboard.Remove(BlackboardKeys.HasWood);
         }

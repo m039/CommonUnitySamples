@@ -102,6 +102,7 @@ namespace Game.GOAPSample
                 var bonfire = house.GetBlackboard().GetValue(BlackboardKeys.Bonfire);
                 return bonfire.GetBlackboard().GetValue(BlackboardKeys.IsLit);
             });
+            addBelief("NotWarm", () => !beliefs["Warm"].Evaluate());
             addBelief("HasWood", () => botController.Blackboard.GetValue(BlackboardKeys.HasWood));
             addBelief("NearBonfire", () =>
             {
@@ -191,6 +192,7 @@ namespace Game.GOAPSample
                 .WithStrategy(new LitBonfireBotStrategy(botController))
                 .AddPrecondition(beliefs["HasWood"])
                 .AddPrecondition(beliefs["NearBonfire"])
+                .AddPrecondition(beliefs["NotWarm"])
                 .AddEffect(beliefs["Warm"])
                 .Build());
 

@@ -289,5 +289,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _SpawnRadius: 0.12
-  _LitDuration: 10
+  _LitDuration: 20
   _ProgressBarMask: {fileID: 6566825650638092213}

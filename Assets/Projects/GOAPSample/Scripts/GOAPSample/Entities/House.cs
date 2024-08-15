@@ -1,9 +1,12 @@
 using Game.BehaviourTreeSample;
 using m039.Common;
 using m039.Common.Blackboard;
+using m039.Common.StateMachine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
+using static UnityEditorInternal.VersionControl.ListControl;
 
 namespace Game.GOAPSample
 {
@@ -11,17 +14,25 @@ namespace Game.GOAPSample
     {
         #region Inspector
 
+        [Header("Settings")]
+        [SerializeField]
+        MinMaxInt _BotsCount = new(1, 2);
+
         [SerializeField]
         float _SpawnRadius = 1f;
 
+        [Header("Setup")]
         [SerializeField]
         Transform _Pivot;
+
+        [SerializeField]
+        Transform _Entrance;
 
         [SerializeField]
         Rigidbody2D _Rigidbody;
 
         [SerializeField]
-        MinMaxInt _BotsCount = new(1, 2);
+        TMPro.TMP_Text _DebugInfo;
 
         #endregion
 
@@ -48,7 +59,49 @@ namespace Game.GOAPSample
 
         readonly List<IGameEntity> _bots = new();
 
+        readonly StateMachine _stateMachine = new();
+
         Coroutine _createCoroutine;
+
+        IState _openedState;
+
+        IState _closedState;
+
+        Animator _animator;
+
+        readonly HashSet<IGameEntity> _insideBots = new();
+
+        void Awake()
+        {
+            _animator = GetComponentInChildren<Animator>();
+
+            _openedState = new OpenedHouseState(this);
+            _closedState = new ClosedHouseState(this);
+
+            _stateMachine.AddTransition(_openedState, _closedState, () =>
+            {
+                return _insideBots.Count > 0;
+            });
+
+            _stateMachine.AddTransition(_closedState, _openedState, () =>
+            {
+                return _insideBots.Count <= 0;
+            });
+        }
+
+        void Update()
+        {
+            _stateMachine.Update();
+            UpdateDebugInfo();
+        }
+
+        void UpdateDebugInfo()
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine($"BotsInside: {_insideBots.Count}");
+            sb.AppendLine($"Wood: {Blackboard.GetValue(BlackboardKeys.WoodCount)}");
+            _DebugInfo.text = sb.ToString();
+        }
 
         protected override void OnCreateEntity(BlackboardBase blackboard)
         {
@@ -102,6 +155,11 @@ namespace Game.GOAPSample
             }
 
             _createCoroutine = StartCoroutine(createEntities());
+
+            _stateMachine.SetState(_openedState);
+
+            Blackboard.SetValue(BlackboardKeys.InsideBots, _insideBots);
+            Blackboard.SetValue(BlackboardKeys.Entrance, _Entrance.position);
         }
 
         protected override void OnDestroyEntity()
@@ -122,12 +180,55 @@ namespace Game.GOAPSample
             }
 
             _bots.Clear();
+
+            _insideBots.Clear();
         }
 
         private void OnDrawGizmosSelected()
         {
             Gizmos.color = Color.blue;
             Gizmos.DrawWireSphere(transform.position, _SpawnRadius);
+        }
+
+        abstract class HouseState : IState
+        {
+            protected House house;
+
+            public HouseState(House house)
+            {
+                this.house = house;
+            }
+
+            public virtual void OnEnter() { }
+            public virtual void OnExit() { }
+            public virtual void OnFixedUpdate() { }
+            public virtual void OnUpdate() { }
+        }
+
+        class OpenedHouseState : HouseState
+        {
+            public OpenedHouseState(House house) : base(house)
+            {
+            }
+
+            public override void OnEnter()
+            {
+                house._animator.Play(AnimationKeys.Opened);
+            }
+        }
+
+        class ClosedHouseState : HouseState
+        {
+            public ClosedHouseState(House house) : base(house)
+            {
+            }
+
+            public override void OnEnter()
+            {
+                base.OnEnter();
+
+                house._animator.Play(AnimationKeys.Closed);
+            }
         }
     }
 }

@@ -9,5 +9,7 @@ namespace Game
         public readonly static int MoveSpeed = Animator.StringToHash("MoveSpeed");
         public readonly static int Empty = Animator.StringToHash("Empty");
         public readonly static int Lit = Animator.StringToHash("Lit");
+        public readonly static int Opened = Animator.StringToHash("Opened");
+        public readonly static int Closed = Animator.StringToHash("Closed");
     }
 }

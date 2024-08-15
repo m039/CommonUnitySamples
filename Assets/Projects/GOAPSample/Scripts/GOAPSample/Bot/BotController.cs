@@ -7,6 +7,8 @@ namespace Game.GOAPSample
     {
         Bot _bot;
 
+        BotSystem[] _systems;
+
         protected override void Awake()
         {
             base.Awake();
@@ -16,6 +18,28 @@ namespace Game.GOAPSample
             ServiceLocator.Register(GetComponentInChildren<Animator>());
             ServiceLocator.Register<IGameEntity>(_bot);
             ServiceLocator.Register(Blackboard);
+        }
+
+        protected override void Start()
+        {
+            base.Start();
+
+            _systems = GetComponentsInChildren<BotSystem>();
+
+            foreach (var botSystem in _systems)
+            {
+                botSystem.Init(this);
+            }
+        }
+
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+
+            foreach (var botSystem in _systems)
+            {
+                botSystem.Deinit();
+            }
         }
     }
 }

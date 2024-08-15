@@ -10,6 +10,8 @@ namespace Game.GOAPSample
 
         protected CoreBotController botController;
 
+        protected virtual bool isInterruptable => true;
+
         public BotStrategy(CoreBotController botController)
         {
             this.botController = botController;
@@ -17,7 +19,7 @@ namespace Game.GOAPSample
 
         public virtual void Start()
         {
-            // noop
+            botController.Blackboard.SetValue(BlackboardKeys.NotInterrupt, !isInterruptable);
         }
 
         public virtual void Update(float deltaTime)
@@ -27,7 +29,7 @@ namespace Game.GOAPSample
 
         public virtual void Stop()
         {
-            // noop
+            botController.Blackboard.Remove(BlackboardKeys.NotInterrupt);
         }
     }
 }

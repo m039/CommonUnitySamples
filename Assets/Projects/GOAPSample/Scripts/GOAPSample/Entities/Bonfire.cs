@@ -25,7 +25,7 @@ namespace Game.GOAPSample
 
         public override GameEntityType type => GameEntityType.Bonfire;
 
-        readonly StateMachine StateMachine = new();
+        readonly StateMachine _stateMachine = new();
 
         IState _emptyState;
 
@@ -40,12 +40,12 @@ namespace Game.GOAPSample
             _emptyState = new EmptyBonfireState(this);
             _litState = new LitBonfireState(this);
 
-            StateMachine.AddTransition(_emptyState, _litState, () =>
+            _stateMachine.AddTransition(_emptyState, _litState, () =>
             {
                 return Blackboard.GetValue(BlackboardKeys.IsLit);
             });
 
-            StateMachine.AddTransition(_litState, _emptyState, () =>
+            _stateMachine.AddTransition(_litState, _emptyState, () =>
             {
                 return !Blackboard.GetValue(BlackboardKeys.IsLit);
             });
@@ -55,12 +55,12 @@ namespace Game.GOAPSample
         {
             base.OnCreateEntity(blackboard);
 
-            StateMachine.SetState(_emptyState);
+            _stateMachine.SetState(_emptyState);
         }
 
         void Update()
         {
-            StateMachine.Update();
+            _stateMachine.Update();
         }
 
         private void OnDrawGizmosSelected()

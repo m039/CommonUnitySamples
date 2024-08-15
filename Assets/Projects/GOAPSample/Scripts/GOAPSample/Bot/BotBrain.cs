@@ -15,6 +15,10 @@ namespace Game.GOAPSample
         #region Inspector
 
         [SerializeField]
+        float _SensorRadius = 2f;
+
+        [Header("States")]
+        [SerializeField]
         CoreBotState _IdleState;
 
         [SerializeField]
@@ -24,7 +28,7 @@ namespace Game.GOAPSample
         CoreBotState _ChopTreeState;
 
         [SerializeField]
-        float _SensorRadius = 2f;
+        CoreBotState _InvisibleState;
 
         #endregion
 
@@ -43,6 +47,7 @@ namespace Game.GOAPSample
             botController.EventBus.Subscribe(this);
 
             botController.ServiceLocator.Register(_stateMachine);
+            botController.ServiceLocator.Register(_agent);
 
             // State Machine.
 
@@ -74,11 +79,25 @@ namespace Game.GOAPSample
                 () => !botController.Blackboard.GetValue(BlackboardKeys.IsChoping)
             );
 
+            _stateMachine.AddAnyTransition(
+                _InvisibleState,
+                () => botController.Blackboard.GetValue(BlackboardKeys.IsInvisible)
+            );
+
+            _stateMachine.AddTransition(
+                _InvisibleState,
+                _IdleState,
+                () => !botController.Blackboard.GetValue(BlackboardKeys.IsInvisible)
+            );
+
             _stateMachine.SetState(_IdleState);
 
             _timer.onStop += () =>
             {
-                _agent.CalculatePlan();
+                if (!botController.Blackboard.GetValue(BlackboardKeys.NotInterrupt))
+                {
+                    _agent.CalculatePlan();
+                }
                 _timer.Start();
             };
             _timer.Start();
@@ -104,6 +123,7 @@ namespace Game.GOAPSample
             }
 
             addBelief("Nothing", () => false);
+            addBelief("Tired", () => botController.Blackboard.GetValue(BlackboardKeys.Tiredness) >= 10f);
             addBelief("NotTired", () => botController.Blackboard.GetValue(BlackboardKeys.Tiredness) < 10f);
             addBelief("AgentMoving", () => botController.Blackboard.ContainsKey(BlackboardKeys.Destination));
             addBelief("Warm", () =>
@@ -113,6 +133,7 @@ namespace Game.GOAPSample
                 return bonfire.GetBlackboard().GetValue(BlackboardKeys.IsLit);
             });
             addBelief("HasWood", () => botController.Blackboard.GetValue(BlackboardKeys.HasWood));
+            addBelief("HasWoodFromForest", () => botController.Blackboard.GetValue(BlackboardKeys.HasWood));
             addBelief("NearBonfire", () =>
             {
                 if (!botController.Blackboard.TryGetValue(BlackboardKeys.Target, out var target))
@@ -131,6 +152,19 @@ namespace Game.GOAPSample
                 }
 
                 return target.type == GameEntityType.Bonfire;
+            });
+            addBelief("NearHouseEntrance", () =>
+            {
+                var house = botController.Blackboard.GetValue(BlackboardKeys.House);
+                var entrance = house.GetBlackboard().GetValue(BlackboardKeys.Entrance);
+                return Vector2.Distance(entrance, gameEntity.position) < _SensorRadius;
+
+            });
+            addBelief("InHouse", () =>
+            {
+                var house = botController.Blackboard.GetValue(BlackboardKeys.House);
+                var insideBots = house.GetBlackboard().GetValue(BlackboardKeys.InsideBots);
+                return insideBots.Contains(gameEntity);
             });
             addBelief("NearHouse", () =>
             {
@@ -177,17 +211,28 @@ namespace Game.GOAPSample
 
                 return target.type == GameEntityType.Forest;
             });
+            addBelief("HasWoodInHouse", () =>
+            {
+                var house = botController.Blackboard.GetValue(BlackboardKeys.House);
+                return house.GetBlackboard().GetValue(BlackboardKeys.WoodCount) > 0;
+            });
+            addBelief("GiveWood", () =>
+            {
+                return false;
+            });
         }
 
         void SetupActions()
         {
             var actions = _agent.actions;
             var beliefs = _agent.beliefs;
+            var gameEntity = botController.ServiceLocator.Get<IGameEntity>();
 
             actions.Add(new AgentAction.Builder("Wander Around")
                 .WithStrategy(new WanderBotStrategy(botController, 4f))
                 .AddPrecondition(beliefs["NotTired"])
                 .AddEffect(beliefs["AgentMoving"])
+                .AddEffect(beliefs["Tired"])
                 .Build());
 
             actions.Add(new AgentAction.Builder("Relax")
@@ -195,8 +240,53 @@ namespace Game.GOAPSample
                 .AddEffect(beliefs["Nothing"])
                 .Build());
 
-            // Lit bonfire actions.
+            // Rest In House goal's action.
 
+            actions.Add(new AgentAction.Builder("RestInHouse")
+                .AddPrecondition(beliefs["NearHouseEntrance"])
+                .AddPrecondition(beliefs["Tired"])
+                .WithStrategy(new RestInHouseBotStrategy(botController, 5))
+                .AddEffect(beliefs["InHouse"])
+                .Build());
+
+            actions.Add(new AgentAction.Builder("GoToHouseEntrance")
+                .AddPrecondition(beliefs["NearHouse"])
+                .WithStrategy(new MoveBotStrategy(botController,
+                 () =>
+                 {
+                     var house = botController.Blackboard.GetValue(BlackboardKeys.House);
+                     var entrance = house.GetBlackboard().GetValue(BlackboardKeys.Entrance);
+                     return entrance;
+                 },
+                 () =>
+                 {
+                     return _SensorRadius;
+                 }))
+                .AddEffect(beliefs["NearHouseEntrance"])
+                .Build());
+
+            // Gather actions.
+
+            actions.Add(new AgentAction.Builder("GatherWood")
+                .WithStrategy(new RestInHouseBotStrategy(botController, 3))
+                .AddPrecondition(beliefs["NearHouseEntrance"])
+                .AddPrecondition(beliefs["HasWoodFromForest"])
+                .AddEffect(beliefs["GiveWood"])
+                .Build());
+
+            //
+            // Lit bonfire goal's actions.
+            //
+
+            // Take wood from the house.
+            actions.Add(new AgentAction.Builder("TakeWoodFromHouse")
+                .WithStrategy(new RestInHouseBotStrategy(botController, 3, takeWood: true))
+                .AddPrecondition(beliefs["NearHouseEntrance"])
+                .AddPrecondition(beliefs["HasWoodInHouse"])
+                .AddEffect(beliefs["HasWood"])
+                .Build());
+
+            // The main action.
             actions.Add(new AgentAction.Builder("LitBonfire")
                 .WithStrategy(new LitBonfireBotStrategy(botController))
                 .AddPrecondition(beliefs["HasWood"])
@@ -224,7 +314,9 @@ namespace Game.GOAPSample
             actions.Add(new AgentAction.Builder("ChopTree")
                 .WithStrategy(new ChopTreeBotStrategy(botController))
                 .AddPrecondition(beliefs["NearTree"])
+                .AddPrecondition(beliefs["NotTired"])
                 .AddEffect(beliefs["HasWood"])
+                .AddEffect(beliefs["HasWoodFromForest"])
                 .Build());
 
             actions.Add(new AgentAction.Builder("GoToTree")
@@ -261,13 +353,23 @@ namespace Game.GOAPSample
                 .WithDesiredEffect(beliefs["Nothing"])
                 .Build());
 
+            goals.Add(new AgentGoal.Builder("Rest in House")
+                .WithPriority(2)
+                .WithDesiredEffect(beliefs["InHouse"])
+                .Build());
+
             goals.Add(new AgentGoal.Builder("Wander")
                 .WithPriority(2)
-                .WithDesiredEffect(beliefs["AgentMoving"])
+                .WithDesiredEffect(beliefs["Tired"])
+                .Build());
+
+            goals.Add(new AgentGoal.Builder("GatherWood")
+                .WithPriority(4)
+                .WithDesiredEffect(beliefs["GiveWood"])
                 .Build());
 
             goals.Add(new AgentGoal.Builder("Lit Bonfire")
-                .WithPriority(3)
+                .WithPriority(5)
                 .WithDesiredEffect(beliefs["Warm"])
                 .Build());
         }

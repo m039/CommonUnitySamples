@@ -11,6 +11,12 @@ namespace Game
             return this;
         }
 
+        #region Inspector
+
+        public TMPro.TMP_Text botInfo;
+
+        #endregion
+
         public event System.Action onRegenerate;
 
         public void OnRegenerateClicked()

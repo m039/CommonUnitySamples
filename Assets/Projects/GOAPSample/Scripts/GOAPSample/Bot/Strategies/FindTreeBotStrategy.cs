@@ -29,6 +29,9 @@ namespace Game.GOAPSample
             if (childs.Count > 0)
             {
                 botController.Blackboard.SetValue(BlackboardKeys.Target, childs[UnityEngine.Random.Range(0, childs.Count)]);
+            } else
+            {
+                botController.Blackboard.Remove(BlackboardKeys.Target);
             }
         }
     }

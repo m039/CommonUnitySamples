@@ -25,13 +25,17 @@ namespace Game
 
         // GOAP Sample
         static readonly public BlackboardKey<bool> IsFacingLeft = new("is_facing_left");
-        static readonly public BlackboardKey<bool> HasWood = new("has_tree");
+        static readonly public BlackboardKey<bool> HasWood = new("has_wood");
         static readonly public BlackboardKey<bool> IsChoping = new("is_choping");
+        static readonly public BlackboardKey<bool> IsInvisible = new("is_invisible");
         static readonly public BlackboardKey<bool> IsLit = new("is_lit");
         static readonly public BlackboardKey<List<IGameEntity>> Childs = new("childs");
         static readonly public BlackboardKey<IGameEntity> House = new("house");
         static readonly public BlackboardKey<IGameEntity> Bonfire = new("bonfire");
         static readonly public BlackboardKey<float> Tiredness = new("tiredness");
-
+        static readonly public BlackboardKey<HashSet<IGameEntity>> InsideBots = new("inside_bots");
+        static readonly public BlackboardKey<Vector2> Entrance = new("entrance");
+        static readonly public BlackboardKey<int> WoodCount = new("wood_count");
+        static readonly public BlackboardKey<bool> NotInterrupt = new("not_interrupt");
     }
 }

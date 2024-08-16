@@ -71,8 +71,9 @@ namespace Game.GOAPSample
 
         readonly HashSet<IGameEntity> _insideBots = new();
 
-        void Awake()
+        protected override void Awake()
         {
+            base.Awake();
             _animator = GetComponentInChildren<Animator>();
 
             _openedState = new OpenedHouseState(this);
@@ -89,8 +90,10 @@ namespace Game.GOAPSample
             });
         }
 
-        void Update()
+        protected override void Update()
         {
+            base.Update();
+
             _stateMachine.Update();
             UpdateDebugInfo();
         }

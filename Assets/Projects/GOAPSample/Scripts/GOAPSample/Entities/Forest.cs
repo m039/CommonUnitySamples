@@ -39,6 +39,7 @@ namespace Game.GOAPSample
                 _trees.Add(factory.Create(GameEntityType.Tree, b));
             }
 
+            Blackboard.SetValue(BlackboardKeys.MaxChilds, count);
             Blackboard.SetValue(BlackboardKeys.Childs, _trees);
 
             CoreGameController.Instance.EventBus.Subscribe(this);
@@ -68,7 +69,10 @@ namespace Game.GOAPSample
         {
             if (gameEntity.type == GameEntityType.Tree)
             {
-                _trees.Remove(gameEntity);
+                if (_trees.Remove(gameEntity))
+                {
+                    EventBus.Raise<IOnChildRemoved>(a => a.OnChildRemoved(gameEntity));
+                }
             }
         }
     }

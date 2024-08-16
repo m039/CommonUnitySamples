@@ -1,10 +1,16 @@
 using Game.BehaviourTreeSample;
 using m039.Common;
 using m039.Common.Blackboard;
+using m039.Common.Events;
 using UnityEngine;
 
 namespace Game.GOAPSample
 {
+    public interface IOnChildRemoved : IEventSubscriber
+    {
+        void OnChildRemoved(IGameEntity child);
+    }
+
     public abstract class GameEntity : MonoBehaviour, IGameEntity
     {
         public int id { get; private set; }
@@ -45,18 +51,51 @@ namespace Game.GOAPSample
                 return _serviceLocator;
             }
         }
+
+
         public bool IsAlive { get; set; } = false;
 
         ServiceLocator _serviceLocator;
+
+        readonly protected EventBusByInterface EventBus = new();
 
         protected virtual BlackboardBase Blackboard { get; } = new GameBlackboard();
 
         protected virtual void OnCreateServiceLocator(ServiceLocator serviceLocator)
         {
             _serviceLocator.Register(Blackboard);
+            _serviceLocator.Register(EventBus);
         }
 
         string IGameEntity.name => $"{type}#{id}";
+
+        EntitySystem[] _systems;
+
+        protected virtual void Awake()
+        {
+            _systems = GetComponentsInChildren<EntitySystem>();
+            foreach (var s in _systems)
+            {
+                s.Init(this);
+            }
+        }
+
+        protected virtual void OnDestroy()
+        {
+            foreach (var s in _systems)
+            {
+                s.Deinit();
+            }
+            _systems = null;
+        }
+
+        protected virtual void Update()
+        {
+            foreach (var s in _systems)
+            {
+                s.Process(Time.deltaTime);
+            }
+        }
 
         void IGameEntity.OnCreate(BlackboardBase blackboard)
         {

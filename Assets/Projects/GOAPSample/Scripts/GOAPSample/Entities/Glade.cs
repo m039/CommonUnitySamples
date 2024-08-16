@@ -38,6 +38,8 @@ namespace Game.GOAPSample
                 b.SetValue(BlackboardKeys.Position, point);
                 _mushrooms.Add(factory.Create(GameEntityType.Mushroom, b));
             }
+
+            Blackboard.SetValue(BlackboardKeys.MaxChilds, count);
         }
 
         protected override void OnDestroyEntity()

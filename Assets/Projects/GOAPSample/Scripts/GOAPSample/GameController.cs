@@ -1,5 +1,4 @@
 using Game.BehaviourTreeSample;
-using m039.Common.BehaviourTrees;
 using m039.Common.Blackboard;
 using m039.Common.DependencyInjection;
 using m039.Common.GOAP;
@@ -25,7 +24,11 @@ namespace Game.GOAPSample
 
         void Start()
         {
-            _ui.onRegenerate += _worldGenerator.GenerateWorld;
+            _ui.onRegenerate += () =>
+            {
+                ForgetSelectedBot();
+                _worldGenerator.GenerateWorld();
+            };
             _worldGenerator.GenerateWorld();
         }
 
@@ -55,23 +58,23 @@ namespace Game.GOAPSample
                     }
                 }
 
-                void unselectCurrentBot()
-                {
-                    _selectedBot?.locator.Get<BlackboardBase>().Remove(BlackboardKeys.Selection);
-                    _selectedBot = null;
-                }
-
                 if (_selectedBot != null && _selectedBot == bot)
                 {
-                    unselectCurrentBot();
+                    ForgetSelectedBot();
                 }
                 else if (bot != null)
                 {
-                    unselectCurrentBot();
+                    ForgetSelectedBot();
                     _selectedBot = bot;
                     _selectedBot.locator.Get<BlackboardBase>().SetValue(BlackboardKeys.Selection, true);
                 }
             }
+        }
+
+        void ForgetSelectedBot()
+        {
+            _selectedBot?.locator.Get<BlackboardBase>().Remove(BlackboardKeys.Selection);
+            _selectedBot = null;
         }
 
         void ProcessBotInfo()

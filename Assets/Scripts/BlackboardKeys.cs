@@ -30,6 +30,7 @@ namespace Game
         static readonly public BlackboardKey<bool> IsInvisible = new("is_invisible");
         static readonly public BlackboardKey<bool> IsLit = new("is_lit");
         static readonly public BlackboardKey<List<IGameEntity>> Childs = new("childs");
+        static readonly public BlackboardKey<int> MaxChilds = new("max_childs");
         static readonly public BlackboardKey<IGameEntity> House = new("house");
         static readonly public BlackboardKey<IGameEntity> Bonfire = new("bonfire");
         static readonly public BlackboardKey<float> Tiredness = new("tiredness");

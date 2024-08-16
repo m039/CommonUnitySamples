@@ -33,8 +33,9 @@ namespace Game.GOAPSample
 
         Animator _animator;
 
-        void Awake()
+        protected override void Awake()
         {
+            base.Awake();
             _animator = GetComponentInChildren<Animator>();
 
             _emptyState = new EmptyBonfireState(this);
@@ -58,8 +59,9 @@ namespace Game.GOAPSample
             _stateMachine.SetState(_emptyState);
         }
 
-        void Update()
+        protected override void Update()
         {
+            base.Update();
             _stateMachine.Update();
         }
 

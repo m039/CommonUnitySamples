@@ -20,10 +20,13 @@ namespace Game.GOAPSample
 
         bool _takeWood;
 
-        public RestInHouseBotStrategy(CoreBotController botController, float duration, bool takeWood = false) : base(botController)
+        bool _takeFood;
+
+        public RestInHouseBotStrategy(CoreBotController botController, float duration, bool takeWood = false, bool takeFood = false) : base(botController)
         {
             _timer = new CountdownTimer(duration);
             _takeWood = takeWood;
+            _takeFood = takeFood;
         }
 
         protected override bool isInterruptable => false;
@@ -91,6 +94,24 @@ namespace Game.GOAPSample
                     {
                         _house.GetBlackboard().UpdateValue(BlackboardKeys.WoodCount, w => w + 1);
                         botController.Blackboard.Remove(BlackboardKeys.HasWood);
+                    }
+                }
+
+                if (_takeFood)
+                {
+                    if (!botController.Blackboard.ContainsKey(BlackboardKeys.HasFood) &&
+                        _house.GetBlackboard().GetValue(BlackboardKeys.FoodCount) > 0)
+                    {
+                        _house.GetBlackboard().UpdateValue(BlackboardKeys.FoodCount, w => Mathf.Max(w - 1, 0));
+                        botController.Blackboard.SetValue(BlackboardKeys.HasFood, true);
+                    }
+                }
+                else
+                {
+                    if (botController.Blackboard.ContainsKey(BlackboardKeys.HasFood))
+                    {
+                        _house.GetBlackboard().UpdateValue(BlackboardKeys.FoodCount, w => w + 1);
+                        botController.Blackboard.Remove(BlackboardKeys.HasFood);
                     }
                 }
             }

@@ -103,6 +103,7 @@ namespace Game.GOAPSample
             var sb = new StringBuilder();
             sb.AppendLine($"BotsInside: {_insideBots.Count}");
             sb.AppendLine($"Wood: {Blackboard.GetValue(BlackboardKeys.WoodCount)}");
+            sb.AppendLine($"Food: {Blackboard.GetValue(BlackboardKeys.FoodCount)}");
             _DebugInfo.text = sb.ToString();
         }
 

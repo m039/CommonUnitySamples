@@ -37,6 +37,7 @@ namespace Game
         static readonly public BlackboardKey<HashSet<IGameEntity>> InsideBots = new("inside_bots");
         static readonly public BlackboardKey<Vector2> Entrance = new("entrance");
         static readonly public BlackboardKey<int> WoodCount = new("wood_count");
+        static readonly public BlackboardKey<int> FoodCount = new("food_count");
         static readonly public BlackboardKey<bool> NotInterrupt = new("not_interrupt");
         static readonly public BlackboardKey<float> Hunger = new("hunger");
         static readonly public BlackboardKey<bool> HasFood = new("has_food");

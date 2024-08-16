@@ -136,7 +136,8 @@ namespace Game.GOAPSample
             });
             addBelief("HasWood", () => botController.Blackboard.GetValue(BlackboardKeys.HasWood));
             addBelief("HasFood", () => botController.Blackboard.GetValue(BlackboardKeys.HasFood));
-            addBelief("HasWoodFromForest", () => botController.Blackboard.GetValue(BlackboardKeys.HasWood));
+            addBelief("HasFoodFromGlade", () => beliefs["HasFood"].Evaluate());
+            addBelief("HasWoodFromForest", () => beliefs["HasWood"].Evaluate());
             addBelief("NearBonfire", () =>
             {
                 if (!botController.Blackboard.TryGetValue(BlackboardKeys.Target, out var target))
@@ -218,10 +219,13 @@ namespace Game.GOAPSample
                 var house = botController.Blackboard.GetValue(BlackboardKeys.House);
                 return house.GetBlackboard().GetValue(BlackboardKeys.WoodCount) > 0;
             });
-            addBelief("GiveWood", () =>
+            addBelief("HasFoodInHouse", () =>
             {
-                return false;
+                var house = botController.Blackboard.GetValue(BlackboardKeys.House);
+                return house.GetBlackboard().GetValue(BlackboardKeys.FoodCount) > 0;
             });
+            addBelief("GiveWood", () => false);
+            addBelief("GiveFood", () => false);
 
             addBelief("NearMushroom", () =>
             {
@@ -316,7 +320,23 @@ namespace Game.GOAPSample
                 .AddEffect(beliefs["GiveWood"])
                 .Build());
 
+            // Take food from the house.
+
+            actions.Add(new AgentAction.Builder("TakeFoodFromHouse")
+                .WithStrategy(new RestInHouseBotStrategy(botController, 3, takeFood: true))
+                .AddPrecondition(beliefs["NearHouseEntrance"])
+                .AddPrecondition(beliefs["HasFoodInHouse"])
+                .AddEffect(beliefs["HasFood"])
+                .Build());
+
             // Gather mushrooms.
+
+            actions.Add(new AgentAction.Builder("GatherFood")
+                .WithStrategy(new RestInHouseBotStrategy(botController, 3))
+                .AddPrecondition(beliefs["NearHouseEntrance"])
+                .AddPrecondition(beliefs["HasFoodFromGlade"])
+                .AddEffect(beliefs["GiveFood"])
+                .Build());
 
             actions.Add(new AgentAction.Builder("Eat")
                 .WithStrategy(new EatBotStrategy(botController))
@@ -328,6 +348,7 @@ namespace Game.GOAPSample
                 .WithStrategy(new TakeMushroomBotStrategy(botController))
                 .AddPrecondition(beliefs["NearMushroom"])
                 .AddEffect(beliefs["HasFood"])
+                .AddEffect(beliefs["HasFoodFromGlade"])
                 .Build());
 
             actions.Add(new AgentAction.Builder("GoToMushroom")
@@ -443,9 +464,27 @@ namespace Game.GOAPSample
                 .WithDesiredEffect(beliefs["Tired"])
                 .Build());
 
+            const float gatherPriority = 4f;
+            const float maxCount = 100000f;
+
             goals.Add(new AgentGoal.Builder("GatherWood")
-                .WithPriority(4)
+                .WithPriority(() =>
+                {
+                    var house = botController.Blackboard.GetValue(BlackboardKeys.House);
+                    var woodCount = house.GetBlackboard().GetValue(BlackboardKeys.WoodCount);
+                    return gatherPriority + Mathf.Lerp(0.5f, 0f, woodCount / maxCount);
+                })
                 .WithDesiredEffect(beliefs["GiveWood"])
+                .Build());
+
+            goals.Add(new AgentGoal.Builder("GatherFood")
+                .WithPriority(() =>
+                {
+                    var house = botController.Blackboard.GetValue(BlackboardKeys.House);
+                    var foodCount = house.GetBlackboard().GetValue(BlackboardKeys.FoodCount);
+                    return gatherPriority + Mathf.Lerp(0.5f, 0f, foodCount / maxCount);
+                })
+                .WithDesiredEffect(beliefs["GiveFood"])
                 .Build());
 
             goals.Add(new AgentGoal.Builder("Lit Bonfire")

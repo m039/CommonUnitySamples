@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Game.GOAPSample
 {
-    public class Glade : GameEntity
+    public class Glade : GameEntity, IGameEntityDestroyedEvent
     {
         #region Inspector
 
@@ -40,11 +40,16 @@ namespace Game.GOAPSample
             }
 
             Blackboard.SetValue(BlackboardKeys.MaxChilds, count);
+            Blackboard.SetValue(BlackboardKeys.Childs, _mushrooms);
+
+            CoreGameController.Instance.EventBus.Subscribe(this);
         }
 
         protected override void OnDestroyEntity()
         {
             base.OnDestroyEntity();
+
+            CoreGameController.Instance.EventBus.Unsubscribe(this);
 
             foreach (var t in _mushrooms)
             {
@@ -58,6 +63,17 @@ namespace Game.GOAPSample
         {
             Gizmos.color = Color.blue;
             Gizmos.DrawWireSphere(transform.position, _SpawnRadius);
+        }
+
+        public void OnGameEntityDestroyed(IGameEntity gameEntity)
+        {
+            if (gameEntity.type == GameEntityType.Mushroom)
+            {
+                if (_mushrooms.Remove(gameEntity))
+                {
+                    EventBus.Raise<IOnChildRemoved>(a => a.OnChildRemoved(gameEntity));
+                }
+            }
         }
     }
 }

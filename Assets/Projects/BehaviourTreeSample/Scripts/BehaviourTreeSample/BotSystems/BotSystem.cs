@@ -16,5 +16,9 @@ namespace Game.BehaviourTreeSample
         public virtual void Deinit()
         {
         }
+
+        public virtual void Process(float deltaTime)
+        {
+        }
     }
 }

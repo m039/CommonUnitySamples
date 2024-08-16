@@ -32,6 +32,16 @@ namespace Game.GOAPSample
             }
         }
 
+        protected override void Update()
+        {
+            base.Update();
+
+            foreach (var botSystem in _systems)
+            {
+                botSystem.Process(Time.deltaTime);
+            }
+        }
+
         protected override void OnDestroy()
         {
             base.OnDestroy();

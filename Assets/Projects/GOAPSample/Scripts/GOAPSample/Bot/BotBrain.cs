@@ -124,7 +124,9 @@ namespace Game.GOAPSample
 
             addBelief("Nothing", () => false);
             addBelief("Tired", () => botController.Blackboard.GetValue(BlackboardKeys.Tiredness) >= 10f);
-            addBelief("NotTired", () => botController.Blackboard.GetValue(BlackboardKeys.Tiredness) < 10f);
+            addBelief("NotTired", () => !beliefs["Tired"].Evaluate());
+            addBelief("Hungry", () => botController.Blackboard.GetValue(BlackboardKeys.Hunger) > 0.8f);
+            addBelief("NotHungry", () => !beliefs["Hungry"].Evaluate());
             addBelief("AgentMoving", () => botController.Blackboard.ContainsKey(BlackboardKeys.Destination));
             addBelief("Warm", () =>
             {
@@ -133,6 +135,7 @@ namespace Game.GOAPSample
                 return bonfire.GetBlackboard().GetValue(BlackboardKeys.IsLit);
             });
             addBelief("HasWood", () => botController.Blackboard.GetValue(BlackboardKeys.HasWood));
+            addBelief("HasFood", () => botController.Blackboard.GetValue(BlackboardKeys.HasFood));
             addBelief("HasWoodFromForest", () => botController.Blackboard.GetValue(BlackboardKeys.HasWood));
             addBelief("NearBonfire", () =>
             {
@@ -191,7 +194,6 @@ namespace Game.GOAPSample
 
                 return target.IsAlive && target.type == GameEntityType.Tree;
             });
-
             addBelief("NearForest", () =>
             {
                 if (!botController.Blackboard.TryGetValue(BlackboardKeys.Target, out var target))
@@ -219,6 +221,46 @@ namespace Game.GOAPSample
             addBelief("GiveWood", () =>
             {
                 return false;
+            });
+
+            addBelief("NearMushroom", () =>
+            {
+                if (!botController.Blackboard.TryGetValue(BlackboardKeys.Target, out var target))
+                {
+                    return false;
+                }
+
+                return target.IsAlive &&
+                    target.type == GameEntityType.Mushroom &&
+                    Vector2.Distance(target.position, gameEntity.position) < _SensorRadius;
+            });
+            addBelief("FoundMushroom", () =>
+            {
+                if (!botController.Blackboard.TryGetValue(BlackboardKeys.Target, out var target))
+                {
+                    return false;
+                }
+
+                return target.IsAlive && target.type == GameEntityType.Mushroom;
+            });
+            addBelief("NearGlade", () =>
+            {
+                if (!botController.Blackboard.TryGetValue(BlackboardKeys.Target, out var target))
+                {
+                    return false;
+                }
+
+                return target.type == GameEntityType.Glade &&
+                    Vector2.Distance(target.position, gameEntity.position) < target.spawnRadius;
+            });
+            addBelief("FoundGlade", () =>
+            {
+                if (!botController.Blackboard.TryGetValue(BlackboardKeys.Target, out var target))
+                {
+                    return false;
+                }
+
+                return target.type == GameEntityType.Glade;
             });
         }
 
@@ -265,13 +307,50 @@ namespace Game.GOAPSample
                 .AddEffect(beliefs["NearHouseEntrance"])
                 .Build());
 
-            // Gather actions.
+            // Gather wood.
 
             actions.Add(new AgentAction.Builder("GatherWood")
                 .WithStrategy(new RestInHouseBotStrategy(botController, 3))
                 .AddPrecondition(beliefs["NearHouseEntrance"])
                 .AddPrecondition(beliefs["HasWoodFromForest"])
                 .AddEffect(beliefs["GiveWood"])
+                .Build());
+
+            // Gather mushrooms.
+
+            actions.Add(new AgentAction.Builder("Eat")
+                .WithStrategy(new EatBotStrategy(botController))
+                .AddPrecondition(beliefs["HasFood"])
+                .AddEffect(beliefs["NotHungry"])
+                .Build());
+
+            actions.Add(new AgentAction.Builder("GatherMushroom")
+                .WithStrategy(new TakeMushroomBotStrategy(botController))
+                .AddPrecondition(beliefs["NearMushroom"])
+                .AddEffect(beliefs["HasFood"])
+                .Build());
+
+            actions.Add(new AgentAction.Builder("GoToMushroom")
+                .WithStrategy(new MoveToBotStrategy(botController, BlackboardKeys.Target, false))
+                .AddPrecondition(beliefs["FoundMushroom"])
+                .AddEffect(beliefs["NearMushroom"])
+                .Build());
+
+            actions.Add(new AgentAction.Builder("FindMushroom")
+                .WithStrategy(new FindRandomChildBotStrategy(botController))
+                .AddPrecondition(beliefs["NearGlade"])
+                .AddEffect(beliefs["FoundMushroom"])
+                .Build());
+
+            actions.Add(new AgentAction.Builder("GoToGlade")
+                .WithStrategy(new MoveToBotStrategy(botController, BlackboardKeys.Target))
+                .AddPrecondition(beliefs["FoundGlade"])
+                .AddEffect(beliefs["NearGlade"])
+                .Build());
+
+            actions.Add(new AgentAction.Builder("FindGlade")
+                .WithStrategy(new FindGladeBotStrategy(botController))
+                .AddEffect(beliefs["FoundGlade"])
                 .Build());
 
             //
@@ -315,6 +394,7 @@ namespace Game.GOAPSample
                 .WithStrategy(new ChopTreeBotStrategy(botController))
                 .AddPrecondition(beliefs["NearTree"])
                 .AddPrecondition(beliefs["NotTired"])
+                .AddPrecondition(beliefs["NotHungry"])
                 .AddEffect(beliefs["HasWood"])
                 .AddEffect(beliefs["HasWoodFromForest"])
                 .Build());
@@ -326,7 +406,7 @@ namespace Game.GOAPSample
                 .Build());
 
             actions.Add(new AgentAction.Builder("FindTree")
-                .WithStrategy(new FindTreeBotStrategy(botController))
+                .WithStrategy(new FindRandomChildBotStrategy(botController))
                 .AddPrecondition(beliefs["NearForest"])
                 .AddEffect(beliefs["FoundTree"])
                 .Build());
@@ -371,6 +451,11 @@ namespace Game.GOAPSample
             goals.Add(new AgentGoal.Builder("Lit Bonfire")
                 .WithPriority(5)
                 .WithDesiredEffect(beliefs["Warm"])
+                .Build());
+
+            goals.Add(new AgentGoal.Builder("Eat")
+                .WithPriority(6)
+                .WithDesiredEffect(beliefs["NotHungry"])
                 .Build());
         }
 

@@ -2,9 +2,9 @@ using m039.Common.Blackboard;
 
 namespace Game.GOAPSample
 {
-    public class FindTreeBotStrategy : BotStrategy
+    public class FindRandomChildBotStrategy : BotStrategy
     {
-        public FindTreeBotStrategy(CoreBotController botController) : base(botController)
+        public FindRandomChildBotStrategy(CoreBotController botController) : base(botController)
         {
         }
 

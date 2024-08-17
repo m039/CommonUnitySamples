@@ -22,6 +22,8 @@ namespace Game.GOAPSample
 
         IGameEntity _selectedBot;
 
+        float _fpsTimer = 0;
+
         void Start()
         {
             _ui.onRegenerate += () =>
@@ -30,12 +32,33 @@ namespace Game.GOAPSample
                 _worldGenerator.GenerateWorld();
             };
             _worldGenerator.GenerateWorld();
+
+            _ui.debugModeToggle.isOn = true;
+            OnDebugModeChanged(_ui.debugModeToggle.isOn);
+            _ui.debugModeToggle.onValueChanged.AddListener((v) =>
+            {
+                OnDebugModeChanged(v);
+            });
         }
 
         void Update()
         {
+            ProcessDebug();
             ProcessInput();
             ProcessBotInfo();
+        }
+
+        void ProcessDebug()
+        {
+            if (Blackboard.GetValue(BlackboardKeys.DebugMode))
+            {
+                _fpsTimer -= Time.deltaTime;
+                if (_fpsTimer < 0)
+                {
+                    _ui.fpsCounter.text = string.Format("FPS: {0,3:f2}", 1 / Time.deltaTime);
+                    _fpsTimer = 0.1f;
+                }
+            }
         }
 
         void ProcessInput()
@@ -132,6 +155,12 @@ namespace Game.GOAPSample
                 agent.Print(2, sb);
             }
             _ui.botInfo.text = sb.ToString();
+        }
+
+        void OnDebugModeChanged(bool value)
+        {
+            Blackboard.SetValue(BlackboardKeys.DebugMode, value);
+            _ui.fpsCounter.gameObject.SetActive(value);
         }
     }
 }

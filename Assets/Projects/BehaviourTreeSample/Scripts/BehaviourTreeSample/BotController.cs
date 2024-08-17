@@ -105,16 +105,6 @@ namespace Game.BehaviourTreeSample
             Blackboard.SetValue(BlackboardKeys.StartPosition, transform.position);
         }
 
-        protected override void OnDestroy()
-        {
-            base.OnDestroy();
-
-            foreach (var botSystem in _systems)
-            {
-                botSystem.Deinit();
-            }
-        }
-
         void IGameEntity.OnDestroy()
         {
             _created = false;

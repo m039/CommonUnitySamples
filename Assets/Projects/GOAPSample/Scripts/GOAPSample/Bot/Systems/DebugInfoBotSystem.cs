@@ -17,7 +17,8 @@ namespace Game.GOAPSample
         {
             base.Process(deltaTime);
 
-            if (botController.Blackboard.ContainsKey(BlackboardKeys.IsInvisible))
+            if (botController.Blackboard.ContainsKey(BlackboardKeys.IsInvisible) ||
+                !CoreGameController.Instance.Blackboard.GetValue(BlackboardKeys.DebugMode))
             {
                 _Text.gameObject.SetActive(false);
             } else
@@ -38,12 +39,20 @@ namespace Game.GOAPSample
 
                 if (botController.Blackboard.ContainsKey(BlackboardKeys.InDanger))
                 {
-                    sb.AppendLine("In Danger");
+                    sb.AppendLine("<color=\"red\">In Danger</color>");
                 }
 
                 if (botController.Blackboard.TryGetValue(BlackboardKeys.Hunger, out var hunger))
                 {
-                    sb.AppendLine($"Hunger: {hunger.ToString("0.0")}");
+                    string format;
+                    if (hunger > 0.8f)
+                    {
+                        format = "<color=\"red\">{0}</color>";
+                    } else
+                    {
+                        format = "{0}";
+                    }
+                    sb.AppendLine(string.Format(format, $"Hunger: {hunger.ToString("0.0")}"));
                 }
 
                 _Text.text = sb.ToString();

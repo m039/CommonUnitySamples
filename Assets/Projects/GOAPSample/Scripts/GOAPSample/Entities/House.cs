@@ -100,8 +100,16 @@ namespace Game.GOAPSample
 
         void UpdateDebugInfo()
         {
+            if (!CoreGameController.Instance.Blackboard.GetValue(BlackboardKeys.DebugMode))
+            {
+                _DebugInfo.gameObject.SetActive(false);
+                return;
+            }
+
+            _DebugInfo.gameObject.SetActive(true);
+
             var sb = new StringBuilder();
-            sb.AppendLine($"BotsInside: {_insideBots.Count}");
+            sb.AppendLine($"Bots Inside: {_insideBots.Count}");
             sb.AppendLine($"Wood: {Blackboard.GetValue(BlackboardKeys.WoodCount)}");
             sb.AppendLine($"Food: {Blackboard.GetValue(BlackboardKeys.FoodCount)}");
             _DebugInfo.text = sb.ToString();

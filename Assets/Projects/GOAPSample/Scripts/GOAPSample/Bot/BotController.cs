@@ -41,15 +41,5 @@ namespace Game.GOAPSample
                 botSystem.Process(Time.deltaTime);
             }
         }
-
-        protected override void OnDestroy()
-        {
-            base.OnDestroy();
-
-            foreach (var botSystem in _systems)
-            {
-                botSystem.Deinit();
-            }
-        }
     }
 }

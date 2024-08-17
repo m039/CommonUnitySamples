@@ -19,13 +19,6 @@ namespace Game.BehaviourTreeSample
             OnSelectionChanged();
         }
 
-        public override void Deinit()
-        {
-            base.Deinit();
-
-            botController.Blackboard.Unsubscribe(BlackboardKeys.Selection, OnSelectionChanged);
-        }
-
         void OnSelectionChanged()
         {
             _Selection.gameObject.SetActive(botController.Blackboard.GetValue(BlackboardKeys.Selection));

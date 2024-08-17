@@ -1,5 +1,6 @@
 using m039.Common.DependencyInjection;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Game
 {
@@ -14,6 +15,10 @@ namespace Game
         #region Inspector
 
         public TMPro.TMP_Text botInfo;
+
+        public TMPro.TMP_Text fpsCounter;
+
+        public Toggle debugModeToggle;
 
         #endregion
 

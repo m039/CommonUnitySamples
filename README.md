@@ -8,6 +8,7 @@ Samples:
 * [GOAP Sample](/Assets/Projects/GOAPSample)
 * [Behaviour Tree Sample](/Assets/Projects/BehaviourTreeSample)
 * [State Machine Sample](/Assets/Projects/StateMachineSample)
+* [Pathfinding Sample](/Assets/Projects/PathfindingSample)
 
 ## GOAP Sample
 
@@ -20,3 +21,7 @@ In this sample there are several types of bots with different behaviours. From t
 ## State Machine Sample
 
 This is a very simple sample when you can change a bot's state by pressing a button.
+
+## Pathfinding Sample
+
+A scene with a lot of object with colliders and two circles which you can drag with a mouse and the path will be calculated between their points.

@@ -2,10 +2,8 @@ using Game.BehaviourTreeSample;
 using m039.Common;
 using m039.Common.Blackboard;
 using m039.Common.DependencyInjection;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEditor.U2D.Aseprite;
 using UnityEngine;
 
 namespace Game

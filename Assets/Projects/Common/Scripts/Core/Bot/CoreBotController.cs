@@ -66,10 +66,6 @@ namespace Game
             }
         }
 
-        protected virtual void OnDestroy()
-        {
-        }
-
         protected virtual void Start()
         {
             if (_Brain == null)

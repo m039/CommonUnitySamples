@@ -5,16 +5,14 @@ namespace Game.GOAPSample
 {
     public class EntityBotController : CoreBotController
     {
-        IGameEntity _gameEntity;
-
         protected override void Awake()
         {
             base.Awake();
 
-            _gameEntity = GetComponent<IGameEntity>();
+            var gameEntity = GetComponent<IGameEntity>();
 
             ServiceLocator.Register(GetComponentInChildren<Animator>());
-            ServiceLocator.Register(_gameEntity);
+            ServiceLocator.Register(gameEntity);
             ServiceLocator.Register(Blackboard);
         }
     }

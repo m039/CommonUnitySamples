@@ -49,7 +49,9 @@ namespace Game
             }
 
             if (childs.Count >= maxChilds)
+            {
                 return;
+            }
 
             var factory = CoreGameController.Instance.ServiceLocator.Get<IGameEntityFactory>();
 
@@ -63,9 +65,6 @@ namespace Game
 
             if (childs.Count < maxChilds) {
                 ResetTimer();
-            } else
-            {
-                _timer = null;
             }
         }
 
@@ -92,6 +91,7 @@ namespace Game
             _timer = new CountdownTimer(_Cooldown.Random());
             _timer.onStop += () =>
             {
+                _timer = null;
                 SpawnObject();
             };
             _timer.Start();

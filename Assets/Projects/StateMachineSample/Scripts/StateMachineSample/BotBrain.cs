@@ -40,9 +40,9 @@ namespace Game.StateMachineSample
             var patrolState = _PatrolState;
             var wanderState = _WanderState;
 
-            _stateMachine.AddAnyTransition(idleState, () => Input.GetKeyDown(KeyCode.R) || _idleClicked);
-            _stateMachine.AddAnyTransition(patrolState, () => Input.GetKeyDown(KeyCode.P) || _patrolClicked);
-            _stateMachine.AddAnyTransition(wanderState, () => Input.GetKeyDown(KeyCode.W) || _wanderClicked);
+            _stateMachine.AddAnyTransition(idleState, () => _idleClicked);
+            _stateMachine.AddAnyTransition(patrolState, () => _patrolClicked);
+            _stateMachine.AddAnyTransition(wanderState, () => _wanderClicked);
             _stateMachine.SetState(idleState);
         }
 

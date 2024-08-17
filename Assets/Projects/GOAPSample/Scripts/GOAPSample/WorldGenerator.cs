@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace Game
+namespace Game.GOAPSample
 {
     public class WorldGenerator : MonoBehaviour, IDependencyProvider
     {

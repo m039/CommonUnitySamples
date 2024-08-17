@@ -17,4 +17,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/GOAPSample.unity
     guid: d001b24cbdf63364aa94a5478820786e
+  - enabled: 1
+    path: Assets/Scenes/PathfindingSample.unity
+    guid: 4004ca0176aff2a47bc646fd1b20fccf
   m_configObjects: {}

@@ -54,7 +54,8 @@ namespace Game
             {
                 ("GOAP", "GOAPSample"),
                 ("Behaviour Tree", "BehaviourTreeSample"),
-                ("State Machine", "StateMachineSample")
+                ("State Machine", "StateMachineSample"),
+                ("Pathfinding", "PathfindingSample")
             };
 
             foreach (Transform child in _Buttons)

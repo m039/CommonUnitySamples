@@ -5,7 +5,7 @@ namespace Game.GOAPSample
 {
     public class BotController : CoreBotController
     {
-        Bot _bot;
+        IGameEntity _gameEntity;
 
         BotSystem[] _systems;
 
@@ -13,10 +13,10 @@ namespace Game.GOAPSample
         {
             base.Awake();
 
-            _bot = GetComponent<Bot>();
+            _gameEntity = GetComponent<IGameEntity>();
 
             ServiceLocator.Register(GetComponentInChildren<Animator>());
-            ServiceLocator.Register<IGameEntity>(_bot);
+            ServiceLocator.Register(_gameEntity);
             ServiceLocator.Register(Blackboard);
         }
 

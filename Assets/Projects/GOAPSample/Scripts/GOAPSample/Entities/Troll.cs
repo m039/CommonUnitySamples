@@ -1,21 +1,10 @@
-using System.Collections;
-using System.Collections.Generic;
+using Game.BehaviourTreeSample;
 using UnityEngine;
 
-namespace Game
+namespace Game.GOAPSample
 {
-    public class Troll : MonoBehaviour
+    public class Troll : Bot
     {
-        // Start is called before the first frame update
-        void Start()
-        {
-        
-        }
-
-        // Update is called once per frame
-        void Update()
-        {
-        
-        }
+        public override GameEntityType type => GameEntityType.Troll;
     }
 }

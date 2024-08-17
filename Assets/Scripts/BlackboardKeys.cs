@@ -41,5 +41,7 @@ namespace Game
         static readonly public BlackboardKey<bool> NotInterrupt = new("not_interrupt");
         static readonly public BlackboardKey<float> Hunger = new("hunger");
         static readonly public BlackboardKey<bool> HasFood = new("has_food");
+        static readonly public BlackboardKey<bool> InDanger = new("encountered_troll");
+        static readonly public BlackboardKey<float> MoveSpeedMultiplier = new("move_speed_multiplier");
     }
 }

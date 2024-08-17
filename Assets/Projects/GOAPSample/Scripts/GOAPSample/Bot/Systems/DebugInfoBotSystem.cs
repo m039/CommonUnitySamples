@@ -36,6 +36,11 @@ namespace Game.GOAPSample
                     sb.AppendLine("+Wood");
                 }
 
+                if (botController.Blackboard.ContainsKey(BlackboardKeys.InDanger))
+                {
+                    sb.AppendLine("In Danger");
+                }
+
                 if (botController.Blackboard.TryGetValue(BlackboardKeys.Hunger, out var hunger))
                 {
                     sb.AppendLine($"Hunger: {hunger.ToString("0.0")}");

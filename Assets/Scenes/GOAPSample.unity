@@ -357,6 +357,7 @@ MonoBehaviour:
   - {fileID: 3245891835084069029, guid: 0fa7bb41b746dc24393b56ec9de0e3d8, type: 3}
   - {fileID: 8431480865148638825, guid: a4a86b8d8a76a064cbea2608b1aa6528, type: 3}
   - {fileID: 6041806105766450169, guid: f65ad8b78fc731a478617a37d2a8979a, type: 3}
+  - {fileID: 6041806105766450169, guid: af3359a396f952d44a82408675453274, type: 3}
 --- !u!4 &128459902
 Transform:
   m_ObjectHideFlags: 0
@@ -579,14 +580,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _HousesCount:
-    min: 1
-    max: 1
+    min: 2
+    max: 3
   _ForestCount:
     min: 3
     max: 6
   _GladesCount:
     min: 3
     max: 4
+  _TrollsCount:
+    min: 1
+    max: 2
 --- !u!1 &349791844
 GameObject:
   m_ObjectHideFlags: 0

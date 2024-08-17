@@ -266,6 +266,15 @@ namespace Game.GOAPSample
 
                 return target.type == GameEntityType.Glade;
             });
+
+            addBelief("NotInDanger", () =>
+            {
+                return !botController.Blackboard.ContainsKey(BlackboardKeys.InDanger);
+            });
+            addBelief("InDanger", () =>
+            {
+                return botController.Blackboard.ContainsKey(BlackboardKeys.InDanger);
+            });
         }
 
         void SetupActions()
@@ -293,6 +302,21 @@ namespace Game.GOAPSample
                 .AddPrecondition(beliefs["Tired"])
                 .WithStrategy(new RestInHouseBotStrategy(botController, 5))
                 .AddEffect(beliefs["InHouse"])
+                .Build());
+
+            actions.Add(new AgentAction.Builder("RestInHouse")
+                .AddPrecondition(beliefs["NearHouseEntrance"])
+                .AddPrecondition(beliefs["Tired"])
+                .WithStrategy(new RestInHouseBotStrategy(botController, 5))
+                .AddEffect(beliefs["InHouse"])
+                .Build());
+
+            actions.Add(new AgentAction.Builder("RestInHouseWhileDanger")
+                .AddPrecondition(beliefs["NearHouseEntrance"])
+                .AddPrecondition(beliefs["InDanger"])
+                .WithStrategy(new RestInHouseBotStrategy(botController, 10))
+                .AddEffect(beliefs["InHouse"])
+                .AddEffect(beliefs["NotInDanger"])
                 .Build());
 
             actions.Add(new AgentAction.Builder("GoToHouseEntrance")
@@ -406,7 +430,14 @@ namespace Game.GOAPSample
                 .AddEffect(beliefs["FoundBonfire"])
                 .Build());
 
+            actions.Add(new AgentAction.Builder("GoHomeQuickly")
+                .AddPrecondition(beliefs["InDanger"])
+                .WithStrategy(new MoveToBotStrategy(botController, BlackboardKeys.House, moveSpeedMultiplier: 1.3f))
+                .AddEffect(beliefs["NearHouse"])
+                .Build());
+
             actions.Add(new AgentAction.Builder("GoHome")
+                .AddPrecondition(beliefs["NotInDanger"])
                 .WithStrategy(new MoveToBotStrategy(botController, BlackboardKeys.House))
                 .AddEffect(beliefs["NearHouse"])
                 .Build());
@@ -496,19 +527,11 @@ namespace Game.GOAPSample
                 .WithPriority(6)
                 .WithDesiredEffect(beliefs["NotHungry"])
                 .Build());
-        }
 
-        public override void Deinit()
-        {
-            base.Deinit();
-
-            botController.EventBus.Unsubscribe(this);
-            botController.ServiceLocator.Unregister(_stateMachine);
-
-            foreach (var botState in _botStates)
-            {
-                botState.Deinit();
-            }
+            goals.Add(new AgentGoal.Builder("SaveLife")
+                .WithPriority(7)
+                .WithDesiredEffect(beliefs["NotInDanger"])
+                .Build());
         }
 
         public override void Think()

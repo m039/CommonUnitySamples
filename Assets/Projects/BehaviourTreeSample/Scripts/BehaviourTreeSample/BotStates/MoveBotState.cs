@@ -50,7 +50,9 @@ namespace Game.BehaviourTreeSample
                 var direction = ((Vector2)destination - p).normalized;
                 botController.Blackboard.SetValue(BlackboardKeys.IsFacingLeft, direction.x < 0);
 
-                gameEntity.position += _MoveSpeed * Time.deltaTime * direction;
+                var moveSpeedMultiplier = botController.Blackboard.GetValue(BlackboardKeys.MoveSpeedMultiplier, 1);
+
+                gameEntity.position += _MoveSpeed * moveSpeedMultiplier * Time.deltaTime * direction;
 
                 botController.Blackboard.UpdateValue(BlackboardKeys.Tiredness, x => x + Time.deltaTime);
             }

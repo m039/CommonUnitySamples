@@ -71,19 +71,6 @@ namespace Game.BehaviourTreeSample
             }
         }
 
-        public override void Deinit()
-        {
-            base.Deinit();
-
-            botController.ServiceLocator.Unregister(StateMachine);
-            botController.ServiceLocator.Unregister(BehaviourTree);
-
-            if (CoreGameController.Instance != null && CoreGameController.Instance.ServiceLocator.TryGet(out Arbiter arbiter))
-            {
-                arbiter.Unregister(this);
-            }
-        }
-
         public override void Think()
         {
             _expertActions.Clear();

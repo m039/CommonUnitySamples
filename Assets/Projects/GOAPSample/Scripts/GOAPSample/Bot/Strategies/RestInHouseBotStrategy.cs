@@ -76,6 +76,7 @@ namespace Game.GOAPSample
 
             botController.Blackboard.Remove(BlackboardKeys.Tiredness);
             botController.Blackboard.Remove(BlackboardKeys.Target);
+            botController.Blackboard.Remove(BlackboardKeys.InDanger);
 
             if (_house != null) {
 

@@ -5,6 +5,7 @@ using m039.Common.DependencyInjection;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor.U2D.Aseprite;
 using UnityEngine;
 
 namespace Game
@@ -21,6 +22,9 @@ namespace Game
 
         [SerializeField]
         MinMaxInt _GladesCount = new(5, 10);
+
+        [SerializeField]
+        MinMaxInt _TrollsCount = new(5, 10);
 
         #endregion
 
@@ -60,6 +64,18 @@ namespace Game
                 return false;
             }
 
+            void spawnDefault(GameEntityType type, int count)
+            {
+                for (int i = 0; i < count; i++)
+                {
+                    var position = CameraUtils.RandomPositionOnScreen();
+
+                    _blackboard.Clear();
+                    _blackboard.SetValue(BlackboardKeys.Position, position);
+                    _entityFactory.Create(type, _blackboard);
+                }
+            }
+
             void spawn(GameEntityType type, int count, List<GameEntityType> checkTypes)
             {
                 var spawnRadius = _entityFactory.GetPrefab(type).spawnRadius;
@@ -91,16 +107,17 @@ namespace Game
 
             bool generate()
             {
-                var templates = new List<(GameEntityType, int)>
+                var templates = new List<(GameEntityType, int, bool)>
                 {
-                    (GameEntityType.House, _HousesCount.Random()),
-                    (GameEntityType.Forest, _ForestCount.Random()),
-                    (GameEntityType.Glade, _GladesCount.Random())
+                    (GameEntityType.House, _HousesCount.Random(), true),
+                    (GameEntityType.Forest, _ForestCount.Random(), true),
+                    (GameEntityType.Glade, _GladesCount.Random(), true),
+                    (GameEntityType.Troll, _TrollsCount.Random(), false)
                 };
 
                 // Destroy previous entities.
 
-                foreach (var (type, _) in templates)
+                foreach (var (type, _, _) in templates)
                 {
                     foreach (var entity in _entityFactory.GetEnteties(type).ToArray())
                     {
@@ -112,15 +129,22 @@ namespace Game
 
                 var checkTypes = new List<GameEntityType>();
 
-                foreach (var (type, count) in templates)
+                foreach (var (type, count, checkCollisions) in templates)
                 {
-                    checkTypes.Add(type);
-                    spawn(type, count, checkTypes);
+                    if (checkCollisions)
+                    {
+                        checkTypes.Add(type);
+                        spawn(type, count, checkTypes);
+                    }
+                    else
+                    {
+                        spawnDefault(type, count);
+                    }
                 }
 
                 // Check if all entities have been succesfully spawned.
 
-                foreach (var (type, _) in templates)
+                foreach (var (type, _, _) in templates)
                 {
                     if (_entityFactory.GetEnteties(type).Count <= 0)
                     {

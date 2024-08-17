@@ -4,11 +4,16 @@ using m039.Common.Blackboard;
 using m039.Common.Events;
 using UnityEngine;
 
-namespace Game.GOAPSample
+namespace Game
 {
     public interface IOnChildRemoved : IEventSubscriber
     {
         void OnChildRemoved(IGameEntity child);
+    }
+
+    public interface IOnDestoyEntityEvent : IEventSubscriber
+    {
+        void OnDestroyEntity();
     }
 
     public abstract class GameEntity : MonoBehaviour, IGameEntity
@@ -57,7 +62,7 @@ namespace Game.GOAPSample
 
         ServiceLocator _serviceLocator;
 
-        readonly protected EventBusByInterface EventBus = new();
+        protected virtual EventBusByInterface EventBus { get; } = new();
 
         protected virtual BlackboardBase Blackboard { get; } = new GameBlackboard();
 

@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Game.BehaviourTreeSample
 {
-    public class SelectionBotSystem : BotSystem
+    public class SelectionBotSystem : CoreBotSystem
     {
         #region Inspector
 

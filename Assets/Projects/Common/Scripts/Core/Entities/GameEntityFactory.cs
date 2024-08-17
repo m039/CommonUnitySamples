@@ -160,10 +160,6 @@ namespace Game
 
             if (gameEntity is MonoBehaviour monoBehaviour)
             {
-                if (gameEntity is Food food)
-                {
-                    food.isSetActive = true;
-                }
                 monoBehaviour.gameObject.name = $"{_typeToPrefab[type][typeClass].gameObject.name}#{_entitiesId}";
                 monoBehaviour.gameObject.SetActive(true);
             }

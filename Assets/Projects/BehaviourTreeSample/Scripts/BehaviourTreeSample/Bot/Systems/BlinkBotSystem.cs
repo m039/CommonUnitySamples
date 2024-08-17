@@ -10,7 +10,7 @@ namespace Game
         public void Blink(Color color, float duration);
     }
 
-    public class BlinkBotFeature : CoreBotFeature, IBlinkEvent
+    public class BlinkBotSystem : CoreBotSystem, IBlinkEvent
     {
         #region Inspector
 
@@ -66,14 +66,11 @@ namespace Game
             _Renderer.color = Color.white;
         }
 
-        protected override void OnInit()
+        public override void Init(CoreBotController botController)
         {
-            botController.EventBus.Subscribe(this);
-        }
+            base.Init(botController);
 
-        protected override void OnDeinit()
-        {
-            botController.EventBus.Unsubscribe(this);
+            botController.EventBus.Subscribe(this);
         }
     }
 }

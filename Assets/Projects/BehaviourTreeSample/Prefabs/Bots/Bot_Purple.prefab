@@ -45,6 +45,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _Priority: 0
+  lastStatus: 0
+  lastProcessedStatus: 1
   _ResultKey: start_position
 --- !u!1 &1600399852054804532
 GameObject:
@@ -91,6 +93,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _Priority: 0
+  lastStatus: 0
+  lastProcessedStatus: 1
   _TimerKey: timer1
 --- !u!1 &1655341906248808140
 GameObject:
@@ -139,6 +143,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _Priority: 0
+  lastStatus: 0
+  lastProcessedStatus: 1
   _Nodes:
   - {fileID: 8455518397788828171}
   - {fileID: 1113151857346552458}
@@ -189,6 +195,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _Priority: 0
+  lastStatus: 0
+  lastProcessedStatus: 1
   _Nodes:
   - {fileID: 2253956321870550012}
   - {fileID: 7389938068601815323}
@@ -237,6 +245,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _Priority: 0
+  lastStatus: 0
+  lastProcessedStatus: 1
   _ArgumentKey: start_position
 --- !u!1 &2363979576854647774
 GameObject:
@@ -287,6 +297,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _Priority: 0
+  lastStatus: 0
+  lastProcessedStatus: 1
   _Nodes:
   - {fileID: 1116312481965850409}
   - {fileID: 2710872068190406386}
@@ -337,6 +349,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _Priority: 0
+  lastStatus: 0
+  lastProcessedStatus: 1
 --- !u!1 &4346419572612468375
 GameObject:
   m_ObjectHideFlags: 0
@@ -414,6 +428,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _Priority: 0
+  lastStatus: 0
+  lastProcessedStatus: 1
   _ArgumentKey: target_position
 --- !u!1 &6164819301301319367
 GameObject:
@@ -462,6 +478,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _Priority: 0
+  lastStatus: 0
+  lastProcessedStatus: 1
   _Nodes:
   - {fileID: 8819160218985630309}
   - {fileID: 2048108875713018534}
@@ -510,6 +528,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _Priority: 0
+  lastStatus: 0
+  lastProcessedStatus: 1
   _Key: destination
 --- !u!1 &8221805124792717080
 GameObject:
@@ -556,6 +576,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _Priority: 0
+  lastStatus: 0
+  lastProcessedStatus: 1
   _ResultKey: target_position
 --- !u!1 &8624665144630294771
 GameObject:
@@ -602,6 +624,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _Priority: 0
+  lastStatus: 0
+  lastProcessedStatus: 1
   _Radius: 3.21
   _TargetType: 1
   _MaxTaken: 2
@@ -651,6 +675,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _Priority: 0
+  lastStatus: 0
+  lastProcessedStatus: 1
   _TimerKey: timer1
   _TimerDuration:
     min: 15
@@ -703,6 +729,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _Priority: 0
+  lastStatus: 0
+  lastProcessedStatus: 1
   _Nodes:
   - {fileID: 512915488678805052}
   - {fileID: 6939037230128039435}
@@ -758,6 +786,10 @@ PrefabInstance:
     - target: {fileID: 2404239737810771527, guid: 8059cd05d0f8b414aaa433c9f58f0381, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3042856285319678227, guid: 8059cd05d0f8b414aaa433c9f58f0381, type: 3}
+      propertyPath: _TypeClass
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 3075529061267389523, guid: 8059cd05d0f8b414aaa433c9f58f0381, type: 3}
       propertyPath: _StartNode

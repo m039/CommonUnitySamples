@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Game
 {
-    public class SetColorBotFeature : CoreBotFeature, ISetColorEvent
+    public class SetColorBotSystem : CoreBotSystem, ISetColorEvent
     {
         #region Inspector
 
@@ -10,14 +10,11 @@ namespace Game
 
         #endregion
 
-        protected override void OnInit()
+        public override void Init(CoreBotController botController)
         {
-            botController.EventBus.Subscribe(this);
-        }
+            base.Init(botController);
 
-        protected override void OnDeinit()
-        {
-            botController.EventBus.Unsubscribe(this);
+            botController.EventBus.Subscribe(this);
         }
 
         void ISetColorEvent.SetColor(Color color)

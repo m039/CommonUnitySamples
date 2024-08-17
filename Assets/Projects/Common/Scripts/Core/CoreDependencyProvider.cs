@@ -8,13 +8,6 @@ namespace Game
 {
     public class CoreDependencyProvider : MonoBehaviour, IDependencyProvider
     {
-        #region Inspector
-
-        [SerializeField]
-        BlackboardData _BlackboardData;
-
-        #endregion
-
         BlackboardBase _blackboard;
 
         ServiceLocator _serviceLocator;
@@ -27,7 +20,6 @@ namespace Game
             if (_blackboard == null)
             {
                 var blackboard = new Blackboard();
-                blackboard.SetValues(_BlackboardData);
                 _blackboard = blackboard;
             }
             return _blackboard;

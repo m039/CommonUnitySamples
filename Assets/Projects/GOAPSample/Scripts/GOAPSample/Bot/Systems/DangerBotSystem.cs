@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Game
 {
-    public class DangerBotSystem : BotSystem
+    public class DangerBotSystem : CoreBotSystem
     {
 
         #region Inspector

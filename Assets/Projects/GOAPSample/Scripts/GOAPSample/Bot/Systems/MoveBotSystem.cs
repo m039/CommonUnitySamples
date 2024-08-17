@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Game.GOAPSample
 {
-    public class MoveBotFeature : CoreBotFeature
+    public class MoveBotSystem : CoreBotSystem
     {
         #region Inspector
 
@@ -11,15 +11,12 @@ namespace Game.GOAPSample
 
         #endregion
 
-        protected override void OnInit()
+        public override void Init(CoreBotController botController)
         {
+            base.Init(botController);
+
             botController.Blackboard.Subscribe(BlackboardKeys.IsFacingLeft, UpdateFacing);
             UpdateFacing();
-        }
-
-        protected override void OnDeinit()
-        {
-            botController.Blackboard.Unsubscribe(BlackboardKeys.IsFacingLeft, UpdateFacing);
         }
 
         void UpdateFacing()

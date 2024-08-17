@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Game.GOAPSample
 {
-    public class DebugInfoBotSystem : BotSystem
+    public class DebugInfoBotSystem : CoreBotSystem
     {
         #region Inspector
 

@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace Game.GOAPSample
 {
-    public class BotBrain : CoreBotBrain, Bot.IOnDestoyEntityEvent
+    public class BotBrain : CoreBotBrain, IOnDestoyEntityEvent
     {
         #region Inspector
 
@@ -554,7 +554,7 @@ namespace Game.GOAPSample
             Gizmos.DrawWireSphere(transform.position, _SensorRadius);
         }
 
-        void Bot.IOnDestoyEntityEvent.OnDestroyEntity()
+        void IOnDestoyEntityEvent.OnDestroyEntity()
         {
             _agent.ClearState();
         }

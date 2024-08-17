@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Game.GOAPSample
 {
-    public class TrollBrains : CoreBotBrain, Bot.IOnDestoyEntityEvent
+    public class TrollBrains : CoreBotBrain, IOnDestoyEntityEvent
     {
         #region Inspector
 

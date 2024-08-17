@@ -4,7 +4,6 @@ using m039.Common.Events;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using TMPro;
 using UnityEditor;
 using UnityEngine;
 
@@ -20,7 +19,7 @@ namespace Game.BehaviourTreeSample
         void FoodEaten(IGameEntity eater, IGameEntity food);
     }
 
-    public class Food : MonoBehaviour, IGameEntity
+    public class Food : GameEntity
     {
         #region Inspector
 
@@ -32,75 +31,23 @@ namespace Game.BehaviourTreeSample
 
         #endregion
 
-        public int id { get; private set; } = 0;
-
-        public float spawnRadius => 0;
-
-        string IGameEntity.name => "Food#" + id;
-
-        public Vector2 position {
-            get
-            {
-                return transform.position;
-            }
-
-            set
-            {
-                var p = transform.position;
-                p.x = value.x;
-                p.y = value.y;
-                p.z = Mathf.InverseLerp(-100, 100, value.y) * 100;
-                transform.position = p;
-            }
-        }
-
-        public GameEntityType type => GameEntityType.Food;
-
-        public bool IsAlive { get; set; }
-
-        public ServiceLocator locator {
-            get
-            {
-                if (_serviceLocator == null)
-                {
-                    _serviceLocator = new();
-                    _serviceLocator.Register(_blackboard);
-                }
-
-                return _serviceLocator;
-            }
-        }
-
-        public int typeClass => 0;
+        public override GameEntityType type => GameEntityType.Food;
 
         bool _created;
-
-        public bool isSetActive { get; set; }
-
-        ServiceLocator _serviceLocator;
-
-        readonly BlackboardBase _blackboard = new GameBlackboard();
 
         Coroutine _coroutine;
 
         List<(SpriteRenderer r, float a)> _spriteRenders;
 
-        void Awake()
+        protected override void Awake()
         {
+            base.Awake();
             _spriteRenders = _Renderers.Select(r => (r, r.color.a)).ToList();
         }
 
-        public void OnCreate(BlackboardBase blackboard)
+        protected override void OnCreateEntity(BlackboardBase blackboard)
         {
-            if (blackboard.TryGetValue(BlackboardKeys.Id, out int _id))
-            {
-                id = _id;
-            }
-
-            if (blackboard.TryGetValue(BlackboardKeys.Position, out Vector2 _position))
-            {
-                position = _position;
-            }
+            base.OnCreateEntity(blackboard);
 
             _coroutine = StartCoroutine(WaitAndDestroy());
 
@@ -143,17 +90,17 @@ namespace Game.BehaviourTreeSample
             }
         }
 
-        void IGameEntity.OnDestroy()
+        protected override void OnDestroyEntity()
         {
+            base.OnDestroyEntity();
+
             if (_coroutine != null)
             {
                 StopCoroutine(_coroutine);
                 _coroutine = null;
             }
 
-            _blackboard.Clear();
             _created = false;
-            isSetActive = false;
         }
 
         void OnTriggerEnter2D(Collider2D collider)

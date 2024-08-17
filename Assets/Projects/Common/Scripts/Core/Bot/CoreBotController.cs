@@ -1,3 +1,4 @@
+using Game.BehaviourTreeSample;
 using m039.Common;
 using m039.Common.Blackboard;
 using m039.Common.Events;
@@ -52,25 +53,21 @@ namespace Game
         [SerializeField]
         CoreBotBrain _Brain;
 
-        CoreBotFeature[] _features;
+        CoreBotSystem[] _systems;
 
         protected CoreBotBrain Brain => _Brain;
 
         protected virtual void Awake()
         {
-            _features = GetComponentsInChildren<CoreBotFeature>();
-            foreach (var feature in _features)
+            _systems = GetComponentsInChildren<CoreBotSystem>();
+            foreach (var botSystem in _systems)
             {
-                feature.Init(this);
+                botSystem.Init(this);
             }
         }
 
         protected virtual void OnDestroy()
         {
-            foreach (var feature in _features)
-            {
-                feature.Deinit();
-            }
         }
 
         protected virtual void Start()
@@ -88,6 +85,11 @@ namespace Game
 
         protected virtual void Update()
         {
+            foreach (var botSystem in _systems)
+            {
+                botSystem.Process(Time.deltaTime);
+            }
+
             if (_Brain != null)
             {
                 _Brain.Think();

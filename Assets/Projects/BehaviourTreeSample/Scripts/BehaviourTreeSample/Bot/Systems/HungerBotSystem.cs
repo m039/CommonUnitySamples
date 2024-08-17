@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Game
 {
-    public class HungerBotSystem : BotSystem, IFoodEater
+    public class HungerBotSystem : CoreBotSystem, IFoodEater
     {
         #region Inspector
 

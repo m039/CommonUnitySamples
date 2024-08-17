@@ -1,7 +1,7 @@
 using Game.BehaviourTreeSample;
 using UnityEngine;
 
-namespace Game.GOAPSample
+namespace Game
 {
     public abstract class EntitySystem : MonoBehaviour
     {

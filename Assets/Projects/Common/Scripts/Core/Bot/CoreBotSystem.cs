@@ -1,10 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-namespace Game.BehaviourTreeSample
+namespace Game
 {
-    public class BotSystem : MonoBehaviour
+    public class CoreBotSystem : MonoBehaviour
     {
         public CoreBotController botController { get; private set; }
 

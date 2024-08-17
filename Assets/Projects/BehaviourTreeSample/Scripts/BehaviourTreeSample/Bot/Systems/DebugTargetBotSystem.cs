@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Game.BehaviourTreeSample
 {
-    public class DebugTargetBotSystem : BotSystem
+    public class DebugTargetBotSystem : CoreBotSystem
     {
         #region Inspector
 

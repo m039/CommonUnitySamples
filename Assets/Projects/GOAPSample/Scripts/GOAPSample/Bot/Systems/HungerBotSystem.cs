@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Game.GOAPSample
 {
-    public class HungerBotSystem : BotSystem
+    public class HungerBotSystem : CoreBotSystem
     {
         #region Inspector
 

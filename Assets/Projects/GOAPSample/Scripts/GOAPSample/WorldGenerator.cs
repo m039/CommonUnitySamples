@@ -103,16 +103,8 @@ namespace Game.GOAPSample
                 }
             }
 
-            bool generate()
+            bool generate(List<(GameEntityType, int, bool)> templates)
             {
-                var templates = new List<(GameEntityType, int, bool)>
-                {
-                    (GameEntityType.House, _HousesCount.Random(), true),
-                    (GameEntityType.Forest, _ForestCount.Random(), true),
-                    (GameEntityType.Glade, _GladesCount.Random(), true),
-                    (GameEntityType.Troll, _TrollsCount.Random(), false)
-                };
-
                 // Destroy previous entities.
 
                 foreach (var (type, _, _) in templates)
@@ -153,12 +145,42 @@ namespace Game.GOAPSample
                 return true;
             }
 
-            for (int i = 0; i < 10; i++)
+            var templates = new List<(GameEntityType, int, bool)>
             {
-                if (generate())
+                (GameEntityType.House, _HousesCount.Random(), true),
+                (GameEntityType.Forest, _ForestCount.Random(), true),
+                (GameEntityType.Glade, _GladesCount.Random(), true),
+                (GameEntityType.Troll, _TrollsCount.Random(), false)
+            };
+
+            while (true)
+            {
+                if (generate(templates))
                 {
                     return;
                 }
+
+                // Find a template with the highest count parameter.
+
+                var highCountIndex = -1;
+
+                for (int i = 0; i < templates.Count; i++)
+                {
+                    var (_, count, checkCollisions) = templates[i];
+                    if (highCountIndex == -1 || (count > highCountIndex && count > 1 && checkCollisions))
+                    {
+                        highCountIndex = i;
+                    }
+                }
+
+                if (highCountIndex == -1)
+                    break;
+
+                // Decrease count to make generation possible.
+
+                var template = templates[highCountIndex];
+                template.Item2--;
+                templates[highCountIndex] = template;
             }
 
             Debug.LogError("Can't successfully generate the world. Adjust the generation parameters.");

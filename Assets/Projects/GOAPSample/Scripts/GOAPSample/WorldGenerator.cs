@@ -153,6 +153,8 @@ namespace Game.GOAPSample
                 (GameEntityType.Troll, _TrollsCount.Random(), false)
             };
 
+            int tries = 100;
+
             while (true)
             {
                 if (generate(templates))
@@ -174,7 +176,16 @@ namespace Game.GOAPSample
                 }
 
                 if (highCountIndex == -1)
-                    break;
+                {
+                    tries--;
+                    if (tries <= 0)
+                    {
+                        break;
+                    } else
+                    {
+                        continue;
+                    }
+                }
 
                 // Decrease count to make generation possible.
 

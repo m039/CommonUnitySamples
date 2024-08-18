@@ -15,7 +15,6 @@ namespace Game
             base.Awake();
 
             Blackboard.SetValue(BlackboardKeys.MoveSpeed, _MoveSpeed);
-            Blackboard.SetValue(BlackboardKeys.StartPosition, transform.position);
         }
 
         void OnValidate()

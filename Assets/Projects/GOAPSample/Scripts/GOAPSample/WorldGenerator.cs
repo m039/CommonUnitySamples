@@ -167,7 +167,7 @@ namespace Game.GOAPSample
                 for (int i = 0; i < templates.Count; i++)
                 {
                     var (_, count, checkCollisions) = templates[i];
-                    if (highCountIndex == -1 || (count > highCountIndex && count > 1 && checkCollisions))
+                    if ((count > highCountIndex || highCountIndex == -1) && count > 1 && checkCollisions)
                     {
                         highCountIndex = i;
                     }

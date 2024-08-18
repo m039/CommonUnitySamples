@@ -2,6 +2,7 @@ using Game.BehaviourTreeSample;
 using m039.Common.Blackboard;
 using m039.Common.DependencyInjection;
 using m039.Common.GOAP;
+using m039.Common.Pathfindig;
 using m039.Common.StateMachine;
 using System.Collections;
 using System.Text;
@@ -14,6 +15,13 @@ namespace Game.GOAPSample
     {
         static readonly Collider2D[] s_Buffer = new Collider2D[16];
 
+        #region Inspector
+
+        [SerializeField]
+        GraphController _GraphController;
+
+        #endregion
+
         [Inject]
         readonly GameUI _ui;
 
@@ -24,8 +32,12 @@ namespace Game.GOAPSample
 
         float _fpsTimer = 0;
 
+        Vector2 _previousScreenSize;
+
         void Start()
         {
+            ServiceLocator.Register(_GraphController.GetComponent<Seeker>());
+
             _ui.onRegenerate += () =>
             {
                 ForgetSelectedBot();
@@ -46,6 +58,7 @@ namespace Game.GOAPSample
             ProcessDebug();
             ProcessInput();
             ProcessBotInfo();
+            UpdateGraphController();
         }
 
         void ProcessDebug()
@@ -161,6 +174,23 @@ namespace Game.GOAPSample
         {
             Blackboard.SetValue(BlackboardKeys.DebugMode, value);
             _ui.fpsCounter.gameObject.SetActive(value);
+        }
+
+        void UpdateGraphController()
+        {
+            var height = Camera.main.orthographicSize * 2;
+            var width = height * Camera.main.aspect;
+
+            var size = new Vector2(width, height);
+            if (size != _previousScreenSize)
+            {
+                _previousScreenSize = size;
+
+                _GraphController.width = width;
+                _GraphController.height = height;
+
+                _GraphController.Refresh();
+            }
         }
     }
 }

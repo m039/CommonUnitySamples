@@ -32,6 +32,8 @@ namespace Game.GOAPSample
             base.OnCreateEntity(blackboard);
 
             Blackboard.SetValue(BlackboardKeys.House, blackboard.GetValue(BlackboardKeys.House));
+
+            botController.EventBus.Raise<IOnCreateEntityEvent>(a => a.OnCreateEntity());
         }
 
         protected override void OnDestroyEntity()

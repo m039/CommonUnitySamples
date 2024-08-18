@@ -1,11 +1,10 @@
-using Game.BehaviourTreeSample;
 using m039.Common.Pathfindig;
 using System.Text;
 using UnityEngine;
 
 namespace Game.GOAPSample
 {
-    public class DebugBotSystem : CoreBotSystem
+    public class DebugBotSystem : CoreBotSystem, IOnCreateEntityEvent, IOnDestoyEntityEvent
     {
         #region Inspector
 
@@ -22,12 +21,15 @@ namespace Game.GOAPSample
             base.Init(botController);
 
             botController.ServiceLocator.Register(this);
+            botController.EventBus.Subscribe(this);
         }
 
         public void DebugPath(Path path)
         {
-            if (path == null ||
-                !CoreGameController.Instance.Blackboard.GetValue(BlackboardKeys.DebugPathfinding))
+            if (!CoreGameController.Instance.Blackboard.GetValue(BlackboardKeys.DebugPathfinding))
+                return;
+
+            if (path == null)
             {
                 _DebugPathLine.positionCount = 0;
             } else
@@ -83,6 +85,22 @@ namespace Game.GOAPSample
 
                 _DebugInfoText.text = sb.ToString();
             }
+        }
+
+        public void OnCreateEntity()
+        {
+            CoreGameController.Instance.Blackboard.Subscribe(BlackboardKeys.DebugPathfinding, OnDebugPathfindingChanged);
+            OnDebugPathfindingChanged();
+        }
+
+        public void OnDestroyEntity()
+        {
+            CoreGameController.Instance.Blackboard.Unsubscribe(BlackboardKeys.DebugPathfinding, OnDebugPathfindingChanged);
+        }
+
+        void OnDebugPathfindingChanged()
+        {
+            _DebugPathLine.gameObject.SetActive(CoreGameController.Instance.Blackboard.GetValue(BlackboardKeys.DebugPathfinding));
         }
     }
 }

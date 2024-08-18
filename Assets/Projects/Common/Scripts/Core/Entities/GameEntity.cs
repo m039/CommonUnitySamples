@@ -16,6 +16,11 @@ namespace Game
         void OnDestroyEntity();
     }
 
+    public interface IOnCreateEntityEvent : IEventSubscriber
+    {
+        void OnCreateEntity();
+    }
+
     public abstract class GameEntity : MonoBehaviour, IGameEntity
     {
         public int id { get; private set; }

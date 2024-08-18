@@ -5,18 +5,15 @@ using UnityEngine;
 
 namespace Game.GOAPSample
 {
-    public class DebugInfoBotSystem : CoreBotSystem
+    public class DebugBotSystem : CoreBotSystem
     {
         #region Inspector
 
         [SerializeField]
-        TMPro.TMP_Text _Text;
+        TMPro.TMP_Text _DebugInfoText;
 
         [SerializeField]
         LineRenderer _DebugPathLine;
-
-        [SerializeField]
-        bool _DebugPath = false;
 
         #endregion
 
@@ -29,7 +26,8 @@ namespace Game.GOAPSample
 
         public void DebugPath(Path path)
         {
-            if (path == null || !_DebugPath)
+            if (path == null ||
+                !CoreGameController.Instance.Blackboard.GetValue(BlackboardKeys.DebugPathfinding))
             {
                 _DebugPathLine.positionCount = 0;
             } else
@@ -51,10 +49,10 @@ namespace Game.GOAPSample
             if (botController.Blackboard.ContainsKey(BlackboardKeys.IsInvisible) ||
                 !CoreGameController.Instance.Blackboard.GetValue(BlackboardKeys.DebugMode))
             {
-                _Text.gameObject.SetActive(false);
+                _DebugInfoText.gameObject.SetActive(false);
             } else
             {
-                _Text.gameObject.SetActive(true);
+                _DebugInfoText.gameObject.SetActive(true);
 
                 var sb = new StringBuilder();
 
@@ -83,7 +81,7 @@ namespace Game.GOAPSample
                     sb.AppendLine($"Hunger: {number}");
                 }
 
-                _Text.text = sb.ToString();
+                _DebugInfoText.text = sb.ToString();
             }
         }
     }

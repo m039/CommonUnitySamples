@@ -41,11 +41,20 @@ namespace Game.GOAPSample
             _ui.onRegenerate += GenerateWorld;
             GenerateWorld();
 
+            // Debug mode toggle.
             _ui.debugModeToggle.isOn = true;
             OnDebugModeChanged(_ui.debugModeToggle.isOn);
             _ui.debugModeToggle.onValueChanged.AddListener((v) =>
             {
                 OnDebugModeChanged(v);
+            });
+
+            // Debug pathfinding toggle.
+            _ui.debugPathfindingToggle.isOn = false;
+            OnDebugPathfindingChanged(_ui.debugPathfindingToggle.isOn);
+            _ui.debugPathfindingToggle.onValueChanged.AddListener((v) =>
+            {
+                OnDebugPathfindingChanged(v);
             });
         }
 
@@ -172,10 +181,16 @@ namespace Game.GOAPSample
             _ui.fpsCounter.gameObject.SetActive(value);
         }
 
+        void OnDebugPathfindingChanged(bool value)
+        {
+            Blackboard.SetValue(BlackboardKeys.DebugPathfinding, value);
+        }
+
         void GenerateWorld()
         {
             IEnumerator command()
             {
+                _ui.ClearWarningNotification();
                 ForgetSelectedBot();
                 _worldGenerator.GenerateWorld();
                 yield return new WaitForFixedUpdate();
@@ -197,6 +212,10 @@ namespace Game.GOAPSample
 
                 _GraphController.width = width;
                 _GraphController.height = height;
+
+                var rows = _GraphController.rows;
+                var columns = (int)(rows * Camera.main.aspect);
+                _GraphController.columns = columns;
 
                 _GraphController.Refresh();
             }

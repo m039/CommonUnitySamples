@@ -29,6 +29,9 @@ namespace Game.GOAPSample
         [Inject]
         readonly IGameEntityFactory _entityFactory;
 
+        [Inject]
+        readonly GameUI _ui;
+
         [Provide]
         WorldGenerator GetWorldGenerator()
         {
@@ -194,7 +197,7 @@ namespace Game.GOAPSample
                 templates[highCountIndex] = template;
             }
 
-            Debug.LogError("Can't successfully generate the world. Adjust the generation parameters.");
+            _ui.SetWarningNotification("Can't successfully generate the world");
         }
     }
 }

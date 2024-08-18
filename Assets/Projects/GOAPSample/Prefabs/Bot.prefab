@@ -82,8 +82,8 @@ LineRenderer:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 3
-        time: 0.07103729
-        value: 0.03067398
+        time: 0
+        value: 0.01567398
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -216,7 +216,7 @@ GameObject:
   - component: {fileID: 7154718958664578953}
   - component: {fileID: 2609944523111771117}
   m_Layer: 7
-  m_Name: DebugInfo
+  m_Name: Debug
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -249,9 +249,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0a0d40dc7cb71b7439a8c716113cad52, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _Text: {fileID: 1276465069738362679}
+  _DebugInfoText: {fileID: 1276465069738362679}
   _DebugPathLine: {fileID: 7480435799918696206}
-  _DebugPath: 0
 --- !u!1 &2695716394686587689
 GameObject:
   m_ObjectHideFlags: 0

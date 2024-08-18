@@ -48,7 +48,7 @@ namespace Game.GOAPSample
             _path = seeker.Search(_gameEntity.position, _destination());
             _index = 0;
 
-            botController.ServiceLocator.Get<DebugInfoBotSystem>().DebugPath(_path);
+            botController.ServiceLocator.Get<DebugBotSystem>().DebugPath(_path);
 
             if (_path != null)
             {

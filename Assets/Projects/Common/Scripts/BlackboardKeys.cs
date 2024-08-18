@@ -44,6 +44,6 @@ namespace Game
         static readonly public BlackboardKey<bool> InDanger = new("in_danger");
         static readonly public BlackboardKey<float> MoveSpeedMultiplier = new("move_speed_multiplier");
         static readonly public BlackboardKey<bool> DebugPathfinding = new("debug_pathfinding");
-
+        static readonly public BlackboardKey<float> MoveAnimationSpeed = new("move_animation_speed");
     }
 }

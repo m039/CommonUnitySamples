@@ -1,6 +1,8 @@
+using Game.BehaviourTreeSample;
 using Game.StateMachineSample;
 using m039.Common;
 using m039.Common.GOAP;
+using m039.Common.Pathfindig;
 using m039.Common.StateMachine;
 using UnityEngine;
 
@@ -28,9 +30,19 @@ namespace Game.GOAPSample
 
         Timer _timer;
 
+        Path _path;
+
+        int _pathIndex;
+
+        IGameEntity _gameEntity;
+
+        Vector2 _destination;
+
         public override void Init(CoreBotController botController)
         {
             base.Init(botController);
+
+            _gameEntity = botController.ServiceLocator.Get<IGameEntity>();
 
             botController.EventBus.Subscribe(this);
 
@@ -62,6 +74,24 @@ namespace Game.GOAPSample
         {
             _stateMachine.Update();
 
+            if (_path != null)
+            {
+                if (Vector2.Distance(_gameEntity.position, _path.vectorPath[_pathIndex]) < 0.01f)
+                {
+                    _pathIndex++;
+
+                    if (_pathIndex < _path.vectorPath.Count)
+                    {
+                        botController.Blackboard.SetValue(BlackboardKeys.Destination, _path.vectorPath[_pathIndex]);
+                    }
+                    else
+                    {
+                        botController.Blackboard.SetValue(BlackboardKeys.Destination, _destination);
+                        _path = null;
+                    }
+                }
+            }
+
             if (botController.Blackboard.ContainsKey(BlackboardKeys.Destination))
                 return;
 
@@ -73,16 +103,33 @@ namespace Game.GOAPSample
                 _timer = new CountdownTimer(_IdleDuration.Random());
                 _timer.onStop += () =>
                 {
-                    FindNewDestination();
+                    CalcNewPath();
                     _timer = null;
                 };
                 _timer.Start();
             }
         }
 
-        void FindNewDestination()
+        void CalcNewPath()
         {
-            botController.Blackboard.SetValue(BlackboardKeys.Destination, CameraUtils.RandomPositionOnScreen());
+            var seeker = CoreGameController.Instance.ServiceLocator.Get<Seeker>();
+            _destination = CameraUtils.RandomPositionOnScreen();
+
+            _path = seeker.Search(_gameEntity.position, _destination);
+            _pathIndex = 0;
+
+            botController.ServiceLocator.Get<DebugBotSystem>().DebugPath(_path);
+
+            if (_path != null)
+            {
+                botController.Blackboard.SetValue(BlackboardKeys.Destination, _path.vectorPath[_pathIndex]);
+                botController.Blackboard.SetValue(BlackboardKeys.DestinationThreshold, 0.01f);
+            }
+            else
+            {
+                botController.Blackboard.SetValue(BlackboardKeys.Destination, _destination);
+                botController.Blackboard.SetValue(BlackboardKeys.DestinationThreshold, 0.01f);
+            }
         }
 
         public void OnDestroyEntity()

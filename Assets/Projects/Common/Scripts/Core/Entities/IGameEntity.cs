@@ -14,7 +14,8 @@ namespace Game.BehaviourTreeSample
         Tree = 5,
         Glade = 6,
         Mushroom = 7,
-        Troll = 8
+        Troll = 8,
+        Obstacle = 9
     }
 
     public interface IGameEntity

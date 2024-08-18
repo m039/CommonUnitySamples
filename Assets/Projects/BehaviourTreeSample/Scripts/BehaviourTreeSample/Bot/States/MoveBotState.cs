@@ -15,6 +15,30 @@ namespace Game.BehaviourTreeSample
 
         #endregion
 
+        protected override void OnInit(CoreBotController botController)
+        {
+            base.OnInit(botController);
+
+            if (!_SyncMoveSpeedInAnimator)
+            {
+                botController.Blackboard.Subscribe(BlackboardKeys.MoveAnimationSpeed, UpdateMoveAnimationSpeed);
+                UpdateMoveAnimationSpeed();
+            }
+        }
+
+        void UpdateMoveAnimationSpeed()
+        {
+            if (!botController.ServiceLocator.TryGet(out Animator animator))
+            {
+                return;
+            }
+
+            if (botController.Blackboard.TryGetValue(BlackboardKeys.MoveAnimationSpeed, out var animationSpeed))
+            {
+                animator.SetFloat(AnimationKeys.MoveSpeed, animationSpeed);
+            }
+        }
+
         public override void OnEnter()
         {
             base.OnEnter();

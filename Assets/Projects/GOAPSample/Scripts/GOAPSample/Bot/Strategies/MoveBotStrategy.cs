@@ -37,7 +37,7 @@ namespace Game.GOAPSample
 
         Path _path;
 
-        int _index;
+        int _pathIndex;
 
         public override void Start()
         {
@@ -45,22 +45,39 @@ namespace Game.GOAPSample
 
             var seeker = CoreGameController.Instance.ServiceLocator.Get<Seeker>();
 
-            _path = seeker.Search(_gameEntity.position, _destination());
-            _index = 0;
+            var destination = _destination();
+            var inRangeOf = _inRangeOf();
+            var vector = (destination - _gameEntity.position);
+            var distance = vector.magnitude - inRangeOf;
+
+            if (distance < 0)
+            {
+                return;
+            }
+
+            _path = seeker.Search(_gameEntity.position, destination);
+            _pathIndex = 0;
+
+            if (_path == null)
+            {
+                // Calculate new path with destination minus the range distance.
+                _path = seeker.Search(_gameEntity.position, _gameEntity.position + vector.normalized * distance);
+            }
 
             botController.ServiceLocator.Get<DebugBotSystem>().DebugPath(_path);
 
             if (_path != null)
             {
-                botController.Blackboard.SetValue(BlackboardKeys.Destination, _path.vectorPath[_index]);
+                botController.Blackboard.SetValue(BlackboardKeys.Destination, _path.vectorPath[_pathIndex]);
                 botController.Blackboard.SetValue(BlackboardKeys.DestinationThreshold, 0.01f);
             } else
             {
-                botController.Blackboard.SetValue(BlackboardKeys.Destination, _destination());
-                botController.Blackboard.SetValue(BlackboardKeys.DestinationThreshold, _inRangeOf());
+                botController.Blackboard.SetValue(BlackboardKeys.Destination, destination);
+                botController.Blackboard.SetValue(BlackboardKeys.DestinationThreshold, inRangeOf);
             }
 
             botController.Blackboard.SetValue(BlackboardKeys.MoveSpeedMultiplier, _moveSpeedMultiplier);
+            botController.Blackboard.SetValue(BlackboardKeys.MoveAnimationSpeed, _moveSpeedMultiplier);
         }
 
         public override void Update(float deltaTime)
@@ -70,12 +87,12 @@ namespace Game.GOAPSample
             if (_path == null)
                 return;
 
-            if (Vector2.Distance(_gameEntity.position, _path.vectorPath[_index]) < 0.01f) {
-                _index++;
+            if (Vector2.Distance(_gameEntity.position, _path.vectorPath[_pathIndex]) < 0.01f) {
+                _pathIndex++;
 
-                if (_index < _path.vectorPath.Count)
+                if (_pathIndex < _path.vectorPath.Count)
                 {
-                    botController.Blackboard.SetValue(BlackboardKeys.Destination, _path.vectorPath[_index]);
+                    botController.Blackboard.SetValue(BlackboardKeys.Destination, _path.vectorPath[_pathIndex]);
                 } else
                 {
                     botController.Blackboard.SetValue(BlackboardKeys.Destination, _destination());

@@ -5,6 +5,7 @@ using m039.Common.DependencyInjection;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Video;
 
 namespace Game.GOAPSample
 {
@@ -23,6 +24,9 @@ namespace Game.GOAPSample
 
         [SerializeField]
         MinMaxInt _TrollsCount = new(5, 10);
+
+        [SerializeField]
+        MinMaxInt _ObstaclesCount = new(10, 20);
 
         #endregion
 
@@ -77,19 +81,36 @@ namespace Game.GOAPSample
                 }
             }
 
-            void spawn(GameEntityType type, int count, List<GameEntityType> checkTypes)
+            void spawn(GameEntityType type, int count, System.Type typeClass, List< GameEntityType> checkTypes)
             {
-                var spawnRadius = _entityFactory.GetPrefab(type).spawnRadius;
+                // Data needed for spawning entities with different type classes.
+                List<(float, int)> spawnData; 
+                if (typeClass == null)
+                {
+                    spawnData = new()
+                    {
+                        (_entityFactory.GetPrefab(type).spawnRadius, 0)
+                    };
+                } else
+                {
+                    spawnData = new();
+                    foreach (var e in System.Enum.GetValues(typeClass))
+                    {
+                        var typeClassInt = (int)e;
+                        spawnData.Add((_entityFactory.GetPrefab(type, typeClassInt).spawnRadius, typeClassInt));
+                    }
+                }
 
                 for (int i = 0; i < count; i++)
                 {
                     var position = Vector2.zero;
                     var validPosition = false;
+                    var data = spawnData[Random.Range(0, spawnData.Count)];
 
                     for (int j = 0; j < 100; j++)
                     {
-                        position = CameraUtils.RandomPositionOnScreen(spawnRadius);
-                        if (isOccupied(position, spawnRadius, checkTypes))
+                        position = CameraUtils.RandomPositionOnScreen(data.Item1);
+                        if (isOccupied(position, data.Item1, checkTypes))
                         {
                             continue;
                         }
@@ -102,17 +123,18 @@ namespace Game.GOAPSample
 
                     _blackboard.Clear();
                     _blackboard.SetValue(BlackboardKeys.Position, position);
+                    _blackboard.SetValue(BlackboardKeys.TypeClass, data.Item2);
                     _entityFactory.Create(type, _blackboard);
                 }
             }
 
-            bool generate(List<(GameEntityType, int, bool)> templates)
+            bool generate(List<Template> templates)
             {
                 // Destroy previous entities.
 
-                foreach (var (type, _, _) in templates)
+                foreach (var template in templates)
                 {
-                    foreach (var entity in _entityFactory.GetEnteties(type).ToArray())
+                    foreach (var entity in _entityFactory.GetEnteties(template.type).ToArray())
                     {
                         _entityFactory.Destroy(entity);
                     }
@@ -122,24 +144,24 @@ namespace Game.GOAPSample
 
                 var checkTypes = new List<GameEntityType>();
 
-                foreach (var (type, count, checkCollisions) in templates)
+                foreach (var template in templates)
                 {
-                    if (checkCollisions)
+                    if (template.checkCollisions)
                     {
-                        checkTypes.Add(type);
-                        spawn(type, count, checkTypes);
+                        checkTypes.Add(template.type);
+                        spawn(template.type, template.count, template.typeClass, checkTypes);
                     }
                     else
                     {
-                        spawnDefault(type, count);
+                        spawnDefault(template.type, template.count);
                     }
                 }
 
                 // Check if all entities have been succesfully spawned.
 
-                foreach (var (type, _, _) in templates)
+                foreach (var template in templates)
                 {
-                    if (_entityFactory.GetEnteties(type).Count <= 0)
+                    if (_entityFactory.GetEnteties(template.type).Count <= 0)
                     {
                         return false;
                     }
@@ -148,12 +170,13 @@ namespace Game.GOAPSample
                 return true;
             }
 
-            var templates = new List<(GameEntityType, int, bool)>
+            var templates = new List<Template>
             {
-                (GameEntityType.House, _HousesCount.Random(), true),
-                (GameEntityType.Forest, _ForestCount.Random(), true),
-                (GameEntityType.Glade, _GladesCount.Random(), true),
-                (GameEntityType.Troll, _TrollsCount.Random(), false)
+                new (GameEntityType.House, _HousesCount.Random()),
+                new (GameEntityType.Forest, _ForestCount.Random()),
+                new (GameEntityType.Glade, _GladesCount.Random()),
+                new (GameEntityType.Troll, _TrollsCount.Random(), checkCollisions: false),
+                new (GameEntityType.Obstacle, _ObstaclesCount.Random(), typeClass: typeof(ObstalceType))
             };
 
             int tries = 100;
@@ -168,11 +191,12 @@ namespace Game.GOAPSample
                 // Find a template with the highest count parameter.
 
                 var highCountIndex = -1;
+                Template template;
 
                 for (int i = 0; i < templates.Count; i++)
                 {
-                    var (_, count, checkCollisions) = templates[i];
-                    if ((count > highCountIndex || highCountIndex == -1) && count > 1 && checkCollisions)
+                    template = templates[i];
+                    if ((template.count > highCountIndex || highCountIndex == -1) && template.count > 1 && template.checkCollisions)
                     {
                         highCountIndex = i;
                     }
@@ -192,12 +216,28 @@ namespace Game.GOAPSample
 
                 // Decrease count to make generation possible.
 
-                var template = templates[highCountIndex];
-                template.Item2--;
+                template = templates[highCountIndex];
+                template.count--;
                 templates[highCountIndex] = template;
             }
 
             _ui.SetWarningNotification("Can't successfully generate the world");
+        }
+
+        struct Template
+        {
+            public GameEntityType type;
+            public int count;
+            public bool checkCollisions;
+            public System.Type typeClass;
+
+            public Template(GameEntityType type, int count, bool checkCollisions = true, System.Type typeClass = null)
+            {
+                this.type = type;
+                this.count = count;
+                this.checkCollisions = checkCollisions;
+                this.typeClass = typeClass;
+            }
         }
     }
 }

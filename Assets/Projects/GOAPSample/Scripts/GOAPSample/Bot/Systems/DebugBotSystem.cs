@@ -26,6 +26,9 @@ namespace Game.GOAPSample
 
         public void DebugPath(Path path)
         {
+            if (_DebugPathLine == null)
+                return;
+
             if (!CoreGameController.Instance.Blackboard.GetValue(BlackboardKeys.DebugPathfinding))
                 return;
 
@@ -47,6 +50,9 @@ namespace Game.GOAPSample
         public override void Process(float deltaTime)
         {
             base.Process(deltaTime);
+
+            if (_DebugInfoText == null)
+                return;
 
             if (botController.Blackboard.ContainsKey(BlackboardKeys.IsInvisible) ||
                 !CoreGameController.Instance.Blackboard.GetValue(BlackboardKeys.DebugMode))

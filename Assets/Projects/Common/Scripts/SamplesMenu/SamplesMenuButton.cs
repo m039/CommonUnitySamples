@@ -1,7 +1,11 @@
-using UnityEditor.UI;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
+
+#if UNITY_EDITOR
+using UnityEditor.UI;
+using UnityEditor;
+#endif
 
 namespace Game
 {

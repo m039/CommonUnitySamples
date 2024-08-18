@@ -75,15 +75,12 @@ namespace Game.GOAPSample
 
                 if (botController.Blackboard.TryGetValue(BlackboardKeys.Hunger, out var hunger))
                 {
-                    string format;
+                    string number = hunger.ToString("0.0");
                     if (hunger > 0.8f)
                     {
-                        format = "<color=\"red\">{0}</color>";
-                    } else
-                    {
-                        format = "{0}";
+                        number = $"<color=\"red\">{number}</color>";
                     }
-                    sb.AppendLine(string.Format(format, $"Hunger: {hunger.ToString("0.0")}"));
+                    sb.AppendLine($"Hunger: {number}");
                 }
 
                 _Text.text = sb.ToString();

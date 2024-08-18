@@ -1,4 +1,5 @@
 using Game.BehaviourTreeSample;
+using m039.Common.Pathfindig;
 using System.Text;
 using UnityEngine;
 
@@ -11,7 +12,37 @@ namespace Game.GOAPSample
         [SerializeField]
         TMPro.TMP_Text _Text;
 
+        [SerializeField]
+        LineRenderer _DebugPathLine;
+
+        [SerializeField]
+        bool _DebugPath = false;
+
         #endregion
+
+        public override void Init(CoreBotController botController)
+        {
+            base.Init(botController);
+
+            botController.ServiceLocator.Register(this);
+        }
+
+        public void DebugPath(Path path)
+        {
+            if (path == null || !_DebugPath)
+            {
+                _DebugPathLine.positionCount = 0;
+            } else
+            {
+                _DebugPathLine.positionCount = path.vectorPath.Count;
+                for (int i = 0; i < path.vectorPath.Count; i++)
+                {
+                    var p = path.vectorPath[i];
+                    _DebugPathLine.SetPosition(i, new Vector3(p.x, p.y, 10));
+                }
+                _DebugPathLine.startColor = _DebugPathLine.endColor = Color.white;
+            }
+        }
 
         public override void Process(float deltaTime)
         {

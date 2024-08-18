@@ -38,12 +38,8 @@ namespace Game.GOAPSample
         {
             ServiceLocator.Register(_GraphController.GetComponent<Seeker>());
 
-            _ui.onRegenerate += () =>
-            {
-                ForgetSelectedBot();
-                _worldGenerator.GenerateWorld();
-            };
-            _worldGenerator.GenerateWorld();
+            _ui.onRegenerate += GenerateWorld;
+            GenerateWorld();
 
             _ui.debugModeToggle.isOn = true;
             OnDebugModeChanged(_ui.debugModeToggle.isOn);
@@ -174,6 +170,19 @@ namespace Game.GOAPSample
         {
             Blackboard.SetValue(BlackboardKeys.DebugMode, value);
             _ui.fpsCounter.gameObject.SetActive(value);
+        }
+
+        void GenerateWorld()
+        {
+            IEnumerator command()
+            {
+                ForgetSelectedBot();
+                _worldGenerator.GenerateWorld();
+                yield return new WaitForFixedUpdate();
+                _GraphController.Refresh();
+            }
+
+            StartCoroutine(command());
         }
 
         void UpdateGraphController()

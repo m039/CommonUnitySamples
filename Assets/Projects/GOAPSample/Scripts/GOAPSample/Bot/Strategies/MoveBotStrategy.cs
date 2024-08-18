@@ -48,6 +48,8 @@ namespace Game.GOAPSample
             _path = seeker.Search(_gameEntity.position, _destination());
             _index = 0;
 
+            botController.ServiceLocator.Get<DebugInfoBotSystem>().DebugPath(_path);
+
             if (_path != null)
             {
                 botController.Blackboard.SetValue(BlackboardKeys.Destination, _path.vectorPath[_index]);

@@ -113,7 +113,16 @@ namespace Game.GOAPSample
         void CalcNewPath()
         {
             var seeker = CoreGameController.Instance.ServiceLocator.Get<Seeker>();
-            _destination = CameraUtils.RandomPositionOnScreen();
+            var graphController = CoreGameController.Instance.ServiceLocator.Get<IGraphController>();
+
+            // Find not blocking destination.
+            for (int i = 0; i < 10; i++)
+            {
+                _destination = CameraUtils.RandomPositionOnScreen();
+                var node = graphController.GetNodeAt(_destination);
+                if (node != null && node.type != NodeType.Blocked)
+                    break;
+            }
 
             _path = seeker.Search(_gameEntity.position, _destination);
             _pathIndex = 0;

@@ -37,6 +37,7 @@ namespace Game.GOAPSample
         void Start()
         {
             ServiceLocator.Register(_GraphController.GetComponent<Seeker>());
+            ServiceLocator.Register<IGraphController>(_GraphController);
 
             _ui.onRegenerate += GenerateWorld;
             GenerateWorld();

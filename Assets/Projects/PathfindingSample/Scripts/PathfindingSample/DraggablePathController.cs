@@ -1,8 +1,5 @@
 using m039.Common.DependencyInjection;
 using m039.Common.Pathfindig;
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Game.PathfindingSample
@@ -47,7 +44,7 @@ namespace Game.PathfindingSample
         {
             _handle1.Reset();
             _handle2.Reset();
-            UpdatePath();
+            Refresh();
         }
 
         void Awake()
@@ -59,7 +56,7 @@ namespace Game.PathfindingSample
         {
             _handle1 = new Handle(_Handle1);
             _handle2 = new Handle(_Handle2);
-            UpdatePath();
+            Refresh();
         }
 
         void Update()
@@ -96,7 +93,7 @@ namespace Game.PathfindingSample
                     p.x = position.x;
                     p.y = position.y;
                     _currentHandle.transform.position = p;
-                    UpdatePath();
+                    Refresh();
                 } else if (Input.GetMouseButtonUp(0))
                 {
                     _currentHandle.renderer.color = Color.white;
@@ -107,7 +104,7 @@ namespace Game.PathfindingSample
 
         const float Z = 10f;
 
-        void UpdatePath()
+        public void Refresh()
         {
             var path = _Seeker.Search(_handle1.position, _handle2.position);
             if (path == null || path.vectorPath.Count <= 0)

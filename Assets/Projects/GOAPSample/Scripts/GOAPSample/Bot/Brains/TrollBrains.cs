@@ -1,7 +1,6 @@
 using Game.BehaviourTreeSample;
 using Game.StateMachineSample;
 using m039.Common;
-using m039.Common.GOAP;
 using m039.Common.Pathfindig;
 using m039.Common.StateMachine;
 using UnityEngine;
@@ -35,8 +34,6 @@ namespace Game.GOAPSample
         int _pathIndex;
 
         IGameEntity _gameEntity;
-
-        Vector2 _destination;
 
         public override void Init(CoreBotController botController)
         {
@@ -86,7 +83,6 @@ namespace Game.GOAPSample
                     }
                     else
                     {
-                        botController.Blackboard.SetValue(BlackboardKeys.Destination, _destination);
                         _path = null;
                     }
                 }
@@ -115,16 +111,18 @@ namespace Game.GOAPSample
             var seeker = CoreGameController.Instance.ServiceLocator.Get<Seeker>();
             var graphController = CoreGameController.Instance.ServiceLocator.Get<IGraphController>();
 
+            var destination = Vector2.zero;
+
             // Find not blocking destination.
             for (int i = 0; i < 10; i++)
             {
-                _destination = CameraUtils.RandomPositionOnScreen();
-                var node = graphController.GetNodeAt(_destination);
+                destination = CameraUtils.RandomPositionOnScreen();
+                var node = graphController.GetNodeAt(destination);
                 if (node != null && node.type != NodeType.Blocked)
                     break;
             }
 
-            _path = seeker.Search(_gameEntity.position, _destination);
+            _path = seeker.Search(_gameEntity.position, destination);
             _pathIndex = 0;
 
             botController.ServiceLocator.Get<DebugBotSystem>().DebugPath(_path);
@@ -136,7 +134,7 @@ namespace Game.GOAPSample
             }
             else
             {
-                botController.Blackboard.SetValue(BlackboardKeys.Destination, _destination);
+                botController.Blackboard.SetValue(BlackboardKeys.Destination, destination);
                 botController.Blackboard.SetValue(BlackboardKeys.DestinationThreshold, 0.01f);
             }
         }

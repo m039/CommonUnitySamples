@@ -41,6 +41,10 @@ namespace Game.PathfindingSample
                 _graphController.width = width;
                 _graphController.height = height;
 
+                var rows = _graphController.rows;
+                var columns = (int)(rows * Camera.main.aspect);
+                _graphController.columns = columns;
+
                 _graphController.Refresh();
             }
         }

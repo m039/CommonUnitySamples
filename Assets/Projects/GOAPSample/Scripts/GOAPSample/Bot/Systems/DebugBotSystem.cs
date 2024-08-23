@@ -16,6 +16,8 @@ namespace Game.GOAPSample
 
         #endregion
 
+        Path _lastPath;
+
         public override void Init(CoreBotController botController)
         {
             base.Init(botController);
@@ -28,6 +30,8 @@ namespace Game.GOAPSample
         {
             if (_DebugPathLine == null)
                 return;
+
+            _lastPath = path;
 
             if (!CoreGameController.Instance.Blackboard.GetValue(BlackboardKeys.DebugPathfinding))
                 return;
@@ -107,6 +111,7 @@ namespace Game.GOAPSample
         void OnDebugPathfindingChanged()
         {
             _DebugPathLine.gameObject.SetActive(CoreGameController.Instance.Blackboard.GetValue(BlackboardKeys.DebugPathfinding));
+            DebugPath(_lastPath);
         }
     }
 }

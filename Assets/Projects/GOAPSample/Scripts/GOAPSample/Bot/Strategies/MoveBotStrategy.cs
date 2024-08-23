@@ -56,7 +56,7 @@ namespace Game.GOAPSample
             }
 
             _path = seeker.Search(_gameEntity.position, destination);
-            _pathIndex = 0;
+            _pathIndex = 1;
 
             if (_path == null)
             {
@@ -66,7 +66,7 @@ namespace Game.GOAPSample
 
             botController.ServiceLocator.Get<DebugBotSystem>().DebugPath(_path);
 
-            if (_path != null)
+            if (_path != null && _path.vectorPath.Count > 1)
             {
                 botController.Blackboard.SetValue(BlackboardKeys.Destination, _path.vectorPath[_pathIndex]);
                 botController.Blackboard.SetValue(BlackboardKeys.DestinationThreshold, 0.01f);

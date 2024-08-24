@@ -3,6 +3,7 @@ using Game.StateMachineSample;
 using m039.Common;
 using m039.Common.Pathfindig;
 using m039.Common.StateMachine;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Game.GOAPSample
@@ -29,7 +30,7 @@ namespace Game.GOAPSample
 
         Timer _timer;
 
-        Path _path;
+        IList<Vector3> _vectorPath;
 
         int _pathIndex;
 
@@ -71,19 +72,19 @@ namespace Game.GOAPSample
         {
             _stateMachine.Update();
 
-            if (_path != null)
+            if (_vectorPath != null)
             {
-                if (Vector2.Distance(_gameEntity.position, _path.vectorPath[_pathIndex]) < 0.01f)
+                if (Vector2.Distance(_gameEntity.position, _vectorPath[_pathIndex]) < 0.01f)
                 {
                     _pathIndex++;
 
-                    if (_pathIndex < _path.vectorPath.Count)
+                    if (_pathIndex < _vectorPath.Count)
                     {
-                        botController.Blackboard.SetValue(BlackboardKeys.Destination, _path.vectorPath[_pathIndex]);
+                        botController.Blackboard.SetValue(BlackboardKeys.Destination, _vectorPath[_pathIndex]);
                     }
                     else
                     {
-                        _path = null;
+                        _vectorPath = null;
                     }
                 }
             }
@@ -122,14 +123,27 @@ namespace Game.GOAPSample
                     break;
             }
 
-            _path = seeker.Search(_gameEntity.position, destination);
+            var path = seeker.Search(_gameEntity.position, destination);
+            _vectorPath = null;
             _pathIndex = 0;
 
-            botController.ServiceLocator.Get<DebugBotSystem>().DebugPath(_path);
-
-            if (_path != null)
+            if (path != null)
             {
-                botController.Blackboard.SetValue(BlackboardKeys.Destination, _path.vectorPath[_pathIndex]);
+                if (CoreGameController.Instance.ServiceLocator.TryGet(out PathSmoother pathSmooter))
+                {
+                    _vectorPath = pathSmooter.GetSmoothPath(path.vectorPath);
+                }
+                else
+                {
+                    _vectorPath = path.vectorPath;
+                }
+            }
+
+            botController.ServiceLocator.Get<DebugBotSystem>().DebugPath(_vectorPath);
+
+            if (_vectorPath != null)
+            {
+                botController.Blackboard.SetValue(BlackboardKeys.Destination, _vectorPath[_pathIndex]);
                 botController.Blackboard.SetValue(BlackboardKeys.DestinationThreshold, 0.01f);
             }
             else

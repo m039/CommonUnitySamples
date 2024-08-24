@@ -1,6 +1,8 @@
 using Game.BehaviourTreeSample;
 using m039.Common.Pathfindig;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Game.GOAPSample
@@ -35,7 +37,7 @@ namespace Game.GOAPSample
 
         public override bool complete => Vector2.Distance(_gameEntity.position, _destination()) < _inRangeOf();
 
-        Path _path;
+        IList<Vector3> _vectorPath;
 
         int _pathIndex;
 
@@ -55,20 +57,32 @@ namespace Game.GOAPSample
                 return;
             }
 
-            _path = seeker.Search(_gameEntity.position, destination);
+            var path = seeker.Search(_gameEntity.position, destination);
+            _vectorPath = null;
             _pathIndex = 1;
 
-            if (_path == null)
+            if (path == null)
             {
                 // Calculate new path with destination minus the range distance.
-                _path = seeker.Search(_gameEntity.position, _gameEntity.position + vector.normalized * distance);
+                path = seeker.Search(_gameEntity.position, _gameEntity.position + vector.normalized * distance);
             }
 
-            botController.ServiceLocator.Get<DebugBotSystem>().DebugPath(_path);
-
-            if (_path != null && _path.vectorPath.Count > 1)
+            if (path != null && path.vectorPath.Count > 1)
             {
-                botController.Blackboard.SetValue(BlackboardKeys.Destination, _path.vectorPath[_pathIndex]);
+                if (CoreGameController.Instance.ServiceLocator.TryGet(out PathSmoother pathSmooter))
+                {
+                    _vectorPath = pathSmooter.GetSmoothPath(path.vectorPath);
+                } else
+                {
+                    _vectorPath = path.vectorPath;
+                }
+            }
+
+            botController.ServiceLocator.Get<DebugBotSystem>().DebugPath(_vectorPath);
+
+            if (_vectorPath != null && _vectorPath.Count > 1)
+            {
+                botController.Blackboard.SetValue(BlackboardKeys.Destination, _vectorPath[_pathIndex]);
                 botController.Blackboard.SetValue(BlackboardKeys.DestinationThreshold, 0.01f);
             } else
             {
@@ -84,19 +98,19 @@ namespace Game.GOAPSample
         {
             base.Update(deltaTime);
 
-            if (_path == null)
+            if (_vectorPath == null)
                 return;
 
-            if (Vector2.Distance(_gameEntity.position, _path.vectorPath[_pathIndex]) < 0.01f) {
+            if (Vector2.Distance(_gameEntity.position, _vectorPath[_pathIndex]) < 0.01f) {
                 _pathIndex++;
 
-                if (_pathIndex < _path.vectorPath.Count)
+                if (_pathIndex < _vectorPath.Count)
                 {
-                    botController.Blackboard.SetValue(BlackboardKeys.Destination, _path.vectorPath[_pathIndex]);
+                    botController.Blackboard.SetValue(BlackboardKeys.Destination, _vectorPath[_pathIndex]);
                 } else
                 {
                     botController.Blackboard.SetValue(BlackboardKeys.Destination, _destination());
-                    _path = null;
+                    _vectorPath = null;
                 }
             }
         }

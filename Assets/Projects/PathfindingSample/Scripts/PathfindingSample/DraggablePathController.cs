@@ -1,5 +1,7 @@
 using m039.Common.DependencyInjection;
 using m039.Common.Pathfindig;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Game.PathfindingSample
@@ -25,6 +27,9 @@ namespace Game.PathfindingSample
 
         [SerializeField]
         Seeker _Seeker;
+
+        [SerializeField]
+        PathSmoother _Smoother;
 
         #endregion
 
@@ -107,24 +112,27 @@ namespace Game.PathfindingSample
         public void Refresh()
         {
             var path = _Seeker.Search(_handle1.position, _handle2.position);
-            if (path == null || path.vectorPath.Count <= 0)
+            IList<Vector3> vectorPath = null;
+            if (path != null) {
+                vectorPath = _Smoother.GetSmoothPath(path.vectorPath);
+            }
+
+            if (path == null || vectorPath == null || vectorPath.Count <= 0)
             {
                 _LineRenderer.positionCount = 2;
                 _LineRenderer.SetPosition(0, _handle1.position);
                 _LineRenderer.SetPosition(1, _handle2.position);
-                _LineRenderer.startColor = _BadPathColor;
-                _LineRenderer.endColor = _BadPathColor;
+                _LineRenderer.startColor = _LineRenderer.endColor = _BadPathColor;
             } else
             {
-                _LineRenderer.positionCount = path.vectorPath.Count + 2;
+                _LineRenderer.positionCount = vectorPath.Count + 2;
                 _LineRenderer.SetPosition(0, _handle1.position);
-                for (int i = 0; i < path.vectorPath.Count; i++)
+                for (int i = 0; i < vectorPath.Count; i++)
                 {
-                    _LineRenderer.SetPosition(i + 1, CreatePosition(path.vectorPath[i], Z));
+                    _LineRenderer.SetPosition(i + 1, CreatePosition(vectorPath[i], Z));
                 }
                 _LineRenderer.SetPosition(_LineRenderer.positionCount - 1, _handle2.position);
-                _LineRenderer.startColor = _GoodPathColor;
-                _LineRenderer.endColor = _GoodPathColor;
+                _LineRenderer.startColor = _LineRenderer.endColor = _GoodPathColor;
             }
         }
 

@@ -76,7 +76,11 @@ namespace Game.BehaviourTreeSample
 
                 var moveSpeedMultiplier = botController.Blackboard.GetValue(BlackboardKeys.MoveSpeedMultiplier, 1);
 
-                gameEntity.position += _MoveSpeed * moveSpeedMultiplier * Time.deltaTime * direction;
+                gameEntity.position = Vector2.MoveTowards(
+                    gameEntity.position,
+                    destination,
+                    _MoveSpeed * moveSpeedMultiplier * Time.deltaTime
+                );
 
                 botController.Blackboard.UpdateValue(BlackboardKeys.Tiredness, x => x + Time.deltaTime);
             }

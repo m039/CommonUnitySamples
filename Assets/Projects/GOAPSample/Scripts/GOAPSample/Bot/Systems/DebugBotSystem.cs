@@ -1,4 +1,6 @@
 using m039.Common.Pathfindig;
+using System.Collections;
+using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 
@@ -16,7 +18,7 @@ namespace Game.GOAPSample
 
         #endregion
 
-        Path _lastPath;
+        IList<Vector3> _lastPath;
 
         public override void Init(CoreBotController botController)
         {
@@ -26,7 +28,7 @@ namespace Game.GOAPSample
             botController.EventBus.Subscribe(this);
         }
 
-        public void DebugPath(Path path)
+        public void DebugPath(IList<Vector3> path)
         {
             if (_DebugPathLine == null)
                 return;
@@ -41,10 +43,10 @@ namespace Game.GOAPSample
                 _DebugPathLine.positionCount = 0;
             } else
             {
-                _DebugPathLine.positionCount = path.vectorPath.Count;
-                for (int i = 0; i < path.vectorPath.Count; i++)
+                _DebugPathLine.positionCount = path.Count;
+                for (int i = 0; i < path.Count; i++)
                 {
-                    var p = path.vectorPath[i];
+                    var p = path[i];
                     _DebugPathLine.SetPosition(i, new Vector3(p.x, p.y, 10));
                 }
                 _DebugPathLine.startColor = _DebugPathLine.endColor = Color.white;

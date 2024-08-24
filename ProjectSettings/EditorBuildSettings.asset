@@ -20,4 +20,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/PathfindingSample.unity
     guid: 4004ca0176aff2a47bc646fd1b20fccf
+  - enabled: 1
+    path: Assets/Scenes/FlockingSample.unity
+    guid: 6a4dc02ca8c79414bb9afb696f124f4a
   m_configObjects: {}

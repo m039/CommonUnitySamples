@@ -7,7 +7,7 @@ namespace Game.FlockingSample
 {
     public class FlockingManager : MonoBehaviour, IDependencyProvider
     {
-        static readonly List<FlockingAgent> s_Neighbours = new();
+        static readonly Queue<FlockingAgent> s_Neighbours = new();
 
         static readonly Vector2Int[] Directions = new Vector2Int[]
         {
@@ -33,22 +33,20 @@ namespace Game.FlockingSample
         FlockingAgent _AgentPrefab;
 
         [SerializeField]
+        FlockingBehaviour _Behaviour;
+
+        [SerializeField]
         MinMaxInt _NumberOfAgents = new(10, 10);
 
         [SerializeField]
         float _NeighbourRadius = 1f;
 
-        public float separationCoeff = 1f;
+        [Range(1f, 100f)]
+        [SerializeField]
+        float _MaxSpeed = 5;
 
-        public float alignmentCoeff = 1f;
-
-        public float cohesionCoeff = 1f;
-
-        public float screenBoundAvoidanceCoeff = 1f;
-
-        public float rotationSpeedMultiplier = 1f;
-
-        public float movementSpeedMultiplier = 1f;
+        [SerializeField]
+        float _MovementSpeedMultiplier = 1f;
 
         [SerializeField]
         NeighboursMode _NeighboursMode = NeighboursMode.GridLookUp;
@@ -83,7 +81,7 @@ namespace Game.FlockingSample
                 var instance = Instantiate(_AgentPrefab, transform, false);
                 instance.transform.position = position;
                 instance.transform.rotation = Quaternion.Euler(0, 0, Random.Range(0, 360));
-
+                instance.Initialize(this);
                 _agents.Add(instance);
             }
         }
@@ -91,6 +89,8 @@ namespace Game.FlockingSample
         QuadTree _quadTree;
 
         GridLookUp _gridLookUp;
+
+        FlockingAgent _cachedNeighboursAgent;
 
         void Update()
         {
@@ -105,9 +105,17 @@ namespace Game.FlockingSample
                 }
             }
 
+            _cachedNeighboursAgent = null;
+
             foreach (var agent in _agents)
             {
-                agent.Process(this);
+                var move = _Behaviour.CalculateMove(this, agent);
+                move *= _MovementSpeedMultiplier;
+                if (move.magnitude > _MaxSpeed)
+                {
+                    move = move.normalized * _MaxSpeed;
+                }
+                agent.Move(move);
             }
 
             if (_NeighboursMode == NeighboursMode.GridLookUp)
@@ -118,8 +126,15 @@ namespace Game.FlockingSample
             _previousNeighborRadius = _NeighbourRadius;
         }
 
-        public List<FlockingAgent> GetNeighbours(FlockingAgent agent)
+        public Queue<FlockingAgent> GetNeighbours(FlockingAgent agent)
         {
+            if (_cachedNeighboursAgent == agent)
+            {
+                return s_Neighbours;
+            }
+
+            _cachedNeighboursAgent = agent;
+
             if (_NeighboursMode == NeighboursMode.Bruteforce) {
                 s_Neighbours.Clear();
 
@@ -130,7 +145,7 @@ namespace Game.FlockingSample
 
                     if (Vector2.Distance(agent.position, a.position) < _NeighbourRadius)
                     {
-                        s_Neighbours.Add(a);
+                        s_Neighbours.Enqueue(a);
                     }
                 }
 
@@ -152,7 +167,7 @@ namespace Game.FlockingSample
             Gizmos.color = Color.blue;
             Gizmos.DrawWireSphere(transform.position, _NeighbourRadius);
 
-            if ( _Debug)
+            if (_Debug)
             {
                 if (_NeighboursMode == NeighboursMode.QuadTree && _quadTree != null)
                 {
@@ -170,7 +185,7 @@ namespace Game.FlockingSample
 
             QuadNode<FlockingAgent> _root;
 
-            List<FlockingAgent>[,] _agents;
+            HashSet<FlockingAgent>[,] _agents;
 
             Rect _rect;
 
@@ -181,12 +196,18 @@ namespace Game.FlockingSample
             public GridLookUp(FlockingManager manager)
             {
                 _manager = manager;
-                _rect = CameraUtils.ScreenRect;
+                var screenRect = CameraUtils.ScreenRect;
+                const float padding = 0.1f;
+                _rect = new Rect(
+                    screenRect.position - screenRect.size * padding,
+                    screenRect.size * (1 + 2 * padding)
+                );
+                _rect = screenRect;
                 var length = _manager._NeighbourRadius * 2;
                 var width = (int)(_rect.width / length) + 1;
                 var height = (int)(_rect.height / length) + 1;
                 _size = new Vector2(_rect.width / width, _rect.height / height);
-                _agents = new List<FlockingAgent>[width, height];
+                _agents = new HashSet<FlockingAgent>[width, height];
 
                 foreach (var a in _manager._agents)
                 {
@@ -195,7 +216,7 @@ namespace Game.FlockingSample
                 }
             }
 
-            public List<FlockingAgent> GetNeighbours(FlockingAgent agent)
+            public Queue<FlockingAgent> GetNeighbours(FlockingAgent agent)
             {
                 s_Neighbours.Clear();
                 if (agent.gridX < 0 || agent.gridY < 0)
@@ -219,7 +240,7 @@ namespace Game.FlockingSample
                     {
                         if (Vector2.Distance(agent.position, a.position) < _manager._NeighbourRadius)
                         {
-                            s_Neighbours.Add(a);
+                            s_Neighbours.Enqueue(a);
                         }
                     }
                 }
@@ -256,7 +277,7 @@ namespace Game.FlockingSample
 
                         if (_agents[x, y] == null)
                         {
-                            _agents[x, y] = new List<FlockingAgent>();
+                            _agents[x, y] = new HashSet<FlockingAgent>();
                         }
                         _agents[a.gridX, a.gridY].Add(a);
                     }
@@ -303,10 +324,14 @@ namespace Game.FlockingSample
 
             void Init()
             {
-                var rect = CameraUtils.ScreenRect;
+                var screenRect = CameraUtils.ScreenRect;
+                const float padding = 0.1f;
+                var rect = new Rect(
+                    screenRect.position - new Vector2(screenRect.width, screenRect.height) * padding,
+                    screenRect.size * (1 + 2 * padding)
+                );
 
                 var size = Mathf.Min(rect.width, rect.height);
-
                 _deepestLevel = 1;
                 while (true)
                 {
@@ -323,7 +348,7 @@ namespace Game.FlockingSample
                 _root = CreateNode(rect, 1, agents);
             }
 
-            public List<FlockingAgent> GetNeighbours(FlockingAgent agent)
+            public Queue<FlockingAgent> GetNeighbours(FlockingAgent agent)
             {
                 var rect = CameraUtils.ScreenRect;
                 var size = rect.size / (_deepestLevel * 2);
@@ -342,7 +367,7 @@ namespace Game.FlockingSample
                     {
                         if (Vector2.Distance(agent.position, a.position) < _manager._NeighbourRadius)
                         {
-                            s_Neighbours.Add(a);
+                            s_Neighbours.Enqueue(a);
                         }
                     }
                 }

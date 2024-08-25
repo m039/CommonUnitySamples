@@ -928,16 +928,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _AgentPrefab: {fileID: 3616473631104367217, guid: e12bebea9d0ade643bfa9b52ac8c5ed5, type: 3}
+  _Behaviour: {fileID: 11400000, guid: 40c9fd3da38dcb64188d24aa5d4a8ca1, type: 2}
   _NumberOfAgents:
     min: 400
     max: 400
   _NeighbourRadius: 0.5
-  separationCoeff: 4
-  alignmentCoeff: 1
-  cohesionCoeff: 1.3
-  screenBoundAvoidanceCoeff: 10
-  rotationSpeedMultiplier: 1
-  movementSpeedMultiplier: 1
+  _MaxSpeed: 5
+  _MovementSpeedMultiplier: 0.5
   _NeighboursMode: 0
   _Debug: 1
 --- !u!4 &1663587028

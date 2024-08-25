@@ -1,9 +1,8 @@
 #if UNITY_EDITOR
-#define SHOW_NEIGHBOURS
+//#define SHOW_NEIGHBOURS
+//using System.Collections.Generic;
 #endif
-
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Game.FlockingSample
@@ -15,8 +14,6 @@ namespace Game.FlockingSample
         public float speed = 1f;
 
         public float bodyRadius = 1f;
-
-        public float rotationSpeed = 1f;
 
         #endregion
 
@@ -58,113 +55,26 @@ namespace Game.FlockingSample
             }
         }
 
+        FlockingManager _manager;
+
 #if SHOW_NEIGHBOURS
-        readonly List<FlockingAgent> _neighbours = new();
+        readonly List<FlockingAgent> _neighboars = new();
 #endif
 
-        Vector2 Separation(List<FlockingAgent> neighbours)
+        public void Initialize(FlockingManager manager)
         {
-            Vector2 point = Vector2.zero;
-            var count = 0;
-
-            foreach (var a in neighbours)
-            {
-                var v = a.position - position;
-                if (v.magnitude < bodyRadius)
-                {
-                    point += -v.normalized;
-                    count++;
-                }
-            }
-
-            if (count == 0)
-            {
-                return point;
-            }
-
-            return (point / count).normalized;
+            _manager = manager;
         }
 
-        Vector2 Alignment(List<FlockingAgent> neighbours)
+        public void Move(Vector2 move)
         {
-            if (neighbours.Count <= 0)
-                return Vector2.zero;
-
-            Vector2 direction = Vector2.zero;
-
-            foreach (var a in neighbours)
-            {
-                direction += a.up;
-            }
-
-            return (direction / neighbours.Count).normalized;
-        }
-
-        Vector2 Cohesion(List<FlockingAgent> neighbours)
-        {
-            if (neighbours.Count <= 0)
-                return Vector2.zero;
-
-            var averagePosition = Vector2.zero;
-
-            foreach (var a in neighbours)
-            {
-                averagePosition += a.position;
-            }
-
-            averagePosition /= neighbours.Count;
-
-            return (averagePosition - position).normalized;
-        }
-
-        Vector2 ScreenBoundAvoidance(FlockingManager manager)
-        {
-            var screenRect = CameraUtils.ScreenRect;
-            var direction = Vector2.zero;
-
-            if (position.x < screenRect.xMin + manager.NeighbourRadius) {
-                direction.x = 1;
-            }
-
-            if (position.x > screenRect.xMax - manager.NeighbourRadius)
-            {
-                direction.x = -1;
-            }
-
-            if (position.y < screenRect.yMin + manager.NeighbourRadius)
-            {
-                direction.y = 1;
-            }
-
-            if (position.y > screenRect.yMax - manager.NeighbourRadius)
-            {
-                direction.y = -1;
-            }
-
-            return direction.normalized;
-        }
-
-        public void Process(FlockingManager manager)
-        {
-            var neighbours = manager.GetNeighbours(this);
 #if SHOW_NEIGHBOURS
-            _neighbours.Clear();
-            _neighbours.AddRange(neighbours);
+            _neighboars.Clear();
+            _neighboars.AddRange(_manager.GetNeighbours(this));
 #endif
-            var separation = Separation(neighbours) * manager.separationCoeff;
-            var alignment = Alignment(neighbours) * manager.alignmentCoeff;
-            var cohesion = Cohesion(neighbours) * manager.cohesionCoeff;
-            var screenBoundAvoidance = ScreenBoundAvoidance(manager) * manager.screenBoundAvoidanceCoeff;
 
-            var direction = separation + cohesion + alignment + screenBoundAvoidance;
-
-            up = Vector2.MoveTowards(
-                up,
-                direction.normalized,
-                direction.magnitude * manager.rotationSpeedMultiplier * rotationSpeed * Time.deltaTime
-            );
-
-            var p = position + speed * Time.deltaTime * up * manager.movementSpeedMultiplier;
+            up = move;
+            var p = Vector2.MoveTowards(position, position + move, move.magnitude * speed * Time.deltaTime);
             var screenRect = CameraUtils.ScreenRect;
 
             if (p.x < screenRect.xMin - bodyRadius)
@@ -197,7 +107,7 @@ namespace Game.FlockingSample
 
 #if SHOW_NEIGHBOURS
             Gizmos.color = Color.magenta;
-            foreach (var a in _neighbours)
+            foreach (var a in _neighboars)
             {
                 Gizmos.DrawLine(position, a.position);
             }

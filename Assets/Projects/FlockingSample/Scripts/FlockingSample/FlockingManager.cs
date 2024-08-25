@@ -1,6 +1,9 @@
 using m039.Common;
 using m039.Common.DependencyInjection;
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using UnityEngine;
 
 namespace Game.FlockingSample
@@ -24,7 +27,7 @@ namespace Game.FlockingSample
 
         enum NeighboursMode
         {
-            GridLookUp = 0, QuadTree = 1, Bruteforce = 2
+            GridLookUp = 0, Physics = 1, QuadTree = 2, Bruteforce = 3
         }
 
         #region Inspector
@@ -80,9 +83,10 @@ namespace Game.FlockingSample
                 var position = CameraUtils.RandomPositionOnScreen();
                 var instance = Instantiate(_AgentPrefab, transform, false);
                 instance.transform.position = position;
-                instance.transform.rotation = Quaternion.Euler(0, 0, Random.Range(0, 360));
+                instance.transform.rotation = Quaternion.Euler(0, 0, UnityEngine.Random.Range(0, 360));
                 instance.Initialize(this);
                 _agents.Add(instance);
+                instance.gameObject.name = $"Agent {i}";
             }
         }
 
@@ -126,16 +130,10 @@ namespace Game.FlockingSample
             _previousNeighborRadius = _NeighbourRadius;
         }
 
-        public Queue<FlockingAgent> GetNeighbours(FlockingAgent agent)
+        Queue<FlockingAgent> GetNeighbours(FlockingAgent agent, NeighboursMode mode)
         {
-            if (_cachedNeighboursAgent == agent)
+            if (mode == NeighboursMode.Bruteforce)
             {
-                return s_Neighbours;
-            }
-
-            _cachedNeighboursAgent = agent;
-
-            if (_NeighboursMode == NeighboursMode.Bruteforce) {
                 s_Neighbours.Clear();
 
                 foreach (var a in _agents)
@@ -150,16 +148,104 @@ namespace Game.FlockingSample
                 }
 
                 return s_Neighbours;
-            } else if (_NeighboursMode == NeighboursMode.QuadTree)
+            }
+            else if (mode == NeighboursMode.QuadTree)
             {
                 return _quadTree.GetNeighbours(agent);
-            } else if (_NeighboursMode == NeighboursMode.GridLookUp)
+            }
+            else if (mode == NeighboursMode.GridLookUp)
             {
                 return _gridLookUp.GetNeighbours(agent);
-            } else
+            }
+            else if (mode == NeighboursMode.Physics)
+            {
+                s_Neighbours.Clear();
+                var colliders = Physics2D.OverlapCircleAll(agent.position, _NeighbourRadius);
+
+                foreach (var c in colliders)
+                {
+                    if (c.GetComponentInParent<FlockingAgent>() is FlockingAgent a && a != agent &&
+                        Vector2.Distance(agent.position, a.position) < _NeighbourRadius)
+                    {
+                        s_Neighbours.Enqueue(a);
+                    }
+                }
+
+                return s_Neighbours;
+            }
+            else
             {
                 throw new System.Exception("Unsupported");
             }
+        }
+
+        public Queue<FlockingAgent> GetNeighbours(FlockingAgent agent)
+        {
+            if (_cachedNeighboursAgent == agent)
+            {
+                return s_Neighbours;
+            }
+
+            _cachedNeighboursAgent = agent;
+
+            return GetNeighbours(agent, _NeighboursMode);
+        }
+
+        [ContextMenu("Validate Neighbours")]
+        void ValidateNeighbours()
+        {
+            if (!Application.isPlaying)
+                return;
+
+            _quadTree = new QuadTree(this);
+            _gridLookUp = new GridLookUp(this);
+            _gridLookUp.Update();
+
+            int count = 0;
+
+            foreach (var a in _agents) {
+                count++;
+                var results = new Dictionary<NeighboursMode, HashSet<FlockingAgent>>();
+                foreach (NeighboursMode mode in Enum.GetValues(typeof(NeighboursMode)))
+                {
+                    results.Add(mode, new HashSet<FlockingAgent>(GetNeighbours(a, mode)));
+                }
+
+                foreach (var p1 in results)
+                {
+                    foreach (var p2 in results)
+                    {
+                        if (p1.Key == p2.Key)
+                        {
+                            continue;
+                        }
+
+                        if (!p1.Value.SetEquals(p2.Value) || p1.Value.Count != p2.Value.Count)
+                        {
+                            var sb = new StringBuilder();
+                            sb.AppendLine($"Data mistmach in {p1.Key}[{p1.Value.Count}] and {p2.Key}[{p2.Value.Count}] for {a.gameObject.name}.");
+                            sb.AppendLine($"Neighbours in {p1.Key}:");
+                            foreach (var a2 in p1.Value)
+                            {
+                                sb.AppendLine(" " + a2.gameObject.name);
+                            }
+                            sb.AppendLine($"Neighbours in {p2.Key}:");
+                            foreach (var a2 in p2.Value)
+                            {
+                                sb.AppendLine(" " + a2.gameObject.name);
+                            }
+                            Debug.Log(sb.ToString());
+                            Debug.Break();
+                            goto exit;
+                        }
+                    }
+                }
+            }
+
+            Debug.Log($"Data is valid. Compared {count} agents.");
+            return;
+        exit:
+            return;
         }
 
         private void OnDrawGizmosSelected()
@@ -183,26 +269,27 @@ namespace Game.FlockingSample
         {
             readonly FlockingManager _manager;
 
-            QuadNode<FlockingAgent> _root;
+            readonly QuadNode<FlockingAgent> _root;
 
-            HashSet<FlockingAgent>[,] _agents;
+            readonly HashSet<FlockingAgent>[,] _agents;
 
             Rect _rect;
 
+            Rect _screenRect;
+
             Vector2 _size;
 
-            public bool IsValid => _rect.Equals(CameraUtils.ScreenRect);
+            public bool IsValid => _screenRect.Equals(CameraUtils.ScreenRect);
 
             public GridLookUp(FlockingManager manager)
             {
                 _manager = manager;
-                var screenRect = CameraUtils.ScreenRect;
+                _screenRect = CameraUtils.ScreenRect;
                 const float padding = 0.1f;
                 _rect = new Rect(
-                    screenRect.position - screenRect.size * padding,
-                    screenRect.size * (1 + 2 * padding)
+                    _screenRect.position - _screenRect.size * padding,
+                    (1 + 2 * padding) * _screenRect.size
                 );
-                _rect = screenRect;
                 var length = _manager._NeighbourRadius * 2;
                 var width = (int)(_rect.width / length) + 1;
                 var height = (int)(_rect.height / length) + 1;
@@ -238,7 +325,7 @@ namespace Game.FlockingSample
 
                     foreach (var a in agents)
                     {
-                        if (Vector2.Distance(agent.position, a.position) < _manager._NeighbourRadius)
+                        if (Vector2.Distance(agent.position, a.position) < _manager._NeighbourRadius && agent != a)
                         {
                             s_Neighbours.Enqueue(a);
                         }
@@ -351,7 +438,7 @@ namespace Game.FlockingSample
             public Queue<FlockingAgent> GetNeighbours(FlockingAgent agent)
             {
                 var rect = CameraUtils.ScreenRect;
-                var size = rect.size / (_deepestLevel * 2);
+                var size = Vector2.one * _manager.NeighbourRadius;
                 s_Neighbours.Clear();
 
                 foreach (var direction in Directions)
@@ -365,7 +452,7 @@ namespace Game.FlockingSample
 
                     foreach (var a in deepestNode.data)
                     {
-                        if (Vector2.Distance(agent.position, a.position) < _manager._NeighbourRadius)
+                        if (Vector2.Distance(agent.position, a.position) < _manager._NeighbourRadius && a != agent)
                         {
                             s_Neighbours.Enqueue(a);
                         }

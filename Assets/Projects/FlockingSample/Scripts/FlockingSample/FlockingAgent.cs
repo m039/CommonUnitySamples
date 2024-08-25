@@ -1,9 +1,12 @@
 #if UNITY_EDITOR
-//#define SHOW_NEIGHBOURS
-//using System.Collections.Generic;
+#define SHOW_NEIGHBOURS
 #endif
 using System;
 using UnityEngine;
+
+#if SHOW_NEIGHBOURS
+using System.Collections.Generic;
+#endif
 
 namespace Game.FlockingSample
 {

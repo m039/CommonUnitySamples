@@ -931,10 +931,13 @@ MonoBehaviour:
   _NumberOfAgents:
     min: 400
     max: 400
-  _NeighborRadius: 0.5
-  separationCoeff: 2
-  alignmentCoeff: 1.2
-  cohesionCoeff: 1
+  _NeighbourRadius: 0.5
+  separationCoeff: 4
+  alignmentCoeff: 1
+  cohesionCoeff: 1.3
+  screenBoundAvoidanceCoeff: 10
+  rotationSpeedMultiplier: 1
+  movementSpeedMultiplier: 1
   _NeighboursMode: 0
   _Debug: 1
 --- !u!4 &1663587028

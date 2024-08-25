@@ -36,13 +36,19 @@ namespace Game.FlockingSample
         MinMaxInt _NumberOfAgents = new(10, 10);
 
         [SerializeField]
-        float _NeighborRadius = 1f;
+        float _NeighbourRadius = 1f;
 
         public float separationCoeff = 1f;
 
         public float alignmentCoeff = 1f;
 
         public float cohesionCoeff = 1f;
+
+        public float screenBoundAvoidanceCoeff = 1f;
+
+        public float rotationSpeedMultiplier = 1f;
+
+        public float movementSpeedMultiplier = 1f;
 
         [SerializeField]
         NeighboursMode _NeighboursMode = NeighboursMode.GridLookUp;
@@ -58,6 +64,8 @@ namespace Game.FlockingSample
         readonly List<FlockingAgent> _agents = new();
 
         float _previousNeighborRadius;
+
+        public float NeighbourRadius => _NeighbourRadius;
 
         public void CreateAgents()
         {
@@ -91,7 +99,7 @@ namespace Game.FlockingSample
                 _quadTree = new QuadTree(this);
             } else if (_NeighboursMode == NeighboursMode.GridLookUp)
             {
-                if (_gridLookUp == null || !_gridLookUp.IsValid || _NeighborRadius != _previousNeighborRadius)
+                if (_gridLookUp == null || !_gridLookUp.IsValid || _NeighbourRadius != _previousNeighborRadius)
                 {
                     _gridLookUp = new GridLookUp(this);
                 }
@@ -107,7 +115,7 @@ namespace Game.FlockingSample
                 _gridLookUp.Update();
             }
 
-            _previousNeighborRadius = _NeighborRadius;
+            _previousNeighborRadius = _NeighbourRadius;
         }
 
         public List<FlockingAgent> GetNeighbours(FlockingAgent agent)
@@ -120,7 +128,7 @@ namespace Game.FlockingSample
                     if (a == agent)
                         continue;
 
-                    if (Vector2.Distance(agent.position, a.position) < _NeighborRadius)
+                    if (Vector2.Distance(agent.position, a.position) < _NeighbourRadius)
                     {
                         s_Neighbours.Add(a);
                     }
@@ -142,7 +150,7 @@ namespace Game.FlockingSample
         private void OnDrawGizmosSelected()
         {
             Gizmos.color = Color.blue;
-            Gizmos.DrawWireSphere(transform.position, _NeighborRadius);
+            Gizmos.DrawWireSphere(transform.position, _NeighbourRadius);
 
             if ( _Debug)
             {
@@ -174,7 +182,7 @@ namespace Game.FlockingSample
             {
                 _manager = manager;
                 _rect = CameraUtils.ScreenRect;
-                var length = _manager._NeighborRadius * 2;
+                var length = _manager._NeighbourRadius * 2;
                 var width = (int)(_rect.width / length) + 1;
                 var height = (int)(_rect.height / length) + 1;
                 _size = new Vector2(_rect.width / width, _rect.height / height);
@@ -209,7 +217,7 @@ namespace Game.FlockingSample
 
                     foreach (var a in agents)
                     {
-                        if (Vector2.Distance(agent.position, a.position) < _manager._NeighborRadius)
+                        if (Vector2.Distance(agent.position, a.position) < _manager._NeighbourRadius)
                         {
                             s_Neighbours.Add(a);
                         }
@@ -302,7 +310,7 @@ namespace Game.FlockingSample
                 _deepestLevel = 1;
                 while (true)
                 {
-                    if (size / 2f > _manager._NeighborRadius * 2)
+                    if (size / 2f > _manager._NeighbourRadius * 2)
                     {
                         size = size / 2f;
                         _deepestLevel++;
@@ -332,7 +340,7 @@ namespace Game.FlockingSample
 
                     foreach (var a in deepestNode.data)
                     {
-                        if (Vector2.Distance(agent.position, a.position) < _manager._NeighborRadius)
+                        if (Vector2.Distance(agent.position, a.position) < _manager._NeighbourRadius)
                         {
                             s_Neighbours.Add(a);
                         }

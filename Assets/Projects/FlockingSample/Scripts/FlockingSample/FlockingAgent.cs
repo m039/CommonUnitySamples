@@ -1,4 +1,6 @@
+#if UNITY_EDITOR
 #define SHOW_NEIGHBOURS
+#endif
 
 using System;
 using System.Collections.Generic;
@@ -57,12 +59,12 @@ namespace Game.FlockingSample
         }
 
 #if SHOW_NEIGHBOURS
-        List<FlockingAgent> _neighbours = new();
+        readonly List<FlockingAgent> _neighbours = new();
 #endif
 
         Vector2 Separation(List<FlockingAgent> neighbours)
         {
-            Vector2 direction = Vector2.zero;
+            Vector2 point = Vector2.zero;
             var count = 0;
 
             foreach (var a in neighbours)
@@ -70,12 +72,17 @@ namespace Game.FlockingSample
                 var v = a.position - position;
                 if (v.magnitude < bodyRadius)
                 {
-                    direction += -v.normalized;
+                    point += -v.normalized;
                     count++;
                 }
             }
 
-            return (direction / count).normalized;
+            if (count == 0)
+            {
+                return point;
+            }
+
+            return (point / count).normalized;
         }
 
         Vector2 Alignment(List<FlockingAgent> neighbours)
@@ -90,7 +97,7 @@ namespace Game.FlockingSample
                 direction += a.up;
             }
 
-            return direction / neighbours.Count;
+            return (direction / neighbours.Count).normalized;
         }
 
         Vector2 Cohesion(List<FlockingAgent> neighbours)
@@ -110,6 +117,33 @@ namespace Game.FlockingSample
             return (averagePosition - position).normalized;
         }
 
+        Vector2 ScreenBoundAvoidance(FlockingManager manager)
+        {
+            var screenRect = CameraUtils.ScreenRect;
+            var direction = Vector2.zero;
+
+            if (position.x < screenRect.xMin + manager.NeighbourRadius) {
+                direction.x = 1;
+            }
+
+            if (position.x > screenRect.xMax - manager.NeighbourRadius)
+            {
+                direction.x = -1;
+            }
+
+            if (position.y < screenRect.yMin + manager.NeighbourRadius)
+            {
+                direction.y = 1;
+            }
+
+            if (position.y > screenRect.yMax - manager.NeighbourRadius)
+            {
+                direction.y = -1;
+            }
+
+            return direction.normalized;
+        }
+
         public void Process(FlockingManager manager)
         {
             var neighbours = manager.GetNeighbours(this);
@@ -120,12 +154,17 @@ namespace Game.FlockingSample
             var separation = Separation(neighbours) * manager.separationCoeff;
             var alignment = Alignment(neighbours) * manager.alignmentCoeff;
             var cohesion = Cohesion(neighbours) * manager.cohesionCoeff;
+            var screenBoundAvoidance = ScreenBoundAvoidance(manager) * manager.screenBoundAvoidanceCoeff;
 
-            var direction = (separation + alignment + cohesion) / 3f;
+            var direction = separation + cohesion + alignment + screenBoundAvoidance;
 
-            up += rotationSpeed * Time.deltaTime * (direction - up).normalized;
+            up = Vector2.MoveTowards(
+                up,
+                direction.normalized,
+                direction.magnitude * manager.rotationSpeedMultiplier * rotationSpeed * Time.deltaTime
+            );
 
-            var p = position + speed * Time.deltaTime * up;
+            var p = position + speed * Time.deltaTime * up * manager.movementSpeedMultiplier;
             var screenRect = CameraUtils.ScreenRect;
 
             if (p.x < screenRect.xMin - bodyRadius)

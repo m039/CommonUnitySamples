@@ -26,7 +26,7 @@ namespace Game.FlockingSample
             averagePosition -= agent.position;
             averagePosition = Vector2.SmoothDamp(agent.up, averagePosition, ref _currentVelocity, smoothTime);
 
-            return averagePosition;
+            return averagePosition * manager.cohesionCoeff;
         }
     }
 }

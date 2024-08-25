@@ -9,7 +9,7 @@ namespace Game.FlockingSample
         {
             var neighbours = manager.GetNeighbours(agent);
             if (neighbours.Count <= 0)
-                return agent.up;
+                return agent.up * manager.aligmentCoeff;
 
             Vector2 direction = Vector2.zero;
 
@@ -18,7 +18,7 @@ namespace Game.FlockingSample
                 direction += a.up;
             }
 
-            return direction / neighbours.Count;
+            return direction / neighbours.Count * manager.aligmentCoeff;
         }
     }
 }

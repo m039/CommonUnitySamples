@@ -26,7 +26,7 @@ namespace Game.FlockingSample
                 return point;
             }
 
-            return point / count;
+            return point / count * manager.separationCoeff;
         }
     }
 }

@@ -1,18 +1,14 @@
-#if UNITY_EDITOR
-#define SHOW_NEIGHBOURS
-#endif
 using System;
 using UnityEngine;
-
-#if SHOW_NEIGHBOURS
-using System.Collections.Generic;
-#endif
 
 namespace Game.FlockingSample
 {
     public class FlockingAgent : MonoBehaviour
     {
         #region Inspector
+
+        [SerializeField]
+        SpriteRenderer _Renderer;
 
         public float speed = 1f;
 
@@ -60,22 +56,24 @@ namespace Game.FlockingSample
 
         FlockingManager _manager;
 
-#if SHOW_NEIGHBOURS
-        readonly List<FlockingAgent> _neighboars = new();
-#endif
+        public Color normalColor { get; private set; }
+
+        public Color color {
+            set
+            {
+                _Renderer.color = value;
+            }
+        }
 
         public void Initialize(FlockingManager manager)
         {
             _manager = manager;
+            normalColor = manager.colorsByNeighbour[UnityEngine.Random.Range(0, manager.colorsByNeighbour.Length)];
+            color = normalColor;
         }
 
         public void Move(Vector2 move)
         {
-#if SHOW_NEIGHBOURS
-            _neighboars.Clear();
-            _neighboars.AddRange(_manager.GetNeighbours(this));
-#endif
-
             up = move;
             var p = Vector2.MoveTowards(position, position + move, move.magnitude * speed * Time.deltaTime);
             var screenRect = CameraUtils.ScreenRect;
@@ -107,14 +105,6 @@ namespace Game.FlockingSample
         {
             Gizmos.color = Color.blue;
             Gizmos.DrawWireSphere(transform.position, bodyRadius);
-
-#if SHOW_NEIGHBOURS
-            Gizmos.color = Color.magenta;
-            foreach (var a in _neighboars)
-            {
-                Gizmos.DrawLine(position, a.position);
-            }
-#endif
         }
     }
 }

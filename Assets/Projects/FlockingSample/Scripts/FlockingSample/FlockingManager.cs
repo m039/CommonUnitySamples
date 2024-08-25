@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Unity.VisualScripting;
+using UnityEditor.ShaderGraph.Internal;
 using UnityEngine;
 
 namespace Game.FlockingSample
@@ -25,7 +27,7 @@ namespace Game.FlockingSample
                 new Vector2Int(1, -1)
         };
 
-        enum NeighboursMode
+        public enum NeighboursMode
         {
             GridLookUp = 0, Physics = 1, QuadTree = 2, Bruteforce = 3
         }
@@ -57,6 +59,17 @@ namespace Game.FlockingSample
         [SerializeField]
         bool _Debug = true;
 
+        public Color[] colorsByNeighbour;
+
+        [NonSerialized]
+        public float aligmentCoeff = 1f;
+
+        [NonSerialized]
+        public float separationCoeff = 1f;
+
+        [NonSerialized]
+        public float cohesionCoeff = 1f;
+
         #endregion
 
         [Provide]
@@ -67,6 +80,36 @@ namespace Game.FlockingSample
         float _previousNeighborRadius;
 
         public float NeighbourRadius => _NeighbourRadius;
+
+        LineRenderer _lineTemplate;
+
+        readonly List<LineRenderer> _lines = new();
+
+        bool _debugNeighbours = false;
+
+        bool _colorByNeighbours;
+
+        bool _colorize = true;
+
+        void Awake()
+        {
+            Init();
+        }
+
+        void Init()
+        {
+            _lineTemplate = transform.Find("LineTemplate").GetComponent<LineRenderer>();
+        }
+
+        public void SetDebugNeighbours(bool value) => _debugNeighbours = value;
+
+        public void SetColorByNeighbours(bool value) => _colorByNeighbours = value;
+
+        public void SetColorize(bool value) => _colorize = value;
+
+        public void SetNeighboursMode(NeighboursMode mode) => _NeighboursMode = mode;
+
+        public void SetSpeedMultiplier(float multiplier) => _MovementSpeedMultiplier = multiplier;
 
         public void CreateAgents()
         {
@@ -111,8 +154,25 @@ namespace Game.FlockingSample
 
             _cachedNeighboursAgent = null;
 
+            Queue<LineRenderer> lines = null;
+            if (_debugNeighbours)
+            {
+                lines = new Queue<LineRenderer>(_lines);
+                ClearDebugLines();
+            } else
+            {
+                DestroyDebugLines();
+            }
+
             foreach (var agent in _agents)
             {
+                if (_debugNeighbours)
+                {
+                    DebugNeighbours(agent, lines);
+                }
+
+                SetAgentColor(agent);
+
                 var move = _Behaviour.CalculateMove(this, agent);
                 move *= _MovementSpeedMultiplier;
                 if (move.magnitude > _MaxSpeed)
@@ -128,6 +188,80 @@ namespace Game.FlockingSample
             }
 
             _previousNeighborRadius = _NeighbourRadius;
+        }
+
+        void SetAgentColor(FlockingAgent agent)
+        {
+            if (!_colorize)
+            {
+                agent.color = Color.white;
+                return;
+            }
+
+            if (!_colorByNeighbours) {
+                agent.color = agent.normalColor;
+                return;
+            }
+
+            var neighbours = GetNeighbours(agent);
+            if (neighbours.Count <= 0)
+            {
+                agent.color = agent.normalColor;
+                return;
+            }
+
+            var color = Color.black;
+
+            foreach (var neighbour in neighbours)
+            {
+                color += neighbour.normalColor;
+            }
+
+            color += agent.normalColor;
+            color /= (neighbours.Count + 1);
+            agent.color = color.With(a: 1f);
+        }
+
+        void ClearDebugLines()
+        {
+            foreach (var l in _lines)
+            {
+                l.positionCount = 0;
+            }
+        }
+
+        void DestroyDebugLines()
+        {
+            if (_lines.Count <= 0)
+                return;
+
+            foreach (var l in _lines)
+            {
+                Destroy(l.gameObject);
+            }
+            _lines.Clear();
+        }
+
+        void DebugNeighbours(FlockingAgent agent, Queue<LineRenderer> lines)
+        {
+            foreach (var neighbour in GetNeighbours(agent))
+            {
+                LineRenderer line;
+
+                if (lines.Count > 0)
+                {
+                    line = lines.Dequeue();
+                } else
+                {
+                    line = Instantiate(_lineTemplate);
+                    line.transform.SetParent(transform);
+                    _lines.Add(line);
+                }
+
+                line.positionCount = 2;
+                line.SetPosition(0, agent.position);
+                line.SetPosition(1, neighbour.position);
+            }
         }
 
         Queue<FlockingAgent> GetNeighbours(FlockingAgent agent, NeighboursMode mode)

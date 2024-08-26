@@ -83,6 +83,12 @@ namespace Game.FlockingSample
 
         bool _colorize = true;
 
+        QuadTree<FlockingAgent> _quadTree;
+
+        GridLookUp<FlockingAgent> _gridLookUp;
+
+        FlockingAgent _cachedNeighboursAgent;
+
         void Awake()
         {
             Init();
@@ -121,22 +127,23 @@ namespace Game.FlockingSample
             }
         }
 
-        QuadTree _quadTree;
-
-        GridLookUp _gridLookUp;
-
-        FlockingAgent _cachedNeighboursAgent;
-
         void Update()
         {
             if (neighboursMode == NeighboursMode.QuadTree)
             {
-                _quadTree = new QuadTree(this);
+                if (_quadTree == null ||
+                    _quadTree.neighbourRadius != neighbourRadius ||
+                    !_quadTree.screenRect.Equals(CameraUtils.ScreenRect))
+                {
+                    _quadTree = new QuadTree<FlockingAgent>(CameraUtils.ScreenRect, neighbourRadius);
+                }
             } else if (neighboursMode == NeighboursMode.GridLookUp)
             {
-                if (_gridLookUp == null || !_gridLookUp.IsValid || neighbourRadius != _previousNeighborRadius)
+                if (_gridLookUp == null ||
+                    _gridLookUp.neighbourRadius != neighbourRadius ||
+                    !_gridLookUp.screenRect.Equals(CameraUtils.ScreenRect))
                 {
-                    _gridLookUp = new GridLookUp(this);
+                    _gridLookUp = new GridLookUp<FlockingAgent>(CameraUtils.ScreenRect, neighbourRadius);
                 }
             }
 
@@ -172,7 +179,10 @@ namespace Game.FlockingSample
 
             if (neighboursMode == NeighboursMode.GridLookUp)
             {
-                _gridLookUp.Update();
+                _gridLookUp.Update(_agents);
+            } else if (neighboursMode == NeighboursMode.QuadTree)
+            {
+                _quadTree.Update(_agents);
             }
 
             _previousNeighborRadius = neighbourRadius;
@@ -273,11 +283,21 @@ namespace Game.FlockingSample
             }
             else if (mode == NeighboursMode.QuadTree)
             {
-                return _quadTree.GetNeighbours(agent);
+                s_Neighbours.Clear();
+                foreach (var a in _quadTree.GetNeighbours(agent))
+                {
+                    s_Neighbours.Enqueue(a);
+                }
+                return s_Neighbours;
             }
             else if (mode == NeighboursMode.GridLookUp)
             {
-                return _gridLookUp.GetNeighbours(agent);
+                s_Neighbours.Clear();
+                foreach (var a in _gridLookUp.GetNeighbours(agent))
+                {
+                    s_Neighbours.Enqueue(a);
+                }
+                return s_Neighbours;
             }
             else if (mode == NeighboursMode.Physics)
             {
@@ -319,9 +339,10 @@ namespace Game.FlockingSample
             if (!Application.isPlaying)
                 return;
 
-            _quadTree = new QuadTree(this);
-            _gridLookUp = new GridLookUp(this);
-            _gridLookUp.Update();
+            _quadTree = new QuadTree<FlockingAgent>(CameraUtils.ScreenRect, neighbourRadius);
+            _gridLookUp = new GridLookUp<FlockingAgent>(CameraUtils.ScreenRect, neighbourRadius);
+            _gridLookUp.Update(_agents);
+            _quadTree.Update(_agents);
 
             int count = 0;
 
@@ -387,126 +408,128 @@ namespace Game.FlockingSample
             }
         }
 
-        class GridLookUp
+        public interface IGridLookUpItem
         {
-            readonly FlockingManager _manager;
+            Vector2 position { get; }
+            Vector2Int gridIndex { get; set; }
+        }
 
-            readonly QuadNode<FlockingAgent> _root;
+        class GridLookUp<T> where T : class, IGridLookUpItem
+        {
+            static readonly Queue<T> s_Buffer = new();
 
-            readonly HashSet<FlockingAgent>[,] _agents;
+            readonly HashSet<T>[,] _items;
 
-            Rect _rect;
+            readonly Rect _rect;
 
-            Rect _screenRect;
+            public readonly Rect screenRect;
 
-            Vector2 _size;
+            public readonly float neighbourRadius;
 
-            public bool IsValid => _screenRect.Equals(CameraUtils.ScreenRect);
+            readonly Vector2 _size;
 
-            public GridLookUp(FlockingManager manager)
+            bool _inited = false;
+
+            public GridLookUp(Rect screenRect, float neighbourRadius)
             {
-                _manager = manager;
-                _screenRect = CameraUtils.ScreenRect;
+                this.screenRect = screenRect;
+                this.neighbourRadius = neighbourRadius;
                 const float padding = 0.1f;
                 _rect = new Rect(
-                    _screenRect.position - _screenRect.size * padding,
-                    (1 + 2 * padding) * _screenRect.size
+                    screenRect.position - screenRect.size * padding,
+                    (1 + 2 * padding) * screenRect.size
                 );
-                var length = _manager.neighbourRadius * 2;
+                var length = neighbourRadius * 2;
                 var width = (int)(_rect.width / length) + 1;
                 var height = (int)(_rect.height / length) + 1;
                 _size = new Vector2(_rect.width / width, _rect.height / height);
-                _agents = new HashSet<FlockingAgent>[width, height];
-
-                foreach (var a in _manager._agents)
-                {
-                    a.gridX = -1;
-                    a.gridY = -1;
-                }
+                _items = new HashSet<T>[width, height];
+                _inited = false;
             }
 
-            public Queue<FlockingAgent> GetNeighbours(FlockingAgent agent)
+            public Queue<T> GetNeighbours(T agent)
             {
-                s_Neighbours.Clear();
-                if (agent.gridX < 0 || agent.gridY < 0)
+                s_Buffer.Clear();
+                if (agent.gridIndex.x < 0 || agent.gridIndex.y < 0)
                 {
-                    return s_Neighbours;
+                    return s_Buffer;
                 }
 
                 foreach (var direction in Directions)
                 {
-                    var newX = agent.gridX + direction.x;
-                    var newY = agent.gridY + direction.y;
-                    if (newX < 0 || newX >= _agents.GetLength(0) ||
-                        newY < 0 || newY >= _agents.GetLength(1))
+                    var newX = agent.gridIndex.x + direction.x;
+                    var newY = agent.gridIndex.y + direction.y;
+                    if (newX < 0 || newX >= _items.GetLength(0) ||
+                        newY < 0 || newY >= _items.GetLength(1))
                         continue;
 
-                    var agents = _agents[newX, newY];
+                    var agents = _items[newX, newY];
                     if (agents == null)
                         continue;
 
                     foreach (var a in agents)
                     {
-                        if (Vector2.Distance(agent.position, a.position) < _manager.neighbourRadius && agent != a)
+                        if (Vector2.Distance(agent.position, a.position) < neighbourRadius && agent != a)
                         {
-                            s_Neighbours.Enqueue(a);
+                            s_Buffer.Enqueue(a);
                         }
                     }
                 }
 
-                return s_Neighbours;
+                return s_Buffer;
             }
 
-            public void Update()
+            public void Update(IEnumerable<T> items)
             {
-                foreach (var a in _manager._agents)
+                foreach (var item in items)
                 {
-                    var startPosition = a.position - _rect.position;
+                    var startPosition = item.position - _rect.position;
                     var x = (int)(startPosition.x / _size.x);
                     var y = (int)(startPosition.y / _size.y);
 
-                    if (a.gridX == x && a.gridY == y)
+                    if (item.gridIndex.x == x && item.gridIndex.y == y && _inited)
                         continue;
 
-                    if (a.gridX >= 0 && a.gridX < _agents.GetLength(0) &&
-                        a.gridY >= 0 && a.gridY < _agents.GetLength(1) &&
-                        _agents[a.gridX, a.gridY] != null)
+                    if (item.gridIndex.x >= 0 && item.gridIndex.x < _items.GetLength(0) &&
+                        item.gridIndex.y >= 0 && item.gridIndex.y < _items.GetLength(1) &&
+                        _items[item.gridIndex.x, item.gridIndex.y] != null &&
+                        _inited)
                     {
-                        _agents[a.gridX, a.gridY].Remove(a);
+                        _items[item.gridIndex.x, item.gridIndex.y].Remove(item);
                     }
 
-                    a.gridX = -1;
-                    a.gridY = -1;
+                    item.gridIndex = new Vector2Int(-1, -1);
 
-                    if (x >= 0 && x < _agents.GetLength(0) &&
-                        y >= 0 && y < _agents.GetLength(1))
+                    if (x >= 0 && x < _items.GetLength(0) &&
+                        y >= 0 && y < _items.GetLength(1))
                     {
-                        a.gridX = x;
-                        a.gridY = y;
+                        item.gridIndex = new Vector2Int(x, y);
 
-                        if (_agents[x, y] == null)
+                        if (_items[x, y] == null)
                         {
-                            _agents[x, y] = new HashSet<FlockingAgent>();
+                            _items[x, y] = new HashSet<T>();
                         }
-                        _agents[a.gridX, a.gridY].Add(a);
+                        _items[item.gridIndex.x, item.gridIndex.y].Add(item);
                     }
                 }
+
+                _inited = true;
             }
 
             public void DrawGizmos()
             {
-                for (int x = 0; x < _agents.GetLength(0); x++)
+                for (int x = 0; x < _items.GetLength(0); x++)
                 {
-                    for (int y = 0; y < _agents.GetLength(1); y++)
+                    for (int y = 0; y < _items.GetLength(1); y++)
                     {
                         var rect = new Rect(_rect.position + new Vector2(x * _size.x, y * _size.y), _size);
 
                         Gizmos.color = Color.yellow;
                         Gizmos.DrawWireCube(rect.center, rect.size);
 
-                        if (_agents[x, y] != null)
+                        if (_items[x, y] != null)
                         {
-                            foreach (var a in _agents[x, y])
+                            foreach (var a in _items[x, y])
                             {
                                 Gizmos.color = Color.red;
                                 Gizmos.DrawLine(rect.center, a.position);
@@ -517,23 +540,25 @@ namespace Game.FlockingSample
             }
         }
 
-        class QuadTree
+        class QuadTree<T> where T : class, IQuadTreeItem
         {
-            int _deepestLevel;
+            static readonly Queue<T> s_Buffer = new();
 
-            readonly FlockingManager _manager;
+            readonly int _deepestLevel;
 
-            QuadNode<FlockingAgent> _root;
+            readonly QuadNode<T> _root;
 
-            public QuadTree(FlockingManager manager)
+            public readonly float neighbourRadius;
+
+            public readonly Rect screenRect;
+
+            bool _initedItems = false;
+
+            public QuadTree(Rect screenRect, float neighbourRadius)
             {
-                _manager = manager;
-                Init();
-            }
-
-            void Init()
-            {
-                var screenRect = CameraUtils.ScreenRect;
+                this.screenRect = screenRect;
+                this.neighbourRadius = neighbourRadius;
+                _initedItems = false;
                 const float padding = 0.1f;
                 var rect = new Rect(
                     screenRect.position - new Vector2(screenRect.width, screenRect.height) * padding,
@@ -544,7 +569,7 @@ namespace Game.FlockingSample
                 _deepestLevel = 1;
                 while (true)
                 {
-                    if (size / 2f > _manager.neighbourRadius * 2)
+                    if (size / 2f > neighbourRadius * 2)
                     {
                         size = size / 2f;
                         _deepestLevel++;
@@ -553,21 +578,94 @@ namespace Game.FlockingSample
                     break;
                 }
 
-                _root = new QuadNode<FlockingAgent>
+                _root = new QuadNode<T>
                 {
                     depth = 1,
                     rect = rect
                 };
+            }
 
-                foreach (var a in _manager._agents)
+            public void Update(IEnumerable<T> items)
+            {
+                foreach (var item in items)
                 {
-                    InsertAgent(_root, a);
+                    if (item.node == null || !_initedItems)
+                    {
+                        InserItem(_root, item);
+                    } else
+                    {
+                        var node = (QuadNode<T>)item.node;
+                        if (!node.rect.Contains(item.position))
+                        {
+                            RemoveItem(item);
+                            InserItem(_root, item);
+                        }
+                    }
+                }
+
+                _initedItems = true;
+            }
+
+            void RemoveItem(T item)
+            {
+                if (item.node == null)
+                    return;
+
+                var node = (QuadNode<T>)item.node;
+                item.node = null;
+
+                if (node.data != null)
+                {
+                    node.data.Remove(item);
+                    if (node.data.Count <= 0)
+                    {
+                        node.data = null;
+                    }
+                }
+
+                if (node.data != null)
+                    return;
+
+                while (node.parent != null)
+                {
+                    if (node.one == null && node.two == null && node.three == null && node.four == null)
+                    {
+                        if (node.parent.one == node)
+                        {
+                            node.parent.one = null;
+                            node = node.parent;
+                            continue;
+                        }
+
+                        if (node.parent.two == node)
+                        {
+                            node.parent.two = null;
+                            node = node.parent;
+                            continue;
+                        }
+
+                        if (node.parent.three == node)
+                        {
+                            node.parent.three = null;
+                            node = node.parent;
+                            continue;
+                        }
+
+                        if (node.parent.four == node)
+                        {
+                            node.parent.four = null;
+                            node = node.parent;
+                            continue;
+                        }
+                    }
+
+                    break;
                 }
             }
 
-            bool InsertAgent(QuadNode<FlockingAgent> node, FlockingAgent agent)
+            bool InserItem(QuadNode<T> node, T item)
             {
-                if (!node.rect.Contains(agent.position))
+                if (!node.rect.Contains(item.position))
                     return false;
 
                 if (node.depth == _deepestLevel)
@@ -577,7 +675,8 @@ namespace Game.FlockingSample
                         node.data = new();
                     }
 
-                    node.data.Add(agent);
+                    node.data.Add(item);
+                    item.node = node;
                     return true;
                 }
 
@@ -587,84 +686,89 @@ namespace Game.FlockingSample
 
                 if (node.one != null)
                 {
-                    if (InsertAgent(node.one, agent))
+                    if (InserItem(node.one, item))
                         return true;
                 }
                 else
                 {
                     var rectOne = new Rect(rect.position, size);
-                    var one = new QuadNode<FlockingAgent>
+                    var one = new QuadNode<T>
                     {
                         rect = rectOne,
-                        depth = depth
+                        depth = depth,
+                        parent = node
                     };
                     node.one = one;
-                    if (InsertAgent(one, agent))
+                    if (InserItem(one, item))
                         return true;
                 }
 
                 if (node.two != null)
                 {
-                    if (InsertAgent(node.two, agent))
+                    if (InserItem(node.two, item))
                         return true;
                 }
                 else
                 {
                     var rectTwo = new Rect(rect.position + new Vector2(size.x, 0), size);
-                    var two = new QuadNode<FlockingAgent>
+                    var two = new QuadNode<T>
                     {
                         rect = rectTwo,
-                        depth = depth
+                        depth = depth,
+                        parent = node
                     };
                     node.two = two;
-                    if (InsertAgent(two, agent))
+                    if (InserItem(two, item))
                         return true;
                 }
 
                 if (node.three != null)
                 {
-                    if (InsertAgent(node.three, agent))
+                    if (InserItem(node.three, item))
                         return true;
                 }
                 else
                 {
                     var rectThree = new Rect(rect.position + new Vector2(0, size.y), size);
-                    var three = new QuadNode<FlockingAgent>
+                    var three = new QuadNode<T>
                     {
                         rect = rectThree,
-                        depth = depth
+                        depth = depth,
+                        parent = node
                     };
                     node.three = three;
-                    if (InsertAgent(three, agent))
+                    if (InserItem(three, item))
                         return true;
                 }
 
                 if (node.four != null)
                 {
-                    if (InsertAgent(node.four, agent))
+                    if (InserItem(node.four, item))
                         return true;
                 }
                 else
                 {
                     var rectFour = new Rect(rect.position + new Vector2(size.x, size.y), size);
-                    var four = new QuadNode<FlockingAgent>
+                    var four = new QuadNode<T>
                     {
                         rect = rectFour,
-                        depth = depth
+                        depth = depth,
+                        parent = node
                     };
                     node.four = four;
-                    if (InsertAgent(four, agent))
+                    if (InserItem(four, item))
                         return true;
                 }
 
                 return false;
             }
 
-            public Queue<FlockingAgent> GetNeighbours(FlockingAgent agent)
+            public Queue<T> GetNeighbours(T agent)
             {
                 var rect = CameraUtils.ScreenRect;
-                var size = Vector2.one * _manager.neighbourRadius;
-                s_Neighbours.Clear();
+                var size = Vector2.one * neighbourRadius;
+                var neighbours = s_Buffer;
+                neighbours.Clear();
 
                 foreach (var direction in Directions)
                 {
@@ -680,17 +784,17 @@ namespace Game.FlockingSample
 
                     foreach (var a in deepestNode.data)
                     {
-                        if (Vector2.Distance(agent.position, a.position) < _manager.neighbourRadius && a != agent)
+                        if (Vector2.Distance(agent.position, a.position) < neighbourRadius && a != agent)
                         {
-                            s_Neighbours.Enqueue(a);
+                            neighbours.Enqueue(a);
                         }
                     }
                 }
 
-                return s_Neighbours;
+                return neighbours;
             }
 
-            QuadNode<FlockingAgent> GetDeepestNode(QuadNode<FlockingAgent> node, Vector2 position)
+            QuadNode<T> GetDeepestNode(QuadNode<T> node, Vector2 position)
             {
                 if (node == null)
                     return null;
@@ -720,7 +824,7 @@ namespace Game.FlockingSample
 
             public void DrawGizmos()
             {
-                void drawNode(QuadNode<FlockingAgent> n)
+                void drawNode(QuadNode<T> n)
                 {
                     if (n == null)
                         return;
@@ -751,7 +855,13 @@ namespace Game.FlockingSample
             }
         }
 
-        class QuadNode<T> where T : FlockingAgent
+        public interface IQuadTreeItem
+        {
+            Vector2 position { get; }
+            object node { get; set; }
+        }
+
+        public class QuadNode<T> where T : IQuadTreeItem
         {
             public QuadNode<T> one;
             public QuadNode<T> two;
@@ -760,6 +870,7 @@ namespace Game.FlockingSample
             public HashSet<T> data;
             public int depth;
             public Rect rect;
+            public QuadNode<T> parent;
         }
     }
 }

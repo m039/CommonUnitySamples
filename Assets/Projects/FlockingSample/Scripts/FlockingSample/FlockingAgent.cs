@@ -3,7 +3,10 @@ using UnityEngine;
 
 namespace Game.FlockingSample
 {
-    public class FlockingAgent : MonoBehaviour
+    public class FlockingAgent :
+        MonoBehaviour,
+        FlockingManager.IQuadTreeItem,
+        FlockingManager.IGridLookUpItem
     {
         #region Inspector
 
@@ -15,12 +18,6 @@ namespace Game.FlockingSample
         public float bodyRadius = 1f;
 
         #endregion
-
-        [NonSerialized]
-        internal int gridX = -1;
-
-        [NonSerialized]
-        internal int gridY = -1;
 
         public Vector2 up
         {
@@ -64,6 +61,10 @@ namespace Game.FlockingSample
                 _Renderer.color = value;
             }
         }
+
+        Vector2Int FlockingManager.IGridLookUpItem.gridIndex { get; set; }
+
+        object FlockingManager.IQuadTreeItem.node { get; set; }
 
         public void Initialize(FlockingManager manager)
         {

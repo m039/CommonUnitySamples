@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Game.FlockingSample
@@ -364,20 +365,20 @@ namespace Game.FlockingSample
                 if (n == null)
                     return;
 
+                var rect = n.rect;
+                var line1 = debugLinePool.GetLine();
+                line1.positionCount = 5;
+                line1.SetPosition(0, rect.position);
+                line1.SetPosition(1, rect.position + new Vector2(rect.width, 0));
+                line1.SetPosition(2, rect.position + new Vector2(rect.width, rect.height));
+                line1.SetPosition(3, rect.position + new Vector2(0, rect.height));
+                line1.SetPosition(4, rect.position);
+                line1.startColor = line1.endColor = Color.yellow;
+
                 if (n.depth == _deepestLevel)
                 {
                     if (n.data == null)
                         return;
-
-                    var rect = n.rect;
-                    var line1 = debugLinePool.GetLine();
-                    line1.positionCount = 5;
-                    line1.SetPosition(0, rect.position);
-                    line1.SetPosition(1, rect.position + new Vector2(rect.width, 0));
-                    line1.SetPosition(2, rect.position + new Vector2(rect.width, rect.height));
-                    line1.SetPosition(3, rect.position + new Vector2(0, rect.height));
-                    line1.SetPosition(4, rect.position);
-                    line1.startColor = line1.endColor = Color.yellow;
 
                     foreach (var a in n.data)
                     {

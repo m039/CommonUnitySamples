@@ -40,12 +40,14 @@ namespace Game.FlockingSample
         [SerializeField]
         MinMaxInt _NumberOfAgents = new(10, 10);
 
+        [Range(0.1f, 5f)]
         public float neighbourRadius = 0.5f;
 
         [Range(1f, 100f)]
         [SerializeField]
         float _MaxSpeed = 5;
 
+        [Range(0f, 10f)]
         public float movementSpeedMultiplier = 0.5f;
 
         public NeighboursMode neighboursMode = NeighboursMode.SpatialGrid;

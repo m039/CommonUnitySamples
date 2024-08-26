@@ -48,7 +48,7 @@ namespace Game
                 screenRect.position - screenRect.size * padding,
                 (1 + 2 * padding) * screenRect.size
             );
-            var length = neighbourRadius * 2;
+            var length = neighbourRadius;
             var width = (int)(_rect.width / length) + 1;
             var height = (int)(_rect.height / length) + 1;
             _size = new Vector2(_rect.width / width, _rect.height / height);

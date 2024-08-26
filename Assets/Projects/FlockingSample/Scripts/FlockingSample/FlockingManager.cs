@@ -2,10 +2,7 @@ using m039.Common;
 using m039.Common.DependencyInjection;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using Unity.VisualScripting;
-using UnityEditor.ShaderGraph.Internal;
 using UnityEngine;
 
 namespace Game.FlockingSample
@@ -354,7 +351,7 @@ namespace Game.FlockingSample
                             continue;
                         }
 
-                        if (!p1.Value.SetEquals(p2.Value) || p1.Value.Count != p2.Value.Count)
+                        if (!p1.Value.SetEquals(p2.Value))
                         {
                             var sb = new StringBuilder();
                             sb.AppendLine($"Data mistmach in {p1.Key}[{p1.Value.Count}] and {p2.Key}[{p2.Value.Count}] for {a.gameObject.name}.");

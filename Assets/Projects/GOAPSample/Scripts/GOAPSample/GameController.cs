@@ -28,6 +28,9 @@ namespace Game.GOAPSample
         [Inject]
         readonly WorldGenerator _worldGenerator;
 
+        [Inject]
+        readonly ModularPanel _modularPanel;
+
         IGameEntity _selectedBot;
 
         float _fpsTimer = 0;
@@ -40,24 +43,38 @@ namespace Game.GOAPSample
             ServiceLocator.Register<IGraphController>(_GraphController);
             ServiceLocator.Register(GetComponentInChildren<PathSmoother>());
 
-            _ui.onRegenerate += GenerateWorld;
             GenerateWorld();
+            CreatePanel();
+        }
 
-            // Debug mode toggle.
-            _ui.debugModeToggle.isOn = true;
-            OnDebugModeChanged(_ui.debugModeToggle.isOn);
-            _ui.debugModeToggle.onValueChanged.AddListener((v) =>
-            {
-                OnDebugModeChanged(v);
-            });
+        void CreatePanel()
+        {
+            if (_modularPanel == null)
+                return;
 
-            // Debug pathfinding toggle.
-            _ui.debugPathfindingToggle.isOn = false;
-            OnDebugPathfindingChanged(_ui.debugPathfindingToggle.isOn);
-            _ui.debugPathfindingToggle.onValueChanged.AddListener((v) =>
-            {
-                OnDebugPathfindingChanged(v);
-            });
+            var builder = _modularPanel.CreateBuilder();
+
+            var enablePathSmootherItem = new ModularPanel.ToggleItem(true, "Enable Path Smoother");
+            enablePathSmootherItem.onValueChanged += (v) => _GraphController.GetComponent<PathSmoother>().enabled = v;
+            builder.AddItem(enablePathSmootherItem);
+
+            var debugGraphControllerItem = new ModularPanel.ToggleItem(false, "Debug Graph Controller");
+            debugGraphControllerItem.onValueChanged += (v) => _GraphController.GetComponent<GraphControllerDebugger>().enabled = v;
+            builder.AddItem(debugGraphControllerItem);
+
+            var debugPathfindingItem = new ModularPanel.ToggleItem(false, "Debug Pathfinding");
+            debugPathfindingItem.onValueChanged += (v) => OnDebugPathfindingChanged(v);
+            builder.AddItem(debugPathfindingItem);
+
+            var debugModeItem = new ModularPanel.ToggleItem(true, "Debug Mode");
+            debugModeItem.onValueChanged += (v) => OnDebugModeChanged(v);
+            builder.AddItem(debugModeItem);
+
+            var regenerateItem = new ModularPanel.ButtonItem("Regenerate");
+            regenerateItem.onClick += GenerateWorld;
+            builder.AddItem(regenerateItem);
+
+            builder.Build();
         }
 
         void Update()

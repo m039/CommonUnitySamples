@@ -42,6 +42,9 @@ namespace Game.BehaviourTreeSample
         [Inject]
         readonly IGameEntityFactory _entityFactory;
 
+        [Inject]
+        readonly ModularPanel _modularPanel;
+
         readonly BlackboardBase _blackboard = new GameBlackboard();
 
         readonly Arbiter _arbiter = new();
@@ -58,6 +61,21 @@ namespace Game.BehaviourTreeSample
 
             ServiceLocator.Register(_arbiter);
             EventBus.Subscribe(this);
+            CreatePanel();
+        }
+
+        void CreatePanel()
+        {
+            if (_modularPanel == null)
+                return;
+
+            var builder = _modularPanel.CreateBuilder();
+
+            var debugModeItem = new ModularPanel.ToggleItem(false, "Debug Mode");
+            debugModeItem.onValueChanged += (v) => SetDebugMode(v);
+            builder.AddItem(debugModeItem);
+
+            builder.Build();
         }
 
         protected override void DoDestroy()
@@ -288,9 +306,9 @@ namespace Game.BehaviourTreeSample
             UpdateGroupInfo();
         }
 
-        public void OnDebugModeChanged(bool debugMode)
+        void SetDebugMode(bool debugMode)
         {
-            Blackboard.UpdateValue(BlackboardKeys.DebugMode, x => !x);
+            Blackboard.SetValue(BlackboardKeys.DebugMode, debugMode);
             _FPSCounter.gameObject.SetActive(debugMode);
         }
     }

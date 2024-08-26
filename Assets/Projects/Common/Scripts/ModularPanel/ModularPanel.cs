@@ -1,10 +1,8 @@
 using m039.Common.DependencyInjection;
 using System;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
-using static UnityEditor.Progress;
 
 namespace Game
 {
@@ -15,7 +13,8 @@ namespace Game
             { typeof(ToggleItem), new ToggleItemCreator() },
             { typeof(DropdownItem), new DropdownItemCreator() },
             { typeof(DropdownEnumItem), new DropdownEnumItemCreator() },
-            { typeof(SliderItem), new SliderItemCreator() }
+            { typeof(SliderItem), new SliderItemCreator() },
+            { typeof(ButtonItem), new ButtonItemCreator() }
         };
 
         [Provide]
@@ -49,7 +48,8 @@ namespace Game
                 (typeof(ToggleItem), "ToggleTemplate"),
                 (typeof(DropdownItem), "DropdownTemplate"),
                 (typeof(DropdownEnumItem), "DropdownTemplate"),
-                (typeof(SliderItem), "SliderTemplate")
+                (typeof(SliderItem), "SliderTemplate"),
+                (typeof(ButtonItem), "ButtonTemplate")
             };
 
             _content = transform.Find("Root/Content");
@@ -290,6 +290,26 @@ namespace Game
             }
         }
 
+        class ButtonItemCreator : IPanelItemCreator<ButtonItem>
+        {
+            public Transform Create(ButtonItem item, Transform template)
+            {
+                var instance = Instantiate(template);
+                var label = instance.Find("Text").GetComponent<TMPro.TMP_Text>();
+                label.text = item.label;
+
+                var button = instance.GetComponent<Button>();
+                button.onClick.AddListener(() => item.onClick?.Invoke());
+
+                return instance;
+            }
+
+            public Transform Create(PanelItem panelItem, Transform template)
+            {
+                return Create((ButtonItem)panelItem, template);
+            }
+        }
+
         public abstract class PanelItem {
             bool _visible;
 
@@ -386,6 +406,22 @@ namespace Game
             public override void Reset()
             {
                 onValueChanged?.Invoke(value);
+            }
+        }
+
+        public class ButtonItem : PanelItem
+        {
+            public string label;
+
+            public Action onClick;
+
+            public ButtonItem(string label = null)
+            {
+                this.label = label;
+            }
+
+            public override void Reset()
+            {
             }
         }
 

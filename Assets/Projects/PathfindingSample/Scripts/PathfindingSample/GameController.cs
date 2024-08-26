@@ -20,12 +20,57 @@ namespace Game.PathfindingSample
         [Inject]
         readonly DraggablePathController _pathController;
 
+        [Inject]
+        readonly ModularPanel _modularPanel;
+
         Vector2 _previousSize;
 
         void Start()
         {
             UpdateGraphController();
             Generate();
+            CreatePanel();
+        }
+
+        void CreatePanel()
+        {
+            if (_modularPanel == null)
+                return;
+
+            var builder = _modularPanel.CreateBuilder();
+
+            var enablePathSmootherItem = new ModularPanel.ToggleItem(false, "Enable Path Smoother");
+            enablePathSmootherItem.onValueChanged += (v) =>
+            {
+                _graphController.GetComponent<PathSmoother>().enabled = v;
+                _pathController.Refresh();
+            };
+            builder.AddItem(enablePathSmootherItem);
+
+            var enableRaycastModifierItem = new ModularPanel.ToggleItem(true, "Enable Raycast Modifier");
+            enableRaycastModifierItem.onValueChanged += (v) =>
+            {
+                _graphController.GetComponent<RaycastModifier>().enabled = v;
+                _pathController.Refresh();
+            };
+            builder.AddItem(enableRaycastModifierItem);
+
+            var debugGraphControllerItem = new ModularPanel.ToggleItem(false, "Debug Graph Controller");
+            debugGraphControllerItem.onValueChanged += (v) =>
+            {
+                _graphController.GetComponent<GraphControllerDebugger>().enabled = v;
+            };
+            builder.AddItem(debugGraphControllerItem);
+
+            var resetItem = new ModularPanel.ButtonItem("Reset");
+            resetItem.onClick += OnResetClicked;
+            builder.AddItem(resetItem);
+
+            var regenerateItem = new ModularPanel.ButtonItem("Regenerate");
+            regenerateItem.onClick += OnRegenerateClicked;
+            builder.AddItem(regenerateItem);
+
+            builder.Build();
         }
 
         void UpdateGraphController()

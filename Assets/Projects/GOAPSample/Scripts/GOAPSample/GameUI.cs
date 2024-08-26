@@ -18,21 +18,10 @@ namespace Game
 
         public TMPro.TMP_Text fpsCounter;
 
-        public Toggle debugModeToggle;
-
-        public Toggle debugPathfindingToggle;
-
         [SerializeField]
         RectTransform _WarningNotification;
 
         #endregion
-
-        public event System.Action onRegenerate;
-
-        public void OnRegenerateClicked()
-        {
-            onRegenerate?.Invoke();
-        }
 
         public void ClearWarningNotification()
         {

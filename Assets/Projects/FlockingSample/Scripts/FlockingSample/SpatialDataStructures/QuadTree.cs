@@ -62,16 +62,12 @@ namespace Game.FlockingSample
 
             var size = Mathf.Min(rect.width, rect.height);
             _deepestLevel = 1;
-            while (true)
+
+            do
             {
-                if (size / 2f > neighbourRadius * 2)
-                {
-                    size = size / 2f;
-                    _deepestLevel++;
-                    continue;
-                }
-                break;
-            }
+                size = size / 2f;
+                _deepestLevel++;
+            } while (size > neighbourRadius * 2);
 
             _root = new QuadNode<T>
             {

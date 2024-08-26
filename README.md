@@ -9,6 +9,7 @@ Samples:
 * [Behaviour Tree Sample](/Assets/Projects/BehaviourTreeSample)
 * [State Machine Sample](/Assets/Projects/StateMachineSample)
 * [Pathfinding Sample](/Assets/Projects/PathfindingSample)
+* [Flocking Sample](/Assets/Projects/FlockingSample)
 
 ## GOAP Sample
 
@@ -25,3 +26,7 @@ This is a very simple sample when you can change a bot's state by pressing a but
 ## Pathfinding Sample
 
 A scene with a lot of object with colliders and two circles which you can drag with a mouse and the path will be calculated between their points.
+
+## Flocking Sample
+
+A scene with a lot of small agents with flocking behavours.

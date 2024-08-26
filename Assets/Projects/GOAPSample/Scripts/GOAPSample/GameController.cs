@@ -26,14 +26,15 @@ namespace Game.GOAPSample
         readonly GameUI _ui;
 
         [Inject]
+        readonly FPSCounter _fpsCounter;
+
+        [Inject]
         readonly WorldGenerator _worldGenerator;
 
         [Inject]
         readonly ModularPanel _modularPanel;
 
         IGameEntity _selectedBot;
-
-        float _fpsTimer = 0;
 
         Vector2 _previousScreenSize;
 
@@ -79,23 +80,9 @@ namespace Game.GOAPSample
 
         void Update()
         {
-            ProcessDebug();
             ProcessInput();
             ProcessBotInfo();
             UpdateGraphController();
-        }
-
-        void ProcessDebug()
-        {
-            if (Blackboard.GetValue(BlackboardKeys.DebugMode))
-            {
-                _fpsTimer -= Time.deltaTime;
-                if (_fpsTimer < 0)
-                {
-                    _ui.fpsCounter.text = string.Format("FPS: {0,3:f2}", 1 / Time.deltaTime);
-                    _fpsTimer = 0.1f;
-                }
-            }
         }
 
         void ProcessInput()
@@ -197,7 +184,7 @@ namespace Game.GOAPSample
         void OnDebugModeChanged(bool value)
         {
             Blackboard.SetValue(BlackboardKeys.DebugMode, value);
-            _ui.fpsCounter.gameObject.SetActive(value);
+            _fpsCounter.gameObject.SetActive(value);
         }
 
         void OnDebugPathfindingChanged(bool value)

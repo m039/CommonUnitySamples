@@ -1,24 +1,14 @@
 using m039.Common.DependencyInjection;
-using UnityEngine;
 
 namespace Game.FlockingSample
 {
     public class GameController : CoreGameController
     {
-        #region Inspector
-
-        [SerializeField]
-        TMPro.TMP_Text _FPSCounter;
-
-        #endregion
-
         [Inject]
         readonly FlockingManager _flocking;
 
         [Inject]
         readonly ModularPanel _modularPanel;
-
-        float _fpsTimer = 0;
 
         void Start()
         {
@@ -64,7 +54,7 @@ namespace Game.FlockingSample
             builder.AddItem(agentSpeedItem);
 
             // Neighbours Mode
-            var neighboursModeItem = new ModularPanel.DropdownEnumItem(typeof(FlockingManager.NeighboursMode));
+            var neighboursModeItem = new ModularPanel.DropdownEnumItem(typeof(FlockingManager.NeighboursMode), "Find Neighbours By");
             neighboursModeItem.value = (int)_flocking.neighboursMode;
             neighboursModeItem.onValueChanged += (v) => _flocking.neighboursMode = (FlockingManager.NeighboursMode)v;
             builder.AddItem(neighboursModeItem);
@@ -89,21 +79,6 @@ namespace Game.FlockingSample
             builder.AddItem(noColorize);
 
             builder.Build();
-        }
-
-        void Update()
-        {
-            ProcessDebug();
-        }
-
-        void ProcessDebug()
-        {
-            _fpsTimer -= Time.deltaTime;
-            if (_fpsTimer < 0)
-            {
-                _FPSCounter.text = string.Format("FPS: {0,3:f2}", 1 / Time.deltaTime);
-                _fpsTimer = 0.1f;
-            }
         }
     }
 }

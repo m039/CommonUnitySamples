@@ -16,8 +16,6 @@ namespace Game
 
         public TMPro.TMP_Text botInfo;
 
-        public TMPro.TMP_Text fpsCounter;
-
         [SerializeField]
         RectTransform _WarningNotification;
 

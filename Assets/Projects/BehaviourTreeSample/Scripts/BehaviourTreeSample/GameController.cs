@@ -32,9 +32,6 @@ namespace Game.BehaviourTreeSample
         TMPro.TMP_Text _GroupInfo;
 
         [SerializeField]
-        TMPro.TMP_Text _FPSCounter;
-
-        [SerializeField]
         TMPro.TMP_Text _BotInfo;
 
         #endregion
@@ -45,13 +42,14 @@ namespace Game.BehaviourTreeSample
         [Inject]
         readonly ModularPanel _modularPanel;
 
+        [Inject]
+        readonly FPSCounter _fpsCounter;
+
         readonly BlackboardBase _blackboard = new GameBlackboard();
 
         readonly Arbiter _arbiter = new();
 
         Coroutine _spawner;
-
-        float _fpsTimer = 0;
 
         IGameEntity _selectedBot;
 
@@ -61,21 +59,6 @@ namespace Game.BehaviourTreeSample
 
             ServiceLocator.Register(_arbiter);
             EventBus.Subscribe(this);
-            CreatePanel();
-        }
-
-        void CreatePanel()
-        {
-            if (_modularPanel == null)
-                return;
-
-            var builder = _modularPanel.CreateBuilder();
-
-            var debugModeItem = new ModularPanel.ToggleItem(false, "Debug Mode");
-            debugModeItem.onValueChanged += (v) => SetDebugMode(v);
-            builder.AddItem(debugModeItem);
-
-            builder.Build();
         }
 
         protected override void DoDestroy()
@@ -89,6 +72,8 @@ namespace Game.BehaviourTreeSample
 
         void Start()
         {
+            CreatePanel();
+
             EventBus.Logger.SetEnabled(false);
 
             var botClasses = System.Enum.GetValues(typeof(BotClass)).Cast<BotClass>().ToList();
@@ -110,14 +95,26 @@ namespace Game.BehaviourTreeSample
             }
 
             UpdateGroupInfo();
-            _FPSCounter.gameObject.SetActive(false);
+        }
+
+        void CreatePanel()
+        {
+            if (_modularPanel == null)
+                return;
+
+            var builder = _modularPanel.CreateBuilder();
+
+            var debugModeItem = new ModularPanel.ToggleItem(true, "Debug Mode");
+            debugModeItem.onValueChanged += (v) => SetDebugMode(v);
+            builder.AddItem(debugModeItem);
+
+            builder.Build();
         }
 
         void Update()
         {
             ProcessInput();
             ProcessSpawner();
-            ProcessDebug();
             ProcessBotInfo();
         }
 
@@ -196,19 +193,6 @@ namespace Game.BehaviourTreeSample
                 } else
                 {
                     _entityFactory.Destroy(food);
-                }
-            }
-        }
-
-        void ProcessDebug()
-        {
-            if (Blackboard.GetValue(BlackboardKeys.DebugMode))
-            {
-                _fpsTimer -= Time.deltaTime;
-                if (_fpsTimer < 0)
-                {
-                    _FPSCounter.text = string.Format("FPS: {0,3:f2}", 1 / Time.deltaTime);
-                    _fpsTimer = 0.1f;
                 }
             }
         }
@@ -309,7 +293,7 @@ namespace Game.BehaviourTreeSample
         void SetDebugMode(bool debugMode)
         {
             Blackboard.SetValue(BlackboardKeys.DebugMode, debugMode);
-            _FPSCounter.gameObject.SetActive(debugMode);
+            _fpsCounter.gameObject.SetActive(debugMode);
         }
     }
 }

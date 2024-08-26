@@ -553,8 +553,111 @@ namespace Game.FlockingSample
                     break;
                 }
 
-                var agents = new List<FlockingAgent>(_manager._agents);
-                _root = CreateNode(rect, 1, agents);
+                _root = new QuadNode<FlockingAgent>
+                {
+                    depth = 1,
+                    rect = rect
+                };
+
+                foreach (var a in _manager._agents)
+                {
+                    InsertAgent(_root, a);
+                }
+            }
+
+            bool InsertAgent(QuadNode<FlockingAgent> node, FlockingAgent agent)
+            {
+                if (!node.rect.Contains(agent.position))
+                    return false;
+
+                if (node.depth == _deepestLevel)
+                {
+                    if (node.data == null)
+                    {
+                        node.data = new();
+                    }
+
+                    node.data.Add(agent);
+                    return true;
+                }
+
+                var rect = node.rect;
+                var size = new Vector2(rect.width / 2f, rect.height / 2f);
+                var depth = node.depth + 1;
+
+                if (node.one != null)
+                {
+                    if (InsertAgent(node.one, agent))
+                        return true;
+                }
+                else
+                {
+                    var rectOne = new Rect(rect.position, size);
+                    var one = new QuadNode<FlockingAgent>
+                    {
+                        rect = rectOne,
+                        depth = depth
+                    };
+                    node.one = one;
+                    if (InsertAgent(one, agent))
+                        return true;
+                }
+
+                if (node.two != null)
+                {
+                    if (InsertAgent(node.two, agent))
+                        return true;
+                }
+                else
+                {
+                    var rectTwo = new Rect(rect.position + new Vector2(size.x, 0), size);
+                    var two = new QuadNode<FlockingAgent>
+                    {
+                        rect = rectTwo,
+                        depth = depth
+                    };
+                    node.two = two;
+                    if (InsertAgent(two, agent))
+                        return true;
+                }
+
+                if (node.three != null)
+                {
+                    if (InsertAgent(node.three, agent))
+                        return true;
+                }
+                else
+                {
+                    var rectThree = new Rect(rect.position + new Vector2(0, size.y), size);
+                    var three = new QuadNode<FlockingAgent>
+                    {
+                        rect = rectThree,
+                        depth = depth
+                    };
+                    node.three = three;
+                    if (InsertAgent(three, agent))
+                        return true;
+                }
+
+                if (node.four != null)
+                {
+                    if (InsertAgent(node.four, agent))
+                        return true;
+                }
+                else
+                {
+                    var rectFour = new Rect(rect.position + new Vector2(size.x, size.y), size);
+                    var four = new QuadNode<FlockingAgent>
+                    {
+                        rect = rectFour,
+                        depth = depth
+                    };
+                    node.four = four;
+                    if (InsertAgent(four, agent))
+                        return true;
+                }
+
+                return false;
             }
 
             public Queue<FlockingAgent> GetNeighbours(FlockingAgent agent)
@@ -571,6 +674,9 @@ namespace Game.FlockingSample
                     {
                         continue;
                     }
+
+                    if (deepestNode.data == null)
+                        continue;
 
                     foreach (var a in deepestNode.data)
                     {
@@ -612,59 +718,6 @@ namespace Game.FlockingSample
                 return GetDeepestNode(node.four, position);
             }
 
-            QuadNode<FlockingAgent> CreateNode(Rect rect, int depth, List<FlockingAgent> agents)
-            {
-                bool contains = false;
-
-                foreach (var a in agents)
-                {
-                    if (rect.Contains(a.position))
-                    {
-                        contains = true;
-                        break;
-                    }
-                }
-
-                if (!contains)
-                {
-                    return null;
-                }
-
-                var node = new QuadNode<FlockingAgent>
-                {
-                    depth = depth,
-                    rect = rect
-                };
-
-                if (depth == _deepestLevel)
-                {
-                    node.data = new List<FlockingAgent>();
-                    for (int i = agents.Count - 1; i >= 0; i--)
-                    {
-                        if (rect.Contains(agents[i].position))
-                        {
-                            node.data.Add(agents[i]);
-                            agents.RemoveAt(i);
-                        }
-                    }
-                    return node;
-                }
-
-                var size = new Vector2(rect.width / 2f, rect.height / 2f);
-
-                var rectOne = new Rect(rect.position, size);
-                var rectTwo = new Rect(rect.position + new Vector2(size.x, 0), size);
-                var rectThree = new Rect(rect.position + new Vector2(0, size.y), size);
-                var rectFour = new Rect(rect.position + new Vector2(size.x, size.y), size);
-
-                node.one = CreateNode(rectOne, depth + 1, agents);
-                node.two = CreateNode(rectTwo, depth + 1, agents);
-                node.three = CreateNode(rectThree, depth + 1, agents);
-                node.four = CreateNode(rectFour, depth + 1, agents);
-     
-                return node;
-            }
-
             public void DrawGizmos()
             {
                 void drawNode(QuadNode<FlockingAgent> n)
@@ -674,10 +727,13 @@ namespace Game.FlockingSample
 
                     if (n.depth == _deepestLevel)
                     {
+                        if (n.data == null)
+                            return;
+
                         var rect = n.rect;
                         Gizmos.color = Color.yellow;
                         Gizmos.DrawWireCube(rect.center, rect.size);
-
+                        
                         foreach (var a in n.data)
                         {
                             Gizmos.color = Color.red;
@@ -701,7 +757,7 @@ namespace Game.FlockingSample
             public QuadNode<T> two;
             public QuadNode<T> three;
             public QuadNode<T> four;
-            public List<T> data;
+            public HashSet<T> data;
             public int depth;
             public Rect rect;
         }

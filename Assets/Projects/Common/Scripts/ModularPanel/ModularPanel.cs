@@ -197,7 +197,9 @@ namespace Game
             public Transform Create(DropdownItem item, Transform template)
             {
                 var instance = Instantiate(template);
-                var dropdown = instance.GetComponent<TMPro.TMP_Dropdown>();
+                var label = instance.Find("Label").GetComponent<TMPro.TMP_Text>();
+                label.text = item.label;
+                var dropdown = instance.Find("Dropdown").GetComponent<TMPro.TMP_Dropdown>();
 
                 dropdown.ClearOptions();
                 var options = new List<TMPro.TMP_Dropdown.OptionData>();
@@ -226,7 +228,10 @@ namespace Game
             public Transform Create(DropdownEnumItem item, Transform template)
             {
                 var instance = Instantiate(template);
-                var dropdown = instance.GetComponent<TMPro.TMP_Dropdown>();
+
+                var label = instance.Find("Label").GetComponent<TMPro.TMP_Text>();
+                label.text = item.label;
+                var dropdown = instance.Find("Dropdown").GetComponent<TMPro.TMP_Dropdown>();
 
                 dropdown.ClearOptions();
                 var options = new List<TMPro.TMP_Dropdown.OptionData>();
@@ -353,10 +358,12 @@ namespace Game
             public int value = 0;
             public List<string> options = new();
             public Action<int> onValueChanged;
+            public string label;
 
-            public DropdownItem(int value = 0)
+            public DropdownItem(int value = 0, string label = null)
             {
                 this.value = value;
+                this.label = label;
             }
 
             public override void Reset()
@@ -373,9 +380,12 @@ namespace Game
 
             public Action<int> onValueChanged;
 
-            public DropdownEnumItem(Type type)
+            public string label;
+
+            public DropdownEnumItem(Type type, string label = null)
             {
                 this.type = type;
+                this.label = label;
             }
 
             public override void Reset()

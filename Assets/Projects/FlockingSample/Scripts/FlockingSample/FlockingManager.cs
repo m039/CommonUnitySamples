@@ -40,18 +40,15 @@ namespace Game.FlockingSample
         [SerializeField]
         MinMaxInt _NumberOfAgents = new(10, 10);
 
-        [SerializeField]
-        float _NeighbourRadius = 1f;
+        public float neighbourRadius = 0.5f;
 
         [Range(1f, 100f)]
         [SerializeField]
         float _MaxSpeed = 5;
 
-        [SerializeField]
-        float _MovementSpeedMultiplier = 1f;
+        public float movementSpeedMultiplier = 0.5f;
 
-        [SerializeField]
-        NeighboursMode _NeighboursMode = NeighboursMode.GridLookUp;
+        public NeighboursMode neighboursMode = NeighboursMode.GridLookUp;
 
         [SerializeField]
         bool _Debug = true;
@@ -75,8 +72,6 @@ namespace Game.FlockingSample
         readonly List<FlockingAgent> _agents = new();
 
         float _previousNeighborRadius;
-
-        public float NeighbourRadius => _NeighbourRadius;
 
         LineRenderer _lineTemplate;
 
@@ -103,10 +98,6 @@ namespace Game.FlockingSample
         public void SetColorByNeighbours(bool value) => _colorByNeighbours = value;
 
         public void SetColorize(bool value) => _colorize = value;
-
-        public void SetNeighboursMode(NeighboursMode mode) => _NeighboursMode = mode;
-
-        public void SetSpeedMultiplier(float multiplier) => _MovementSpeedMultiplier = multiplier;
 
         public void CreateAgents()
         {
@@ -138,12 +129,12 @@ namespace Game.FlockingSample
 
         void Update()
         {
-            if (_NeighboursMode == NeighboursMode.QuadTree)
+            if (neighboursMode == NeighboursMode.QuadTree)
             {
                 _quadTree = new QuadTree(this);
-            } else if (_NeighboursMode == NeighboursMode.GridLookUp)
+            } else if (neighboursMode == NeighboursMode.GridLookUp)
             {
-                if (_gridLookUp == null || !_gridLookUp.IsValid || _NeighbourRadius != _previousNeighborRadius)
+                if (_gridLookUp == null || !_gridLookUp.IsValid || neighbourRadius != _previousNeighborRadius)
                 {
                     _gridLookUp = new GridLookUp(this);
                 }
@@ -171,7 +162,7 @@ namespace Game.FlockingSample
                 SetAgentColor(agent);
 
                 var move = _Behaviour.CalculateMove(this, agent);
-                move *= _MovementSpeedMultiplier;
+                move *= movementSpeedMultiplier;
                 if (move.magnitude > _MaxSpeed)
                 {
                     move = move.normalized * _MaxSpeed;
@@ -179,12 +170,12 @@ namespace Game.FlockingSample
                 agent.Move(move);
             }
 
-            if (_NeighboursMode == NeighboursMode.GridLookUp)
+            if (neighboursMode == NeighboursMode.GridLookUp)
             {
                 _gridLookUp.Update();
             }
 
-            _previousNeighborRadius = _NeighbourRadius;
+            _previousNeighborRadius = neighbourRadius;
         }
 
         void SetAgentColor(FlockingAgent agent)
@@ -272,7 +263,7 @@ namespace Game.FlockingSample
                     if (a == agent)
                         continue;
 
-                    if (Vector2.Distance(agent.position, a.position) < _NeighbourRadius)
+                    if (Vector2.Distance(agent.position, a.position) < neighbourRadius)
                     {
                         s_Neighbours.Enqueue(a);
                     }
@@ -291,12 +282,12 @@ namespace Game.FlockingSample
             else if (mode == NeighboursMode.Physics)
             {
                 s_Neighbours.Clear();
-                var colliders = Physics2D.OverlapCircleAll(agent.position, _NeighbourRadius);
+                var colliders = Physics2D.OverlapCircleAll(agent.position, neighbourRadius);
 
                 foreach (var c in colliders)
                 {
                     if (c.GetComponentInParent<FlockingAgent>() is FlockingAgent a && a != agent &&
-                        Vector2.Distance(agent.position, a.position) < _NeighbourRadius)
+                        Vector2.Distance(agent.position, a.position) < neighbourRadius)
                     {
                         s_Neighbours.Enqueue(a);
                     }
@@ -319,7 +310,7 @@ namespace Game.FlockingSample
 
             _cachedNeighboursAgent = agent;
 
-            return GetNeighbours(agent, _NeighboursMode);
+            return GetNeighbours(agent, neighboursMode);
         }
 
         [ContextMenu("Validate Neighbours")]
@@ -382,14 +373,14 @@ namespace Game.FlockingSample
         private void OnDrawGizmosSelected()
         {
             Gizmos.color = Color.blue;
-            Gizmos.DrawWireSphere(transform.position, _NeighbourRadius);
+            Gizmos.DrawWireSphere(transform.position, neighbourRadius);
 
             if (_Debug)
             {
-                if (_NeighboursMode == NeighboursMode.QuadTree && _quadTree != null)
+                if (neighboursMode == NeighboursMode.QuadTree && _quadTree != null)
                 {
                     _quadTree.DrawGizmos();
-                } else if (_NeighboursMode == NeighboursMode.GridLookUp && _gridLookUp != null)
+                } else if (neighboursMode == NeighboursMode.GridLookUp && _gridLookUp != null)
                 {
                     _gridLookUp.DrawGizmos();
                 }
@@ -421,7 +412,7 @@ namespace Game.FlockingSample
                     _screenRect.position - _screenRect.size * padding,
                     (1 + 2 * padding) * _screenRect.size
                 );
-                var length = _manager._NeighbourRadius * 2;
+                var length = _manager.neighbourRadius * 2;
                 var width = (int)(_rect.width / length) + 1;
                 var height = (int)(_rect.height / length) + 1;
                 _size = new Vector2(_rect.width / width, _rect.height / height);
@@ -456,7 +447,7 @@ namespace Game.FlockingSample
 
                     foreach (var a in agents)
                     {
-                        if (Vector2.Distance(agent.position, a.position) < _manager._NeighbourRadius && agent != a)
+                        if (Vector2.Distance(agent.position, a.position) < _manager.neighbourRadius && agent != a)
                         {
                             s_Neighbours.Enqueue(a);
                         }
@@ -553,7 +544,7 @@ namespace Game.FlockingSample
                 _deepestLevel = 1;
                 while (true)
                 {
-                    if (size / 2f > _manager._NeighbourRadius * 2)
+                    if (size / 2f > _manager.neighbourRadius * 2)
                     {
                         size = size / 2f;
                         _deepestLevel++;
@@ -569,7 +560,7 @@ namespace Game.FlockingSample
             public Queue<FlockingAgent> GetNeighbours(FlockingAgent agent)
             {
                 var rect = CameraUtils.ScreenRect;
-                var size = Vector2.one * _manager.NeighbourRadius;
+                var size = Vector2.one * _manager.neighbourRadius;
                 s_Neighbours.Clear();
 
                 foreach (var direction in Directions)
@@ -583,7 +574,7 @@ namespace Game.FlockingSample
 
                     foreach (var a in deepestNode.data)
                     {
-                        if (Vector2.Distance(agent.position, a.position) < _manager._NeighbourRadius && a != agent)
+                        if (Vector2.Distance(agent.position, a.position) < _manager.neighbourRadius && a != agent)
                         {
                             s_Neighbours.Enqueue(a);
                         }

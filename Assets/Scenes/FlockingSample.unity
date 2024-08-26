@@ -1070,9 +1070,9 @@ MonoBehaviour:
   _NumberOfAgents:
     min: 400
     max: 400
-  _NeighbourRadius: 0.5
+  neighbourRadius: 0.5
   _MaxSpeed: 5
-  _MovementSpeedMultiplier: 0.5
+  movementSpeedMultiplier: 0.5
   _NeighboursMode: 0
   _Debug: 1
   colorsByNeighbour:

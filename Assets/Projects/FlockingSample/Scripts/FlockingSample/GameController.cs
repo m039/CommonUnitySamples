@@ -33,34 +33,40 @@ namespace Game.FlockingSample
 
             var builder = _modularPanel.CreateBuilder();
 
+            // Neigbour Radius.
+            var neghbourRadiusItem = new ModularPanel.SliderItem(_flocking.neighbourRadius, 0.1f, 2f);
+            neghbourRadiusItem.label = "Neigbour Radius";
+            neghbourRadiusItem.onValueChanged += (v) => _flocking.neighbourRadius = v;
+            builder.AddItem(neghbourRadiusItem);
+
             // Aligment Coeff.
-            var aligmentItem = new ModularPanel.SliderItem(1f, 0f, 10f);
+            var aligmentItem = new ModularPanel.SliderItem(_flocking.aligmentCoeff, 0f, 10f);
             aligmentItem.label = "Aligment Coeff";
             aligmentItem.onValueChanged += (v) => _flocking.aligmentCoeff = v;
             builder.AddItem(aligmentItem);
 
             // Aligment Coeff.
-            var cohesionItem = new ModularPanel.SliderItem(1f, 0f, 10f);
+            var cohesionItem = new ModularPanel.SliderItem(_flocking.cohesionCoeff, 0f, 10f);
             cohesionItem.label = "Cohesion Coeff";
             cohesionItem.onValueChanged += (v) => _flocking.cohesionCoeff = v;
             builder.AddItem(cohesionItem);
 
             // Separation Coeff.
-            var separationItem = new ModularPanel.SliderItem(1f, 0f, 10f);
+            var separationItem = new ModularPanel.SliderItem(_flocking.separationCoeff, 0f, 10f);
             separationItem.label = "Separation Coeff";
             separationItem.onValueChanged += (v) => _flocking.separationCoeff = v;
             builder.AddItem(separationItem);
 
             // Agent Speed.
-            var agentSpeedItem = new ModularPanel.SliderItem(0.5f, 0.1f, 10f);
+            var agentSpeedItem = new ModularPanel.SliderItem(_flocking.movementSpeedMultiplier, 0.1f, 10f);
             agentSpeedItem.label = "Agent Speed";
-            agentSpeedItem.onValueChanged += (v) => _flocking.SetSpeedMultiplier(v);
+            agentSpeedItem.onValueChanged += (v) => _flocking.movementSpeedMultiplier = v;
             builder.AddItem(agentSpeedItem);
 
             // Neighbours Mode
             var neighboursModeItem = new ModularPanel.DropdownEnumItem(typeof(FlockingManager.NeighboursMode));
-            neighboursModeItem.value = (int)FlockingManager.NeighboursMode.GridLookUp;
-            neighboursModeItem.onValueChanged += (v) => _flocking.SetNeighboursMode((FlockingManager.NeighboursMode)v);
+            neighboursModeItem.value = (int)_flocking.neighboursMode;
+            neighboursModeItem.onValueChanged += (v) => _flocking.neighboursMode = (FlockingManager.NeighboursMode)v;
             builder.AddItem(neighboursModeItem);
 
             // Debug Neighbours.

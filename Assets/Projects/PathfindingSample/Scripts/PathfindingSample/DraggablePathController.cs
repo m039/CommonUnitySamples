@@ -45,6 +45,9 @@ namespace Game.PathfindingSample
             return this;
         }
 
+        [Inject]
+        NotificationMessage _notificationMessage;
+
         public void ResetState()
         {
             _handle1.Reset();
@@ -111,7 +114,10 @@ namespace Game.PathfindingSample
 
         public void Refresh()
         {
+            var time = Time.realtimeSinceStartup;
             var path = _Seeker.Search(_handle1.position, _handle2.position);
+            time = Time.realtimeSinceStartup - time;
+
             IList<Vector3> vectorPath = null;
             if (path != null) {
                 vectorPath = _Smoother.GetSmoothPath(path.vectorPath);
@@ -123,6 +129,9 @@ namespace Game.PathfindingSample
                 _LineRenderer.SetPosition(0, _handle1.position);
                 _LineRenderer.SetPosition(1, _handle2.position);
                 _LineRenderer.startColor = _LineRenderer.endColor = _BadPathColor;
+
+                _notificationMessage.SetLevel(NotificationMessage.Level.Warning);
+                _notificationMessage.SetMessage("Can't calculate the path. Check if start or end points are not blocked.");
             } else
             {
                 _LineRenderer.positionCount = vectorPath.Count + 2;
@@ -133,6 +142,9 @@ namespace Game.PathfindingSample
                 }
                 _LineRenderer.SetPosition(_LineRenderer.positionCount - 1, _handle2.position);
                 _LineRenderer.startColor = _LineRenderer.endColor = _GoodPathColor;
+
+                _notificationMessage.SetLevel(NotificationMessage.Level.Normal);
+                _notificationMessage.SetMessage($"Path calculated in {time * 1000} ms.");
             }
         }
 

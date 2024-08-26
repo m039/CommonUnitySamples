@@ -20,4 +20,4 @@ MonoBehaviour:
   - behvaiour: {fileID: 11400000, guid: 379fb027ae4fb1148b26d23bf86bc52d, type: 2}
     weight: 1
   - behvaiour: {fileID: 11400000, guid: dd6b34e32e7d3164b9d0dabf4378af58, type: 2}
-    weight: 1
+    weight: 0.5

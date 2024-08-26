@@ -12,3 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc31e79a8cea8c64f93774110617373c, type: 3}
   m_Name: StayOnScreenBehaviour
   m_EditorClassIdentifier: 
+  _padding: 0

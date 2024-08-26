@@ -60,20 +60,25 @@ namespace Game.FlockingSample
             builder.AddItem(neighboursModeItem);
 
             // Debug Neighbours.
-            var debugNeighboursItem = new ModularPanel.ToggleItem(false, "Debug Neighbours");
-            debugNeighboursItem.onValueChanged += (v) => _flocking.SetDebugNeighbours(v);
+            var debugNeighboursItem = new ModularPanel.ToggleItem(_flocking.debugNeighbours, "Debug Neighbours");
+            debugNeighboursItem.onValueChanged += (v) => _flocking.debugNeighbours = v;
             builder.AddItem(debugNeighboursItem);
 
+            // Debug Grids.
+            var debugGridsItem = new ModularPanel.ToggleItem(_flocking.debugGrids, "Debug Grids");
+            debugGridsItem.onValueChanged += (v) => _flocking.debugGrids = v;
+            builder.AddItem(debugGridsItem);
+
             // Color By Neighbours
-            var colorByNeighbours = new ModularPanel.ToggleItem(true, "Color By Neighbours");
-            colorByNeighbours.onValueChanged += (v) => _flocking.SetColorByNeighbours(v);
+            var colorByNeighbours = new ModularPanel.ToggleItem(_flocking.colorByNeighbours, "Color By Neighbours");
+            colorByNeighbours.onValueChanged += (v) => _flocking.colorByNeighbours = v;
             builder.AddItem(colorByNeighbours);
 
             // No Colorize.
-            var noColorize = new ModularPanel.ToggleItem(false, "No Colorize");
+            var noColorize = new ModularPanel.ToggleItem(!_flocking.colorize, "No Colorize");
             noColorize.onValueChanged += (v) =>
             {
-                _flocking.SetColorize(!v);
+                _flocking.colorize = !v;
                 colorByNeighbours.visible = !v;
             };
             builder.AddItem(noColorize);

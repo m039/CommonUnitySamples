@@ -1,12 +1,11 @@
-using System;
 using UnityEngine;
 
 namespace Game.FlockingSample
 {
     public class FlockingAgent :
         MonoBehaviour,
-        FlockingManager.IQuadTreeItem,
-        FlockingManager.IGridLookUpItem
+        IQuadTreeItem,
+        ISpatialGridItem
     {
         #region Inspector
 
@@ -62,9 +61,9 @@ namespace Game.FlockingSample
             }
         }
 
-        Vector2Int FlockingManager.IGridLookUpItem.gridIndex { get; set; }
+        Vector2Int ISpatialGridItem.gridIndex { get; set; }
 
-        object FlockingManager.IQuadTreeItem.node { get; set; }
+        object IQuadTreeItem.node { get; set; }
 
         public void Initialize(FlockingManager manager)
         {

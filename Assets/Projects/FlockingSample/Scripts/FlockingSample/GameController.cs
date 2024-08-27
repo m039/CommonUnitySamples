@@ -23,7 +23,7 @@ namespace Game.FlockingSample
             var builder = _modularPanel.CreateBuilder();
 
             // Boids Count.
-            var boidsCountItem = new ModularPanel.SliderItem(400f, 0f, 1000f);
+            var boidsCountItem = new ModularPanel.SliderItem(400f, 0f, 1500f);
             boidsCountItem.label = "Boids Count";
             boidsCountItem.valueFormat = "0";
             boidsCountItem.onValueChanged += (v) => _flocking.CreateOrRemoveAgents((int)v);

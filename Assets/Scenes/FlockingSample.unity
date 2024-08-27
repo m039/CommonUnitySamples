@@ -932,9 +932,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _AgentPrefab: {fileID: 3616473631104367217, guid: e12bebea9d0ade643bfa9b52ac8c5ed5, type: 3}
   _Behaviour: {fileID: 11400000, guid: 40c9fd3da38dcb64188d24aa5d4a8ca1, type: 2}
-  _NumberOfAgents:
-    min: 400
-    max: 400
   neighbourRadius: 0.5
   _MaxSpeed: 5
   movementSpeedMultiplier: 0.5

@@ -12,7 +12,6 @@ namespace Game.FlockingSample
 
         void Start()
         {
-            _flocking.CreateAgents();
             CreatePanel();
         }
 
@@ -22,6 +21,13 @@ namespace Game.FlockingSample
                 return;
 
             var builder = _modularPanel.CreateBuilder();
+
+            // Boids Count.
+            var boidsCountItem = new ModularPanel.SliderItem(400f, 0f, 1000f);
+            boidsCountItem.label = "Boids Count";
+            boidsCountItem.valueFormat = "0";
+            boidsCountItem.onValueChanged += (v) => _flocking.CreateOrRemoveAgents((int)v);
+            builder.AddItem(boidsCountItem);
 
             // Neigbour Radius.
             var neghbourRadiusItem = new ModularPanel.SliderItem(_flocking.neighbourRadius, 0.1f, 2f);

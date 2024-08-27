@@ -37,9 +37,6 @@ namespace Game.FlockingSample
         [SerializeField]
         FlockingBehaviour _Behaviour;
 
-        [SerializeField]
-        MinMaxInt _NumberOfAgents = new(10, 10);
-
         [Range(0.1f, 5f)]
         public float neighbourRadius = 0.5f;
 
@@ -97,6 +94,8 @@ namespace Game.FlockingSample
 
         DebugLinePool _debugLinePool;
 
+        int _agentId = 0;
+
         void Awake()
         {
             Init();
@@ -108,26 +107,34 @@ namespace Game.FlockingSample
             _debugLinePool = new DebugLinePool(template);
         }
 
-        public void CreateAgents()
+        public void CreateOrRemoveAgents(int newCount)
         {
-            foreach (var agent in _agents)
+            if (_agents.Count > newCount)
             {
-                Destroy(agent.gameObject);
-            }
-
-            _agents.Clear();
-
-            var count = _NumberOfAgents.Random();
-            for (int i = 0; i < count; i++)
+                var removeCount = _agents.Count - newCount;
+                for (int i = 0; i < removeCount; i++)
+                {
+                    var lastIndex = _agents.Count - 1;
+                    var agent = _agents[lastIndex];
+                    Destroy(agent.gameObject);
+                    _agents.RemoveAt(lastIndex);
+                }
+            } else
             {
-                var position = CameraUtils.RandomPositionOnScreen();
-                var instance = Instantiate(_AgentPrefab, transform, false);
-                instance.transform.position = position;
-                instance.transform.rotation = Quaternion.Euler(0, 0, UnityEngine.Random.Range(0, 360));
-                instance.Initialize(this);
-                _agents.Add(instance);
-                instance.gameObject.name = $"Agent {i}";
+                var addCount = newCount - _agents.Count;
+                for (int i = 0; i < addCount; i++)
+                {
+                    var position = CameraUtils.RandomPositionOnScreen();
+                    var instance = Instantiate(_AgentPrefab, transform, false);
+                    instance.transform.position = position;
+                    instance.transform.rotation = Quaternion.Euler(0, 0, UnityEngine.Random.Range(0, 360));
+                    instance.Initialize(this);
+                    _agents.Add(instance);
+                    instance.gameObject.name = $"Agent {_agentId++}";
+                }
             }
+            _quadTree = null;
+            _spatialGrid = null;
         }
 
         void Update()

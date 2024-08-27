@@ -278,11 +278,11 @@ namespace Game
                 slider.value = item.value;
 
                 var value = instance.Find("Value").GetComponent<TMPro.TMP_Text>();
-                value.text = item.value.ToString("0.0");
+                value.text = item.value.ToString(item.valueFormat);
 
                 slider.onValueChanged.AddListener(v =>
                 {
-                    value.text = v.ToString("0.0");
+                    value.text = v.ToString(item.valueFormat);
                     item.onValueChanged?.Invoke(v);
                 });
 
@@ -405,6 +405,8 @@ namespace Game
             public string label;
 
             public Action<float> onValueChanged;
+
+            public string valueFormat = "0.0";
 
             public SliderItem(float value, float min = 0, float max = 1)
             {

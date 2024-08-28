@@ -82,8 +82,6 @@ namespace Game.FlockingSample
 
         readonly List<FlockingAgent> _agents = new();
 
-        float _previousNeighborRadius;
-
         QuadTree<FlockingAgent> _quadTree;
 
         SpatialGrid<FlockingAgent> _spatialGrid;
@@ -140,6 +138,15 @@ namespace Game.FlockingSample
         void Update()
         {
             // Recreate grids if necessary.
+
+            if (neighboursMode != NeighboursMode.QuadTree)
+            {
+                _quadTree = null;
+            } else if (neighboursMode != NeighboursMode.SpatialGrid)
+            {
+                _spatialGrid = null;
+            }
+
             if (neighboursMode == NeighboursMode.QuadTree)
             {
                 if (_quadTree == null ||
@@ -169,6 +176,28 @@ namespace Game.FlockingSample
                 _debugLinePool.DestroyLines();
             }
 
+            // Update grids and draw debug if needed.
+
+            if (neighboursMode == NeighboursMode.SpatialGrid)
+            {
+                _spatialGrid.Update(_agents);
+
+                if (debugGrids)
+                {
+                    _spatialGrid.DrawDebug(_debugLinePool);
+                }
+
+            }
+            else if (neighboursMode == NeighboursMode.QuadTree)
+            {
+                _quadTree.Update(_agents);
+
+                if (debugGrids)
+                {
+                    _quadTree.DrawDebug(_debugLinePool);
+                }
+            }
+
             // Main logic: calculate move and update the agents.
             foreach (var agent in _agents)
             {
@@ -187,28 +216,6 @@ namespace Game.FlockingSample
                 }
                 agent.Move(move);
             }
-
-            // Update grids and draw debug if needed.
-            if (neighboursMode == NeighboursMode.SpatialGrid)
-            {
-                _spatialGrid.Update(_agents);
-
-                if (debugGrids)
-                {
-                    _spatialGrid.DrawDebug(_debugLinePool);
-                }
-
-            } else if (neighboursMode == NeighboursMode.QuadTree)
-            {
-                _quadTree.Update(_agents);
-
-                if (debugGrids)
-                {
-                    _quadTree.DrawDebug(_debugLinePool);
-                }
-            }
-
-            _previousNeighborRadius = neighbourRadius;
         }
 
         void SetAgentColor(FlockingAgent agent)

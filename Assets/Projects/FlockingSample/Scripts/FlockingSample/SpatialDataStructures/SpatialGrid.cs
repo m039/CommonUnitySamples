@@ -150,23 +150,32 @@ namespace Game
 
         public void DrawDebug(DebugLinePool debugLinePool)
         {
+            for (int x = 0; x <= _items.GetLength(0); x++)
+            {
+                var line1 = debugLinePool.GetLine();
+                line1.positionCount = 2;
+                line1.SetPosition(0, _rect.position + new Vector2(_size.x * x, 0));
+                line1.SetPosition(1, _rect.position + new Vector2(_size.x * x, _rect.height));
+                line1.startColor = line1.endColor = Color.yellow;
+            }
+
+            for (int y = 0; y <= _items.GetLength(1); y++)
+            {
+                var line1 = debugLinePool.GetLine();
+                line1.positionCount = 2;
+                line1.SetPosition(0, _rect.position + new Vector2(0, y * _size.y));
+                line1.SetPosition(1, _rect.position + new Vector2(_rect.width, y * _size.y));
+                line1.startColor = line1.endColor = Color.yellow;
+            }
+
             for (int x = 0; x < _items.GetLength(0); x++)
             {
                 for (int y = 0; y < _items.GetLength(1); y++)
                 {
-                    var rect = new Rect(_rect.position + new Vector2(x * _size.x, y * _size.y), _size);
-
-                    var line1 = debugLinePool.GetLine();
-                    line1.positionCount = 5;
-                    line1.SetPosition(0, rect.position);
-                    line1.SetPosition(1, rect.position + new Vector2(rect.width, 0));
-                    line1.SetPosition(2, rect.position + new Vector2(rect.width, rect.height));
-                    line1.SetPosition(3, rect.position + new Vector2(0, rect.height));
-                    line1.SetPosition(4, rect.position);
-                    line1.startColor = line1.endColor = Color.yellow;
-
                     if (_items[x, y] != null)
                     {
+                        var rect = new Rect(_rect.position + new Vector2(x * _size.x, y * _size.y), _size);
+
                         foreach (var a in _items[x, y])
                         {
                             var line2 = debugLinePool.GetLine();

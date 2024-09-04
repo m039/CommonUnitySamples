@@ -39,6 +39,11 @@ namespace m039.UIToolbox.Adaptive
             _currentOrientation = Screen.width > Screen.height ? Orientation.Landscape : Orientation.Portrait;
         }
 
+        void Start()
+        {
+            GetOrCreateLayout(_currentOrientation).HideUnusedContainers();
+        }
+
         public void Register(AdaptiveView view)
         {
             if (_views.ContainsKey(view.id))
@@ -97,6 +102,8 @@ namespace m039.UIToolbox.Adaptive
                 {
                     layout.gameObject.SetActive(layout == newLayout);
                 }
+
+                newLayout.HideUnusedContainers();
 
                 _currentOrientation = newOrientation;
             }

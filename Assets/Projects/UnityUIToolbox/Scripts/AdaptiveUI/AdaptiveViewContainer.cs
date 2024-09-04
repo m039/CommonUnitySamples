@@ -11,8 +11,13 @@ namespace Game
         [SerializeField]
         string _Id;
 
+        [SerializeField]
+        bool _HideIfNoView = true;
+
         #endregion
 
         public string id => _Id;
+
+        public bool hideIfNoView => _HideIfNoView;
     }
 }

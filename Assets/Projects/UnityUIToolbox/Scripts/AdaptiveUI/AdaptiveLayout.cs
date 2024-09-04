@@ -8,6 +8,8 @@ namespace m039.UIToolbox.Adaptive
     {
         readonly Dictionary<string, AdaptiveViewContainer> _containers = new();
 
+        readonly Dictionary<string, AdaptiveView> _views = new();
+
         void Awake()
         {
             FindAllContainers();
@@ -36,11 +38,38 @@ namespace m039.UIToolbox.Adaptive
             }
 
             view.transform.SetParent(_containers[view.id].transform, false);
+
+            if (_views.ContainsKey(view.id))
+            {
+                Debug.LogError($"The view with '{view.id}' id is already attached.");
+                return;
+            }
+
+            _views.Add(view.id, view);
         }
 
         public void Detach(AdaptiveView view)
         {
             view.transform.SetParent(null, false);
+
+            if (!_views.ContainsKey(view.id))
+            {
+                Debug.LogError($"Can't detach the view with '{view.id}' id.");
+                return;
+            }
+
+            _views.Remove(view.id);
+        }
+
+        public void HideUnusedContainers()
+        {
+            foreach (var container in _containers.Values)
+            {
+                if (container.hideIfNoView)
+                {
+                    container.gameObject.SetActive(_views.ContainsKey(container.id));
+                }
+            }
         }
     }
 }

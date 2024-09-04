@@ -232,6 +232,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _Id: menu
+  _HideIfNoView: 1
 --- !u!114 &6905358306155554036
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -382,6 +383,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5079486565377600278}
+  - component: {fileID: 3755037743614461469}
   m_Layer: 5
   m_Name: MainPanel
   m_TagString: Untagged
@@ -408,6 +410,20 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &3755037743614461469
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4764246407948355601}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e5b0b2aaab659ba46890afed47bf77af, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _Id: main
+  _HideIfNoView: 0
 --- !u!1 &5606461605345080277
 GameObject:
   m_ObjectHideFlags: 0
@@ -605,6 +621,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _Id: message
+  _HideIfNoView: 0
 --- !u!114 &8936594304198244836
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -624,8 +641,8 @@ MonoBehaviour:
     m_Bottom: 0
   m_ChildAlignment: 0
   m_Spacing: 0
-  m_ChildForceExpandWidth: 1
-  m_ChildForceExpandHeight: 1
+  m_ChildForceExpandWidth: 0
+  m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 1
   m_ChildControlHeight: 1
   m_ChildScaleWidth: 0
@@ -742,6 +759,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _Id: fps
+  _HideIfNoView: 1
 --- !u!114 &378683443880267275
 MonoBehaviour:
   m_ObjectHideFlags: 0

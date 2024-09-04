@@ -29,7 +29,7 @@ namespace Game
             if (_inited)
                 return;
 
-            _content = transform.Find("Root/Content");
+            _content = transform.Find("Content");
             _text = _content.Find("Text").GetComponent<TMPro.TMP_Text>();
             _inited = true;
             _content.gameObject.SetActive(false);

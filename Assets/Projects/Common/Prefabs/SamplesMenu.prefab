@@ -188,6 +188,7 @@ GameObject:
   - component: {fileID: 5487482348370746435}
   - component: {fileID: 552953616410572423}
   - component: {fileID: 2025336123567053053}
+  - component: {fileID: 8068004645537210052}
   m_Layer: 5
   m_Name: SamplesButton
   m_TagString: Untagged
@@ -312,6 +313,19 @@ MonoBehaviour:
   _Text: {fileID: 6043132884288523942}
   _NormalColor: {r: 0, g: 0, b: 0, a: 1}
   _HighlightedColor: {r: 1, g: 1, b: 1, a: 1}
+--- !u!114 &8068004645537210052
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1468356084863623914}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f177509ae7b1ce4f951d66024d0f90f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _Id: menu
 --- !u!1 &2283547193511525427
 GameObject:
   m_ObjectHideFlags: 0

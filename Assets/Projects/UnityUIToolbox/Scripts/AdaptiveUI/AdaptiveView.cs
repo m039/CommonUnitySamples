@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace m039.UIToolbox.Adaptive
@@ -11,11 +12,20 @@ namespace m039.UIToolbox.Adaptive
 
         #endregion
 
+        public System.Action<AdaptiveViewContainer> onAttach;
+
+        public System.Action onDetach;
+
+        [NonSerialized]
+        public AdaptiveViewContainer container;
+
         public string id => _Id;
 
         private void Awake()
         {
             AdaptiveManager.Instance.Register(this);
         }
+
+        
     }
 }

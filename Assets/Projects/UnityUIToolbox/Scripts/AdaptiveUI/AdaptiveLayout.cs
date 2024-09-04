@@ -37,13 +37,16 @@ namespace m039.UIToolbox.Adaptive
                 return;
             }
 
-            view.transform.SetParent(_containers[view.id].transform, false);
-
             if (_views.ContainsKey(view.id))
             {
                 Debug.LogError($"The view with '{view.id}' id is already attached.");
                 return;
             }
+
+            view.transform.SetParent(_containers[view.id].transform, false);
+
+            view.container = _containers[view.id];
+            view.onAttach?.Invoke(view.container);
 
             _views.Add(view.id, view);
         }
@@ -59,6 +62,9 @@ namespace m039.UIToolbox.Adaptive
             }
 
             _views.Remove(view.id);
+
+            view.container = null;
+            view.onDetach?.Invoke();
         }
 
         public void HideUnusedContainers()

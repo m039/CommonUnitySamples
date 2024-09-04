@@ -652,6 +652,30 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1801785364200156905, guid: 82d5d68277d23234f918b082fe658c95, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1801785364200156905, guid: 82d5d68277d23234f918b082fe658c95, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1801785364200156905, guid: 82d5d68277d23234f918b082fe658c95, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2422104227801254700, guid: 82d5d68277d23234f918b082fe658c95, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2422104227801254700, guid: 82d5d68277d23234f918b082fe658c95, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2422104227801254700, guid: 82d5d68277d23234f918b082fe658c95, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3733383094996582355, guid: 82d5d68277d23234f918b082fe658c95, type: 3}
       propertyPath: m_Name
       value: ModularPanel
@@ -1259,8 +1283,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 15
-  m_fontSizeBase: 15
+  m_fontSize: 14
+  m_fontSizeBase: 14
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -1335,10 +1359,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1171624364}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 14.585, y: -8.38}
-  m_SizeDelta: {x: 29.17, y: 16.76}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1258658641
 GameObject:
@@ -1592,6 +1616,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2001624370}
   - component: {fileID: 2001624371}
+  - component: {fileID: 2001624372}
   m_Layer: 5
   m_Name: Root
   m_TagString: Untagged
@@ -1646,6 +1671,19 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &2001624372
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2001624369}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f177509ae7b1ce4f951d66024d0f90f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _Id: main
 --- !u!1 &2083513065
 GameObject:
   m_ObjectHideFlags: 0

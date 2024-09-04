@@ -32,7 +32,11 @@ namespace m039.UIToolbox.Adaptive
 
         readonly Dictionary<string, AdaptiveLayout> _layouts = new();
 
+        readonly List<AdaptiveView> _deferRegister = new();
+
         Orientation _currentOrientation = Orientation.Portrait;
+
+        bool _started = false;
 
         void Awake()
         {
@@ -41,10 +45,30 @@ namespace m039.UIToolbox.Adaptive
 
         void Start()
         {
+            _started = true;
+
+            foreach (var view in _deferRegister)
+            {
+                RegisterInternal(view);
+            }
+
+            _deferRegister.Clear();
+
             GetOrCreateLayout(_currentOrientation).HideUnusedContainers();
         }
 
         public void Register(AdaptiveView view)
+        {
+            if (!_started)
+            {
+                _deferRegister.Add(view);
+                return;
+            }
+
+            RegisterInternal(view);
+        }
+
+        void RegisterInternal(AdaptiveView view)
         {
             if (_views.ContainsKey(view.id))
             {

@@ -1,8 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-namespace Game
+namespace m039.UIToolbox.Adaptive
 {
     public class AdaptiveViewContainer : MonoBehaviour
     {
@@ -14,7 +12,12 @@ namespace Game
         [SerializeField]
         bool _HideIfNoView = true;
 
+        [SerializeField]
+        string _Label;
+
         #endregion
+
+        public string label => _Label;
 
         public string id => _Id;
 

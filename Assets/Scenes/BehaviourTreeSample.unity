@@ -155,6 +155,30 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1801785364200156905, guid: 82d5d68277d23234f918b082fe658c95, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1801785364200156905, guid: 82d5d68277d23234f918b082fe658c95, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1801785364200156905, guid: 82d5d68277d23234f918b082fe658c95, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2422104227801254700, guid: 82d5d68277d23234f918b082fe658c95, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2422104227801254700, guid: 82d5d68277d23234f918b082fe658c95, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2422104227801254700, guid: 82d5d68277d23234f918b082fe658c95, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3733383094996582355, guid: 82d5d68277d23234f918b082fe658c95, type: 3}
       propertyPath: m_Name
       value: ModularPanel

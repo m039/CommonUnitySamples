@@ -1,4 +1,5 @@
 using m039.Common.DependencyInjection;
+using m039.UIToolbox.Adaptive;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -30,7 +31,13 @@ namespace Game
 
         Transform _content;
 
-        Transform _arrowButton;
+        Transform _handle;
+
+        AdaptiveView _handleView;
+
+        Transform _padding;
+
+        bool _visibility;
 
         void Awake()
         {
@@ -52,7 +59,7 @@ namespace Game
                 (typeof(ButtonItem), "ButtonTemplate")
             };
 
-            _content = transform.Find("Root/Content");
+            _content = transform.Find("Root/Body/Content");
             
             foreach (var (type, path) in templates)
             {
@@ -65,18 +72,25 @@ namespace Game
             }
 
             // Find Arrow Button.
-            _arrowButton = transform.Find("Root/ArrowButton");
-            if (_arrowButton != null)
+            _handle = transform.Find("Root/Handle");
+
+            _handleView = _handle.GetComponent<AdaptiveView>();
+            _handleView.onAttach += (c) => {
+                UpdateHandle();
+            };
+            
+            if (_handle != null)
             {
-                var button = _arrowButton.GetComponent<Button>();
-                UpdateArrowButton();
+                var button = _handle.GetComponent<Button>();
+                UpdateHandle();
 
                 button.onClick.AddListener(() =>
                 {
-                    _content.gameObject.SetActive(!_content.gameObject.activeSelf);
-                    UpdateArrowButton();
+                    SetVisibility(!_visibility);
                 });
             }
+
+            _padding = transform.Find("Root/Padding/Space");
 
             Close();
         }
@@ -95,20 +109,43 @@ namespace Game
         {
             Init();
             _content.gameObject.SetActive(visible);
-            UpdateArrowButton();
+            _padding.gameObject.SetActive(visible);
+            UpdateHandle();
+            _visibility = visible;
         }
 
-        void UpdateArrowButton()
+        void UpdateHandle()
         {
-            var image = _arrowButton.Find("Image");
+            var image = _handle.Find("Image");
 
-            if (_content.gameObject.activeSelf)
+            string label = null;
+
+            if (_handleView.container != null)
             {
-                image.rotation = Quaternion.Euler(0, 0, -90);
+                label = _handleView.container.label;
             }
-            else
+
+            if (label == "down_to_up")
             {
-                image.rotation = Quaternion.Euler(0, 0, 90);
+                if (_content.gameObject.activeSelf)
+                {
+                    image.rotation = Quaternion.Euler(0, 0, 0);
+                }
+                else
+                {
+                    image.rotation = Quaternion.Euler(0, 0, 180);
+                }
+            } else
+            {
+                // Left to Right
+                if (_content.gameObject.activeSelf)
+                {
+                    image.rotation = Quaternion.Euler(0, 0, -90);
+                }
+                else
+                {
+                    image.rotation = Quaternion.Euler(0, 0, 90);
+                }
             }
         }
 

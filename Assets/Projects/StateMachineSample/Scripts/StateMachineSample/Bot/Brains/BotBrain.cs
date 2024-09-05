@@ -1,3 +1,4 @@
+using m039.Common.DependencyInjection;
 using m039.Common.StateMachine;
 using System.Linq;
 using UnityEngine;
@@ -14,10 +15,10 @@ namespace Game.StateMachineSample
 
         [SerializeField] PatrolBotState _PatrolState;
 
-        [SerializeField]
-        TMPro.TMP_Text _Info;
-
         #endregion
+
+        [Inject]
+        NotificationMessage _notificationMessage;
 
         StateMachine _stateMachine { get; } = new();
 
@@ -94,11 +95,8 @@ namespace Game.StateMachineSample
                     }
                 }
 
-                _Info.text = "State: " + string.Join(" => ", state.GetHierarchicalStates().Select(getName));
-                _Info.gameObject.SetActive(true);
-            } else
-            {
-                _Info.gameObject.SetActive(false);
+                _notificationMessage.SetLevel(NotificationMessage.Level.Normal);
+                _notificationMessage.SetMessage("State: " + string.Join(" => ", state.GetHierarchicalStates().Select(getName)));
             }
         }
     }
